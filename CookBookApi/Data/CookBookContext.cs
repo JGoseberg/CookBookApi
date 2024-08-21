@@ -12,13 +12,14 @@ namespace CookBookApi.Data
 
         public DbSet<Recipe> Recipes { get; set; }
         public DbSet<Ingredient> Ingredients { get; set; }
-        public DbSet<RecipeIngredient> RecipeIngredients { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Recipe>().ToTable("Recipe");
-            modelBuilder.Entity<Ingredient>().ToTable("Ingredient");
-            modelBuilder.Entity<RecipeIngredient>().ToTable("RecipeIngredient");
+            modelBuilder.Entity<Recipe>()
+                .HasMany(e => e.Ingredients)
+                .WithMany(e => e.Recipes);
+
+            
         }
     }
 }
