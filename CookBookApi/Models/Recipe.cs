@@ -1,4 +1,5 @@
 ﻿using CookBookApi.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace CookBookApi.Models
 {
@@ -10,6 +11,7 @@ namespace CookBookApi.Models
         public string Creator { get; set; }
         public RecipeType Type { get; set; }
         public int Rating { get; set; }
-        public int IngredientID { get; set; }
+
+        DbSet<RecipeIngredient> RecipeIngredients { get; set; }
     }
 }
