@@ -16,7 +16,7 @@ namespace CookBookApi.Models
         
         public RecipeType? Type { get; set; }
         
-        public int? Rating { get; set; }
+        public RecipeRating? Rating { get; set; }
         public List<Ingredient> Ingredients { get; } = [];
     }
 }

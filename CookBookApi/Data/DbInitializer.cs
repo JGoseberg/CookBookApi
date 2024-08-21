@@ -1,4 +1,5 @@
 ﻿using CookBookApi.Models;
+using CookBookApi.Enums;
 
 namespace CookBookApi.Data
 {
@@ -24,16 +25,16 @@ namespace CookBookApi.Data
                 { 
                     Name = "Kräuterbutter",
                     Description = "Lorem Ipsum",
-                    Type = Enums.RecipeType.Vegetarian,
-                    Rating = 4,
+                    Type = RecipeType.Vegetarian,
+                    Rating = RecipeRating.Excellent,
                     Creator = "Jonas"
                 },
                 new Recipe
                 {
                     Name = "Schinkennudeln",
                     Description = "Lorem Ipsum",
-                    Type = Enums.RecipeType.Normal,
-                    Rating = 4,
+                    Type = RecipeType.Normal,
+                    Rating = RecipeRating.Good,
                     Creator = "Jonas",
                     Ingredients =
                     {

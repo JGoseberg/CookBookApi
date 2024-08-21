@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using CookBookApi.Data;
 using CookBookApi.Models;
+using CookBookApi.Enums;
 
 namespace CookBookApi.Controllers
 {
@@ -31,17 +32,28 @@ namespace CookBookApi.Controllers
         }
 
         [HttpPost(Name = "PostRecipes")]
-        public async Task<ActionResult<List<Ingredient>>> PostRecipe(int ingredient)
+        public async Task<ActionResult<List<Ingredient>>> PostRecipe(
+            string name, 
+            string description, 
+            RecipeType type, 
+            RecipeRating Rating, 
+            string ingredient)
         {
+
+
+
             var ingredients = await _context.Ingredients.ToListAsync();
 
-            Ingredient ingredientToAdd = ingredients.Where(x => x.Id == ingredient).First();
+            Ingredient ingredientToAdd = ingredients.Where(x => x.Name == ingredient).First();
 
 
             _context.Recipes.Add(
                 new Recipe
                 {
-                    Name = "test",
+                    Name = name,
+                    Description = description,
+                    Type = type,
+                    Rating = Rating,
                     Ingredients =
                     {
                         ingredientToAdd
