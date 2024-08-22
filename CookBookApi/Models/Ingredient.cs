@@ -1,17 +1,13 @@
-﻿using CookBookApi.Enums;
-
-namespace CookBookApi.Models
+﻿namespace CookBookApi.Models
 {
     public class Ingredient
     {
         public int IngredientId { get; set; }
-        public string Title { get; set; }
-        public DietEnum Diet { get; set; }
-        public string? Notes { get; set; }
-        public DateTime CreatedAtDateTimeCreated { get; set; }
+        public string IngredientName { get; set; }
 
-        public int? CountryId { get; set; }
-        public Country Countries { get; set; }
+
         public ICollection<RecipeIngredient> RecipeIngredients { get; set; }
+        public ICollection<IngredientCountry> IngredientCountries { get; set; }
+        public ICollection<IngredientDietaryRestriction> IngredientDietaryRestrictions { get; set; }
     }
 }

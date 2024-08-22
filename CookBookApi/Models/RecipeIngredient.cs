@@ -8,7 +8,7 @@
         public int IngredientId { get; set; }
         public Ingredient Ingredient { get; set; }
 
-        public int AmountId { get; set; }
-        public Amount Amount { get; set; }
+        public int MeasurementId { get; set; }
+        public Measurement Measurement { get; set; }
     }
 }

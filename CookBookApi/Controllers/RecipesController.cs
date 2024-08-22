@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using CookBookApi.Data;
 using CookBookApi.Models;
-using CookBookApi.Enums;
 
 namespace CookBookApi.Controllers
 {

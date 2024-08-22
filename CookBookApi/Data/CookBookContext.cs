@@ -10,22 +10,21 @@ namespace CookBookApi.Data
         {
         }
 
-        //public DbSet<Amount> Amounts { get; set; }
-        public DbSet<Country> Countries { get; set; }
-        public DbSet<Ingredient> Ingredients { get; set; }
         public DbSet<Recipe> Recipes { get; set; }
+        public DbSet<Ingredient> Ingredients { get; set; }
+        public DbSet<Measurement> Measurements { get; set; }
+        public DbSet<MeasurementUnit> MeasurementsUnits { get; set; }
         public DbSet<RecipeIngredient> RecipeIngredients { get; set; }
-        public DbSet<RecipeSubRecipe> RecipeSubRecipes { get; set; }
-        public DbSet<SubRecipe> SubRecipes { get; set; }
+        public DbSet<CountryKitchen> CountryKitchens { get; set; }
+        public DbSet<IngredientCountry> IngredientCountries { get; set; }
+        public DbSet<RecipeRecipe> RecipeRecipes { get; set; }
+        public DbSet<DietaryRestriction> DietaryRestrictions { get; set; }
+        public DbSet<RecipeDietaryRestriction> RecipeDietaryRestrictions { get; set; }
+        public DbSet<IngredientDietaryRestriction> IngredientDietaryRestrictions { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
-            modelBuilder.Entity<Recipe>()
-                .Property(r => r.RecipeId)
-                .ValueGeneratedOnAdd();
-
             modelBuilder.Entity<RecipeIngredient>()
                 .HasKey(ri => new { ri.RecipeId, ri.IngredientId });
 
@@ -36,44 +35,77 @@ namespace CookBookApi.Data
 
             modelBuilder.Entity<RecipeIngredient>()
                 .HasOne(ri => ri.Ingredient)
-                .WithMany(r => r.RecipeIngredients)
+                .WithMany(i => i.RecipeIngredients)
                 .HasForeignKey(ri => ri.IngredientId);
 
+            modelBuilder.Entity<RecipeIngredient>()
+                .HasOne(ri => ri.Measurement)
+                .WithMany(m => m.RecipeIngredients)
+                .HasForeignKey(ri => ri.MeasurementId);
 
 
-            modelBuilder.Entity<RecipeSubRecipe>()
-                .HasKey(rr => new { rr.RecipeId, rr.SubRecipeId });
-
-            modelBuilder.Entity<RecipeSubRecipe>()
-                .HasOne(rr => rr.Recipe)
-                .WithMany(r => r.RecipeSubRecipes)
-                .HasForeignKey(rr => rr.RecipeId);
-
-            modelBuilder.Entity<RecipeSubRecipe>()
-                .HasOne(rr => rr.SubRecipe)
-                .WithMany(r => r.RecipeSubRecipes)
-                .HasForeignKey(rr => rr.SubRecipeId);
+            modelBuilder.Entity<Measurement>()
+                .HasOne(m => m.MeasurementUnit)
+                .WithMany(mu => mu.Measurements)
+                .HasForeignKey(m => m.MeasurementUnitId);
 
 
+            modelBuilder.Entity<IngredientCountry>()
+                .HasKey(ic => new { ic.IngredientID, ic.CountryKitchenId });
 
-            modelBuilder.Entity<Recipe>()
-                .HasOne(r => r.Countries)
-                .WithMany(c => c.Recipes)
-                .HasForeignKey(r => r.RecipeId)
+            modelBuilder.Entity<IngredientCountry>()
+                .HasOne(ic => ic.Ingredient)
+                .WithMany(i => i.IngredientCountries)
+                .HasForeignKey(ic => ic.IngredientID);
+
+            modelBuilder.Entity<IngredientCountry>()
+                .HasOne(ic => ic.CountryKitchen)
+                .WithMany(i => i.IngredientCountries)
+                .HasForeignKey(ic => ic.CountryKitchenId);
+
+
+            modelBuilder.Entity<RecipeRecipe>()
+                .HasKey(rr => new { rr.ParentRecipeId, rr.ChildRecipeId });
+
+            modelBuilder.Entity<RecipeRecipe>()
+                .HasOne(rr => rr.ParentRecipe)
+                .WithMany(r => r.ChildRecipes)
+                .HasForeignKey(rr => rr.ParentRecipeId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Ingredient>()
-                .HasOne(i => i.Countries)
-                .WithMany(c => c.Ingredients)
-                .HasForeignKey(r => r.IngredientId)
+            modelBuilder.Entity<RecipeRecipe>()
+                .HasOne(rr => rr.ChildRecipe)
+                .WithMany(r => r.ParentRecipes)
+                .HasForeignKey(rr => rr.ChildRecipeId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            //modelBuilder.Entity<Amount>().ToTable(nameof(Amount));
-            //modelBuilder.Entity<Country>().ToTable(nameof(Country));
-            //modelBuilder.Entity<Ingredient>().ToTable(nameof(Ingredient));
-            //modelBuilder.Entity<Recipe>().ToTable(nameof(Recipe));
-            //modelBuilder.Entity<SubRecipe>().ToTable(nameof(SubRecipe));      
 
+            modelBuilder.Entity<RecipeDietaryRestriction>()
+                .HasKey(rd => new { rd.RecipeId, rd.DietaryRecipeRestrictionId });
+
+            modelBuilder.Entity<RecipeDietaryRestriction>()
+                .HasOne(rd => rd.Recipe)
+                .WithMany(r => r.RecipeDietaryRestrictions)
+                .HasForeignKey(rd => rd.RecipeId);
+
+            modelBuilder.Entity<RecipeDietaryRestriction>()
+                .HasOne(rd => rd.DietaryRestriction)
+                .WithMany(dr => dr.RecipeDietaryRestrictions)
+                .HasForeignKey(rd => rd.DietaryRecipeRestrictionId);
+
+
+            modelBuilder.Entity<IngredientDietaryRestriction>()
+                .HasKey(id => new { id.IngredientsId, id.DietaryRestrictionId });
+
+            modelBuilder.Entity<IngredientDietaryRestriction>()
+                .HasOne(id => id.Ingredient)
+                .WithMany(i => i.IngredientDietaryRestrictions)
+                .HasForeignKey(id =>  id.IngredientsId);
+
+            modelBuilder.Entity<IngredientDietaryRestriction>()
+                .HasOne(id => id.DietaryRestriction)
+                .WithMany(dr => dr.IngredientDietaryRestrictions)
+                .HasForeignKey(id => id.DietaryRestrictionId);
         }
     }
 }
