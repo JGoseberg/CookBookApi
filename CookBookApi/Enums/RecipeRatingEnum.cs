@@ -1,6 +1,6 @@
 ﻿namespace CookBookApi.Enums
 {
-    public enum RecipeRating
+    public enum RecipeRatingEnum
     {
         Poor = 0,
         NotSoGod = 1,

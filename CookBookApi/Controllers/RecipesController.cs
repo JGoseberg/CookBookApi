@@ -28,38 +28,39 @@ namespace CookBookApi.Controllers
         [HttpGet(Name = "GetRecipes")]
         public async Task<ActionResult<List<Recipe>>> Get()
         {
-            return await _context.Recipes.Include(r => r.Ingredients).ToListAsync();
+            //return await _context.Recipes.Include(r => r.Ingredients).ToListAsync();
+            return await _context.Recipes.ToListAsync();
         }
 
         [HttpPost(Name = "PostRecipes")]
         public async Task<ActionResult<List<Ingredient>>> PostRecipe(
             string name, 
             string description, 
-            RecipeType type, 
-            RecipeRating Rating, 
+            //RecipeType type, 
+            //RecipeRating Rating, 
             string ingredient)
         {
 
 
 
-            var ingredients = await _context.Ingredients.ToListAsync();
+            //var ingredients = await _context.Ingredients.ToListAsync();
 
-            Ingredient ingredientToAdd = ingredients.Where(x => x.Name == ingredient).First();
+            //Ingredient ingredientToAdd = ingredients.Where(x => x.Name == ingredient).First();
 
 
-            _context.Recipes.Add(
-                new Recipe
-                {
-                    Name = name,
-                    Description = description,
-                    Type = type,
-                    Rating = Rating,
-                    Ingredients =
-                    {
-                        ingredientToAdd
-                    }
-                });
-            _context.SaveChanges();
+            //_context.Recipes.Add(
+            //    new Recipe
+            //    {
+            //        Name = name,
+            //        Description = description,
+            //        Type = type,
+            //        Rating = Rating,
+            //        Ingredients =
+            //        {
+            //            ingredientToAdd
+            //        }
+            //    });
+            //_context.SaveChanges();
 
             return Ok();
         }

@@ -1,6 +1,6 @@
 ﻿namespace CookBookApi.Enums
 {
-    public enum RecipeType
+    public enum DietEnum
     {
         Normal = 0,
         Vegetarian = 1,

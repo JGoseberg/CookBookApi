@@ -10,40 +10,51 @@ namespace CookBookApi.Data
             if (context.Recipes.Any())
                 return;
 
-            var ingredients = new Ingredient[]
-            {
-                new Ingredient {Name = "Nudeln", Description = "Lorem Ipsum"},
-                new Ingredient {Name = "Bacon", Description = "Lorem Ipsum"},
-            };
-            context.Ingredients.AddRange(ingredients);
-            context.SaveChanges();
-
-
             var recipes = new Recipe[]
             {
-                new Recipe 
-                { 
-                    Name = "Kräuterbutter",
-                    Description = "Lorem Ipsum",
-                    Type = RecipeType.Vegetarian,
-                    Rating = RecipeRating.Excellent,
-                    Creator = "Jonas"
-                },
                 new Recipe
                 {
-                    Name = "Schinkennudeln",
-                    Description = "Lorem Ipsum",
-                    Type = RecipeType.Normal,
-                    Rating = RecipeRating.Good,
-                    Creator = "Jonas",
-                    Ingredients =
-                    {
-                        context.Ingredients.Where(x => x.Id == 1).First()
-                    }
+                    Title = "Schinkennudeln"
                 }
             };
-            context.Recipes.AddRange(recipes);
+
+            context.AddRange(recipes);
             context.SaveChanges();
+
+            //var ingredientsOld = new Ingredient[]
+            //{
+            //    new Ingredient {Name = "Nudeln", Description = "Lorem Ipsum"},
+            //    new Ingredient {Name = "Bacon", Description = "Lorem Ipsum"},
+            //};
+            //context.Ingredients.AddRange(ingredients);
+            //context.SaveChanges();
+
+
+            //var recipesOld = new Recipe[]
+            //{
+            //    new Recipe 
+            //    { 
+            //        Name = "Kräuterbutter",
+            //        Description = "Lorem Ipsum",
+            //        Type = RecipeType.Vegetarian,
+            //        Rating = RecipeRatingEnum.Excellent,
+            //        Creator = "Jonas"
+            //    },
+            //    new Recipe
+            //    {
+            //        Name = "Schinkennudeln",
+            //        Description = "Lorem Ipsum",
+            //        Type = RecipeType.Normal,
+            //        Rating = RecipeRatingEnum.Good,
+            //        Creator = "Jonas",
+            //        Ingredients =
+            //        {
+            //            context.Ingredients.Where(x => x.Id == 1).First()
+            //        }
+            //    }
+            //};
+            //context.Recipes.AddRange(recipes);
+            //context.SaveChanges();
         }
     }
 }
