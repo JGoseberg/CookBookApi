@@ -3,14 +3,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CookBookApi.Data
 {
-    public class CookBookContext : DbContext 
+    public class CookBookContext : DbContext
     {
         public CookBookContext(DbContextOptions<CookBookContext> options)
-            : base (options)
+            : base(options)
         {
         }
 
-        public DbSet<Amount> Amounts { get; set; }
+        //public DbSet<Amount> Amounts { get; set; }
         public DbSet<Country> Countries { get; set; }
         public DbSet<Ingredient> Ingredients { get; set; }
         public DbSet<Recipe> Recipes { get; set; }
@@ -21,6 +21,11 @@ namespace CookBookApi.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
+            modelBuilder.Entity<Recipe>()
+                .Property(r => r.RecipeId)
+                .ValueGeneratedOnAdd();
+
             modelBuilder.Entity<RecipeIngredient>()
                 .HasKey(ri => new { ri.RecipeId, ri.IngredientId });
 
@@ -50,6 +55,18 @@ namespace CookBookApi.Data
                 .HasForeignKey(rr => rr.SubRecipeId);
 
 
+
+            modelBuilder.Entity<Recipe>()
+                .HasOne(r => r.Countries)
+                .WithMany(c => c.Recipes)
+                .HasForeignKey(r => r.RecipeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Ingredient>()
+                .HasOne(i => i.Countries)
+                .WithMany(c => c.Ingredients)
+                .HasForeignKey(r => r.IngredientId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             //modelBuilder.Entity<Amount>().ToTable(nameof(Amount));
             //modelBuilder.Entity<Country>().ToTable(nameof(Country));

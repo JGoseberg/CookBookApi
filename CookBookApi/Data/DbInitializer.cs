@@ -10,11 +10,20 @@ namespace CookBookApi.Data
             if (context.Recipes.Any())
                 return;
 
+            var countries = new Country[]
+            {
+                new Country { CountryName = "None"},
+                new Country { CountryName = "Deutschland"},
+            };
+            context.AddRange(countries);
+            context.SaveChanges();
+
             var recipes = new Recipe[]
             {
                 new Recipe
                 {
-                    Title = "Schinkennudeln"
+                    Title = "Schinkennudeln",
+                  
                 }
             };
 
