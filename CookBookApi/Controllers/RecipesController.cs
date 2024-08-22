@@ -7,11 +7,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using CookBookApi.Data;
 using CookBookApi.Models;
+using CookBookApi.DTOs;
 
 namespace CookBookApi.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class RecipesController : Controller
     {
         private readonly CookBookContext _context;
@@ -23,47 +24,55 @@ namespace CookBookApi.Controllers
             _logger = logger;
         }
 
-        // GET: Recipes
-        [HttpGet(Name = "GetRecipes")]
-        public async Task<ActionResult<List<Recipe>>> Get()
+        // Get: api/Recipe/int
+        [HttpGet]
+        public async Task<ActionResult<List<Recipe>>> GetAll()
         {
-            //return await _context.Recipes.Include(r => r.Ingredients).ToListAsync();
-            return await _context.Recipes.ToListAsync();
+            return _context.Recipes.ToList();
         }
 
-        [HttpPost(Name = "PostRecipes")]
-        public async Task<ActionResult<List<Ingredient>>> PostRecipe(
-            string name, 
-            string description, 
-            //RecipeType type, 
-            //RecipeRating Rating, 
-            string ingredient)
-        {
+        // GET: api/Recipe/int
+        [HttpGet("{id}")]
+        public async Task<ActionResult<RecipeDetailDto>> GetRecipe(int id)
+        {   
+            if(int.IsNegative(id))
+                return BadRequest();
 
+            var recipe = await _context.Recipes
+                .Include(r=> r.RecipeIngredients)
+                    .ThenInclude(ri => ri.Ingredient)
+                .Include(r => r.RecipeIngredients)
+                    .ThenInclude(ri => ri.Measurement)
+                        .ThenInclude(m => m.MeasurementUnit)
+                .Include(r => r.RecipeDietaryRestrictions)
+                    .ThenInclude(rd => rd.DietaryRestriction)
+                .Include(r => r.ChildRecipes)
+                    .ThenInclude(rr => rr.ChildRecipe)
+                .Include(r => r.ParentRecipes)
+                    .ThenInclude(rr => rr.ParentRecipe)
+                .FirstOrDefaultAsync(r => r.RecipeId == id);
+            
+            if(recipe == null)
+                return NotFound();
 
+            var recipeDetailDto = new RecipeDetailDto
+            {
+                RecipeId = recipe.RecipeId,
+                RecipeName = recipe.RecipeName,
+                RecipeDescription = recipe.Instruction,
+                Rating = recipe.Rating,
+                CountryKitchen = recipe.CountryKitchen,
+                Ingredients = recipe.RecipeIngredients.Select(ri => new IngredientDetailDto
+                {
+                    IngredientName = ri.Ingredient.IngredientName,
+                    IngredientAmount = ri.Measurement.Amount,
+                    MeasurementUnit = ri.Measurement.MeasurementUnit.MeasurementUnitName,
+                }).ToList(),
+                DietaryRestrictions = recipe.RecipeDietaryRestrictions.Select(rd => rd.DietaryRestriction.DietaryRestrictionName).ToList(),
+                RelatedRecips = recipe.ChildRecipes.Select(cr => cr.ChildRecipe.RecipeName).ToList()                
+            };
 
-            //var ingredients = await _context.Ingredients.ToListAsync();
-
-            //Ingredient ingredientToAdd = ingredients.Where(x => x.Name == ingredient).First();
-
-
-            //_context.Recipes.Add(
-            //    new Recipe
-            //    {
-            //        Name = name,
-            //        Description = description,
-            //        Type = type,
-            //        Rating = Rating,
-            //        Ingredients =
-            //        {
-            //            ingredientToAdd
-            //        }
-            //    });
-            //_context.SaveChanges();
-
-            return Ok();
+            return recipeDetailDto;
         }
-
-
     }
 }
