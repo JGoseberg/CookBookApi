@@ -1,69 +1,98 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using CookBookApi.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using CookBookApi.Data;
-using CookBookApi.Models;
 
-namespace CookBookApi.Controllers
+[Route("api/[controller]")]
+[ApiController]
+public class RecipesController : ControllerBase
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class RecipesController : Controller
+    private readonly CookBookContext _context;
+
+    public RecipesController(CookBookContext context)
     {
-        private readonly CookBookContext _context;
-        private readonly ILogger<RecipesController> _logger;
+        _context = context;
+    }
 
-        public RecipesController(CookBookContext context, ILogger<RecipesController> logger)
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<Recipe>>> GetRecipes()
+    {
+        return await _context.Recipes
+            .Include(r => r.Subrecipes)
+            .Include(r => r.Ingredients)
+            .ToListAsync();
+    }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<Recipe>> GetRecipe(int id)
+    {
+        var recipe = await _context.Recipes
+            .Include(r => r.Subrecipes)
+            .Include(r => r.Ingredients)
+            .FirstOrDefaultAsync(r => r.Id == id);
+
+        if (recipe == null)
         {
-            _context = context;
-            _logger = logger;
+            return NotFound();
         }
 
-        // GET: Recipes
-        [HttpGet(Name = "GetRecipes")]
-        public async Task<ActionResult<List<Recipe>>> Get()
+        return recipe;
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<Recipe>> PostRecipe(Recipe recipe)
+    {
+        _context.Recipes.Add(recipe);
+        await _context.SaveChangesAsync();
+
+        return CreatedAtAction("GetRecipe", new { id = recipe.Id }, recipe);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> PutRecipe(int id, Recipe recipe)
+    {
+        if (id != recipe.Id)
         {
-            //return await _context.Recipes.Include(r => r.Ingredients).ToListAsync();
-            return await _context.Recipes.ToListAsync();
+            return BadRequest();
         }
 
-        [HttpPost(Name = "PostRecipes")]
-        public async Task<ActionResult<List<Ingredient>>> PostRecipe(
-            string name, 
-            string description, 
-            //RecipeType type, 
-            //RecipeRating Rating, 
-            string ingredient)
+        _context.Entry(recipe).State = EntityState.Modified;
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteRecipe(int id)
+    {
+        var recipe = await _context.Recipes.FindAsync(id);
+        if (recipe == null)
         {
-
-
-
-            //var ingredients = await _context.Ingredients.ToListAsync();
-
-            //Ingredient ingredientToAdd = ingredients.Where(x => x.Name == ingredient).First();
-
-
-            //_context.Recipes.Add(
-            //    new Recipe
-            //    {
-            //        Name = name,
-            //        Description = description,
-            //        Type = type,
-            //        Rating = Rating,
-            //        Ingredients =
-            //        {
-            //            ingredientToAdd
-            //        }
-            //    });
-            //_context.SaveChanges();
-
-            return Ok();
+            return NotFound();
         }
 
+        _context.Recipes.Remove(recipe);
+        await _context.SaveChangesAsync();
 
+        return NoContent();
+    }
+
+    [HttpGet("search")]
+    public async Task<ActionResult<IEnumerable<Recipe>>> SearchRecipes([FromQuery] string query)
+    {
+        return await _context.Recipes
+            .Include(r => r.Subrecipes)
+            .Include(r => r.Ingredients)
+            .Where(r => r.Name.Contains(query) || r.Subrecipes.Any(s => s.Name.Contains(query)))
+            .ToListAsync();
+    }
+
+    [HttpGet("by-ingredient/{ingredientName}")]
+    public async Task<ActionResult<IEnumerable<Recipe>>> GetRecipesByIngredient(string ingredientName)
+    {
+        return await _context.Recipes
+            .Include(r => r.Subrecipes)
+            .Include(r => r.Ingredients)
+            .Where(r => r.Ingredients.Any(i => i.Name == ingredientName))
+            .ToListAsync();
     }
 }
