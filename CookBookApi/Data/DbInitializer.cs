@@ -51,6 +51,8 @@ public static class DbInitializer
             new Recipe { Name = "Chocolate Sauce", Description = "Rich chocolate sauce.", Instruction = "Steps",Creator = "ChatGPT", CreateTime = DateTime.Now, CuisineId = cuisines[0].Id }
         };
 
+        recipes[1].Subrecipes = new List<Recipe> { recipes[2] };
+
         context.Recipes.AddRange(recipes);
         context.SaveChanges();
 
