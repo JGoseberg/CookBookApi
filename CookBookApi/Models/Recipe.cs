@@ -9,5 +9,7 @@ public class Recipe
     public Cuisine Cuisine { get; set; } // Navigation property
     public List<Ingredient> Ingredients { get; set; }
     public List<Recipe> Subrecipes { get; set; }
+    public int? ParentRecipeId { get; set; }
     public List<Recipe> ParentRecipes { get; set; }
+    public List<RecipeRestriction> RecipeRestrictions { get; set; }
 }

@@ -21,12 +21,14 @@ public class RecipesController : ControllerBase
     public async Task<ActionResult<IEnumerable<RecipeDto>>> GetRecipes()
     {
         var recipes = await _context.Recipes
-            .Include(r => r.Ingredients)
-            .ThenInclude(i => i.MeasurementUnit)
-            .Include(r => r.Cuisine)
-            .Include(r => r.Subrecipes)
-            .ThenInclude(sr => sr.Cuisine)
-            .ToListAsync();
+        .Include(r => r.Ingredients)
+        .ThenInclude(i => i.MeasurementUnit)
+        .Include(r => r.Cuisine)
+        .Include(r => r.RecipeRestrictions)
+        .ThenInclude(rr => rr.Restriction)
+        .Include(r => r.Subrecipes)
+        .ThenInclude(sr => sr.Cuisine)
+        .ToListAsync();
 
         var recipeDtos = recipes.Select(r => _mapper.Map<RecipeDto>(r)).ToList();
         return Ok(recipeDtos);
@@ -38,11 +40,15 @@ public class RecipesController : ControllerBase
     {
         var recipe = await _context.Recipes
             .Include(r => r.Ingredients)
-            .ThenInclude(i => i.MeasurementUnit)
+                .ThenInclude(i => i.MeasurementUnit)
             .Include(r => r.Cuisine)
+            .Include(r => r.RecipeRestrictions)
+                .ThenInclude(rr => rr.Restriction)
+                .ThenInclude(rr => rr.IngredientRestrictions)
             .Include(r => r.Subrecipes)
-            .ThenInclude(sr => sr.Cuisine)
+                .ThenInclude(sr => sr.Cuisine)
             .FirstOrDefaultAsync(r => r.Id == id);
+
 
         if (recipe == null)
         {

@@ -11,5 +11,7 @@ public class Ingredient
     public Recipe Recipe { get; set; }
     public int CuisineId { get; set; } // Foreign Key
     public Cuisine Cuisine { get; set; } // Navigation property
+    public List<IngredientRestriction> IngredientRestrictions { get; set; }
+
 }
 

@@ -8,6 +8,9 @@ public class CookBookContext : DbContext
     public DbSet<Ingredient> Ingredients { get; set; }
     public DbSet<MeasurementUnit> MeasurementUnits { get; set; }
     public DbSet<Cuisine> Cuisines { get; set; }
+    public DbSet<Restriction> Restrictions { get; set; }
+    public DbSet<RecipeRestriction> RecipeRestrictions { get; set; }
+    public DbSet<IngredientRestriction> IngredientRestrictions { get; set; }
 
     public CookBookContext(DbContextOptions<CookBookContext> options)
         : base(options)
@@ -16,22 +19,60 @@ public class CookBookContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<MeasurementUnit>()
-            .HasMany(mu => mu.Ingredients)
-            .WithOne(i => i.MeasurementUnit)
-            .HasForeignKey(i => i.MeasurementUnitId)
-            .OnDelete(DeleteBehavior.Restrict); // Prevent cascading delete
-
-        modelBuilder.Entity<Recipe>()
-            .HasMany(r => r.Subrecipes)
-            .WithMany(r => r.ParentRecipes)
-            .UsingEntity(j => j.ToTable("RecipeSubrecipes"));
-
+        // Configure Recipe-Ingredient relationship
         modelBuilder.Entity<Recipe>()
             .HasMany(r => r.Ingredients)
             .WithOne(i => i.Recipe)
             .HasForeignKey(i => i.RecipeId)
-            .OnDelete(DeleteBehavior.Restrict); // Prevent cascading delete
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Configure Recipe-Subrecipe relationship (self-referencing)
+        modelBuilder.Entity<Recipe>()
+            .HasMany(r => r.Subrecipes)
+            .WithOne()
+            .HasForeignKey(r => r.ParentRecipeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Configure Ingredient-Cuisine relationship
+        modelBuilder.Entity<Ingredient>()
+            .HasOne(i => i.Cuisine)
+            .WithMany(c => c.Ingredients)
+            .HasForeignKey(i => i.CuisineId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Configure Recipe-Cuisine relationship
+        modelBuilder.Entity<Recipe>()
+            .HasOne(r => r.Cuisine)
+            .WithMany(c => c.Recipes)
+            .HasForeignKey(r => r.CuisineId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Configure many-to-many relationships for Restrictions
+        modelBuilder.Entity<RecipeRestriction>()
+            .HasKey(rr => new { rr.RecipeId, rr.RestrictionId });
+
+        modelBuilder.Entity<RecipeRestriction>()
+            .HasOne(rr => rr.Recipe)
+            .WithMany(r => r.RecipeRestrictions)
+            .HasForeignKey(rr => rr.RecipeId);
+
+        modelBuilder.Entity<RecipeRestriction>()
+            .HasOne(rr => rr.Restriction)
+            .WithMany(r => r.RecipeRestrictions)
+            .HasForeignKey(rr => rr.RestrictionId);
+
+        modelBuilder.Entity<IngredientRestriction>()
+            .HasKey(ir => new { ir.IngredientId, ir.RestrictionId });
+
+        modelBuilder.Entity<IngredientRestriction>()
+            .HasOne(ir => ir.Ingredient)
+            .WithMany(i => i.IngredientRestrictions)
+            .HasForeignKey(ir => ir.IngredientId);
+
+        modelBuilder.Entity<IngredientRestriction>()
+            .HasOne(ir => ir.Restriction)
+            .WithMany(r => r.IngredientRestrictions)
+            .HasForeignKey(ir => ir.RestrictionId);
     }
 
 }
