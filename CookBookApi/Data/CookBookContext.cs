@@ -7,6 +7,7 @@ public class CookBookContext : DbContext
     public DbSet<Subrecipe> Subrecipes { get; set; }
     public DbSet<Ingredient> Ingredients { get; set; }
     public DbSet<MeasurementUnit> MeasurementUnits { get; set; }
+    public DbSet<Cuisine> Cuisines { get; set; }
 
     public CookBookContext(DbContextOptions<CookBookContext> options)
         : base(options)
@@ -18,7 +19,8 @@ public class CookBookContext : DbContext
         modelBuilder.Entity<MeasurementUnit>()
             .HasMany(mu => mu.Ingredients)
             .WithOne(i => i.MeasurementUnit)
-            .HasForeignKey(i => i.MeasurementUnitId);
+            .HasForeignKey(i => i.MeasurementUnitId)
+            .OnDelete(DeleteBehavior.Restrict); // Prevent cascading delete
 
         modelBuilder.Entity<Recipe>()
             .HasMany(r => r.Subrecipes)
@@ -28,7 +30,8 @@ public class CookBookContext : DbContext
         modelBuilder.Entity<Recipe>()
             .HasMany(r => r.Ingredients)
             .WithOne(i => i.Recipe)
-            .HasForeignKey(i => i.RecipeId);
+            .HasForeignKey(i => i.RecipeId)
+            .OnDelete(DeleteBehavior.Restrict); // Prevent cascading delete
     }
 
 }
