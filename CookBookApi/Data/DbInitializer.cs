@@ -46,9 +46,9 @@ public static class DbInitializer
         // Seed Recipes
         var recipes = new Recipe[]
         {
-            new Recipe { Name = "Pancakes", Description = "Fluffy pancakes.", CuisineId = cuisines[1].Id },
-            new Recipe { Name = "Cookies", Description = "Chocolate chip cookies.", CuisineId = cuisines[1].Id },
-            new Recipe { Name = "Chocolate Sauce", Description = "Rich chocolate sauce.", CuisineId = cuisines[0].Id }
+            new Recipe { Name = "Pancakes", Description = "Fluffy pancakes.", Instruction = "Steps", Creator = "ChatGPT", CreateTime = DateTime.Now, CuisineId = cuisines[1].Id },
+            new Recipe { Name = "Cookies", Description = "Chocolate chip cookies.", Instruction = "Steps", Creator = "ChatGPT", CreateTime = DateTime.Now, CuisineId = cuisines[1].Id },
+            new Recipe { Name = "Chocolate Sauce", Description = "Rich chocolate sauce.", Instruction = "Steps",Creator = "ChatGPT", CreateTime = DateTime.Now, CuisineId = cuisines[0].Id }
         };
 
         context.Recipes.AddRange(recipes);
