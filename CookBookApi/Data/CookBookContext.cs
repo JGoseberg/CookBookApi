@@ -6,6 +6,7 @@ public class CookBookContext : DbContext
     public DbSet<Recipe> Recipes { get; set; }
     public DbSet<Subrecipe> Subrecipes { get; set; }
     public DbSet<Ingredient> Ingredients { get; set; }
+    public DbSet<MeasurementUnit> MeasurementUnits { get; set; }
 
     public CookBookContext(DbContextOptions<CookBookContext> options)
         : base(options)
@@ -14,6 +15,11 @@ public class CookBookContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<MeasurementUnit>()
+            .HasMany(mu => mu.Ingredients)
+            .WithOne(i => i.MeasurementUnit)
+            .HasForeignKey(i => i.MeasurementUnitId);
+
         modelBuilder.Entity<Recipe>()
             .HasMany(r => r.Subrecipes)
             .WithMany(r => r.ParentRecipes)
@@ -24,4 +30,5 @@ public class CookBookContext : DbContext
             .WithOne(i => i.Recipe)
             .HasForeignKey(i => i.RecipeId);
     }
+
 }
