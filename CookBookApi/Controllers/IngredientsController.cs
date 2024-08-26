@@ -13,7 +13,7 @@ namespace CookBookApi.Controllers
         private readonly IIngredientRepository _ingredientRepository;
         private readonly IMapper _mapper;
 
-        public IngredientsController (IIngredientRepository ingredientRepository, IMapper mapper)
+        public IngredientsController(IIngredientRepository ingredientRepository, IMapper mapper)
         {
             _mapper = mapper;
             _ingredientRepository = ingredientRepository;
@@ -21,27 +21,39 @@ namespace CookBookApi.Controllers
 
         // GET: api/Ingredients
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<IngredientDto>>> GetIngredients()
+        public async Task<ActionResult<IEnumerable<IngredientDto>>> GetIngredientsAsync()
         {
             var ingredients = await _ingredientRepository.GetAllIngredientsAsync();
 
             return Ok(ingredients);
         }
 
-        [HttpPost]
-        public async Task UpdateIngredientAsync(Ingredient ingredient)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<IngredientDto>> GetIngredientByIdAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        [HttpPost("{id}")]
+        public async Task UpdateIngredientAsync(int id, Ingredient ingredient)
         {
             await _ingredientRepository.UpdateIngredientAsync(ingredient);
         }
 
         [HttpPut]
-        public async Task<IngredientDto> AddIngredient(AddIngredientDto ingredientDto)
+        public async Task<IngredientDto> AddIngredientAsync(AddIngredientDto ingredientDto)
         {
             var ingredient = _mapper.Map<Ingredient>(ingredientDto);
             await _ingredientRepository.AddIngredientAsync(_mapper.Map<Ingredient>(ingredient));
             
             return _mapper.Map<IngredientDto>(ingredient);
 
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteIngredientAsync(int id)
+        {
+            throw new NotImplementedException();
         }
 
     }
