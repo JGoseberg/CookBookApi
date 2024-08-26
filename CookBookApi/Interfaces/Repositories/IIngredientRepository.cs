@@ -1,4 +1,5 @@
 ﻿using CookBookApi.DTOs;
+using CookBookApi.DTOs.Ingredient;
 
 namespace CookBookApi.Interfaces.Repositories
 {

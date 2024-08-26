@@ -2,6 +2,7 @@
 using CookBookApi.DTOs.Ingredient;
 using CookBookApi.Interfaces.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CookBookApi.Controllers
 {
@@ -34,9 +35,13 @@ namespace CookBookApi.Controllers
         }
 
         [HttpPut]
-        public async Task AddIngredient(Ingredient ingredient)
+        public async Task<IngredientDto> AddIngredient(AddIngredientDto ingredientDto)
         {
-            await _ingredientRepository.AddIngredientAsync(ingredient);
+            var ingredient = _mapper.Map<Ingredient>(ingredientDto);
+            await _ingredientRepository.AddIngredientAsync(_mapper.Map<Ingredient>(ingredient));
+            
+            return _mapper.Map<IngredientDto>(ingredient);
+
         }
 
     }

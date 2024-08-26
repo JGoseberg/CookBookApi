@@ -27,6 +27,8 @@ namespace CookBookApi.Mappings
             CreateMap<Restriction, RestrictionDto>();
             CreateMap<Cuisine, CuisineDto>();
 
+            CreateMap<AddIngredientDto, Ingredient>();
+
         }
     }
 }

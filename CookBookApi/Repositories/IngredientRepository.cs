@@ -3,6 +3,7 @@ using CookBookApi.Interfaces.Repositories;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http.HttpResults;
+using CookBookApi.DTOs.Ingredient;
 
 namespace CookBookApi.Repositories
 {
