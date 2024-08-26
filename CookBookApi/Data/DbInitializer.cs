@@ -59,17 +59,36 @@ public static class DbInitializer
         // Seed Ingredients
         var ingredients = new Ingredient[]
         {
-            new Ingredient { Name = "Salt", Amount = 1, MeasurementUnitId = measurementUnits[0].Id, RecipeId = recipes[0].Id, CuisineId = cuisines[1].Id },
-            new Ingredient { Name = "Sugar", Amount = 2, MeasurementUnitId = measurementUnits[1].Id, RecipeId = recipes[1].Id, CuisineId = cuisines[1].Id },
-            new Ingredient { Name = "Flour", Amount = 3, MeasurementUnitId = measurementUnits[0].Id, RecipeId = recipes[0].Id, CuisineId = cuisines[1].Id },
-            new Ingredient { Name = "Butter", Amount = 4, MeasurementUnitId = measurementUnits[0].Id, RecipeId = recipes[1].Id, CuisineId = cuisines[1].Id },
-            new Ingredient { Name = "Milk", Amount = 5, MeasurementUnitId = measurementUnits[0].Id, RecipeId = recipes[0].Id, CuisineId = cuisines[1].Id },
-            new Ingredient { Name = "Eggs", Amount = 6, MeasurementUnitId = measurementUnits[2].Id, RecipeId = recipes[0].Id, CuisineId = cuisines[1].Id },
-            new Ingredient { Name = "Chocolate Chips", Amount = 7, MeasurementUnitId = measurementUnits[1].Id, RecipeId = recipes[1].Id, CuisineId = cuisines[1].Id }
+            new Ingredient { Name = "Salt", CuisineId = cuisines[1].Id },
+            new Ingredient {Name = "Sugar", CuisineId = cuisines[1].Id},
+            new Ingredient {Name = "Flour", CuisineId = cuisines[1].Id},
+            new Ingredient {Name = "Butter", CuisineId = cuisines[1].Id},
+            new Ingredient {Name = "Milk", CuisineId = cuisines[1].Id},
+            new Ingredient {Name = "Eggs", CuisineId = cuisines[1].Id},
+            new Ingredient {Name = "Chocolate Chips", CuisineId = cuisines[1].Id}
         };
 
         context.Ingredients.AddRange(ingredients);
         context.SaveChanges();
+
+        var recipeIngredients = new RecipeIngredient[]
+        {
+            new RecipeIngredient { Recipe = recipes[0], Ingredient = ingredients[0], Amount = 200, MeasurementUnit = measurementUnits[1] },
+            new RecipeIngredient { Recipe = recipes[0], Ingredient = ingredients[1], Amount = 300, MeasurementUnit = measurementUnits[2] },
+
+            new RecipeIngredient { Recipe = recipes[1], Ingredient = ingredients[1], Amount = 300, MeasurementUnit = measurementUnits[2] },
+            new RecipeIngredient { Recipe = recipes[1], Ingredient = ingredients[2], Amount = 50, MeasurementUnit = measurementUnits[0] },
+            new RecipeIngredient { Recipe = recipes[1], Ingredient = ingredients[3], Amount = 25, MeasurementUnit = measurementUnits[2] },
+
+            new RecipeIngredient { Recipe = recipes[2], Ingredient = ingredients[1], Amount = 500, MeasurementUnit = measurementUnits[2] },
+            new RecipeIngredient { Recipe = recipes[2], Ingredient = ingredients[5], Amount = 75, MeasurementUnit = measurementUnits[2] },
+            new RecipeIngredient { Recipe = recipes[2], Ingredient = ingredients[3], Amount = 2, MeasurementUnit = measurementUnits[1] },
+            new RecipeIngredient { Recipe = recipes[2], Ingredient = ingredients[4], Amount = 20, MeasurementUnit = measurementUnits[2] },
+
+        };
+        context.RecipeIngredients.AddRange(recipeIngredients);
+        context.SaveChanges();
+
 
         // Seed Recipe Restrictions
         var recipeRestrictions = new RecipeRestriction[]

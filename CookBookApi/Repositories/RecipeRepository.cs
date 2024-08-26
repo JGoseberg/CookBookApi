@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using CookBookApi.DTOs;
 using CookBookApi.Interfaces.Repositories;
-using Microsoft.CodeAnalysis.Elfie.Diagnostics;
+using CookBookApi.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace CookBookApi.Repositories
@@ -37,12 +37,15 @@ namespace CookBookApi.Repositories
         public async Task<IEnumerable<RecipeDto>> GetAllRecipesAsync()
         {
             var recipes = await _context.Recipes
-            .Include(r => r.Ingredients)
-                .ThenInclude(i => i.MeasurementUnit)
-            .Include(r => r.Cuisine)
-            .Include(r => r.Ingredients)
-                .ThenInclude(i => i.IngredientRestrictions)
-            .ToListAsync();
+                .Include(r => r.Cuisine)
+                .Include(r => r.RecipeIngredients)
+                    .ThenInclude(ri => ri.Ingredient)
+                .Include(r => r.RecipeIngredients)
+                    .ThenInclude(ri => ri.MeasurementUnit)
+                .Include(r => r.RecipeRestrictions)
+                    .ThenInclude(rr => rr.Restriction)
+                    .ThenInclude(rr => rr.IngredientRestrictions)
+                .Include(r => r.Subrecipes).ToListAsync();
 
             return _mapper.Map<IEnumerable<RecipeDto>>(recipes);
         }
@@ -50,16 +53,19 @@ namespace CookBookApi.Repositories
         public async Task<RecipeDto> GetRecipeByIdAsync(int id)
         {
             var recipe = await _context.Recipes
-                        .Include(r => r.Ingredients)
-                            .ThenInclude(i => i.IngredientRestrictions)
-                        .Include(r =>r.Ingredients)
-                            .ThenInclude(i => i.MeasurementUnit)
-                        .Include(r => r.Cuisine)
-                        .Include(r => r.RecipeRestrictions)
-                            .ThenInclude(rr => rr.Restriction)
-                            .ThenInclude(rr => rr.IngredientRestrictions)
-                        .Include(r => r.Subrecipes)
-                        .FirstOrDefaultAsync(r => r.Id == id);
+                .Include(r => r.Cuisine)
+
+                .Include(r => r.RecipeIngredients)
+                    .ThenInclude(ri => ri.Ingredient)
+
+                .Include(r => r.RecipeIngredients)
+                    .ThenInclude(ri => ri.MeasurementUnit)
+
+                .Include(r => r.RecipeRestrictions)
+                    .ThenInclude(rr => rr.Restriction)
+                    .ThenInclude(rr => rr.IngredientRestrictions)
+                .Include(r => r.Subrecipes)
+                .FirstOrDefaultAsync(r => r.Id == id);
 
             return _mapper.Map<RecipeDto>(recipe);
         }

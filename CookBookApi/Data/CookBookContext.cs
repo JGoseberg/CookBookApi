@@ -11,6 +11,7 @@ public class CookBookContext : DbContext
     public DbSet<Restriction> Restrictions { get; set; }
     public DbSet<RecipeRestriction> RecipeRestrictions { get; set; }
     public DbSet<IngredientRestriction> IngredientRestrictions { get; set; }
+    public DbSet<RecipeIngredient> RecipeIngredients { get; set; }
 
     public CookBookContext(DbContextOptions<CookBookContext> options)
         : base(options)
@@ -19,12 +20,21 @@ public class CookBookContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // Configure Recipe-Ingredient relationship
-        modelBuilder.Entity<Recipe>()
-            .HasMany(r => r.Ingredients)
-            .WithOne(i => i.Recipe)
-            .HasForeignKey(i => i.RecipeId)
-            .OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<RecipeIngredient>()
+            .HasOne(ri => ri.Recipe)
+            .WithMany(r => r.RecipeIngredients)
+            .HasForeignKey(ri => ri.RecipeId);
+
+        modelBuilder.Entity<RecipeIngredient>()
+            .HasOne(ri => ri.Ingredient)
+            .WithMany(i => i.RecipeIngredients)
+            .HasForeignKey(ri => ri.IngredientId);
+
+        modelBuilder.Entity<RecipeIngredient>()
+            .HasOne(ri => ri.MeasurementUnit)
+            .WithMany()
+            .HasForeignKey(ri => ri.MeasurementUnitId);
+
 
         // Configure Recipe-Subrecipe relationship (self-referencing)
         modelBuilder.Entity<Recipe>()

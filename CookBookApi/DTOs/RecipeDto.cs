@@ -1,4 +1,6 @@
-﻿namespace CookBookApi.DTOs
+﻿using CookBookApi.DTOs.Ingredient;
+
+namespace CookBookApi.DTOs
 {
     public class RecipeDto
     {
@@ -7,7 +9,7 @@
         public string Description { get; set; }
         public string Instruction { get; set; }
         public string Creator { get; set; }
-        public List<IngredientDto> Ingredients { get; set; }
+        public List<RecipeIngredientDto> Ingredients { get; set; }
         public List<RecipeDto> Subrecipes { get; set; }
         public CuisineDto Cuisine { get; set; }
         public List<RestrictionDto> Restrictions { get; set; }

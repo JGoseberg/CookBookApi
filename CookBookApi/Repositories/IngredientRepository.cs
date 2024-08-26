@@ -1,6 +1,8 @@
 ﻿using CookBookApi.DTOs;
 using CookBookApi.Interfaces.Repositories;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace CookBookApi.Repositories
 {
@@ -15,9 +17,10 @@ namespace CookBookApi.Repositories
             _mapper = mapper;
         }
 
-        public Task AddIngredientAsync(Ingredient ingredient)
+        public async Task AddIngredientAsync(Ingredient ingredient)
         {
-            throw new NotImplementedException();
+            await _context.Ingredients.AddAsync(ingredient);
+            _context.SaveChanges();
         }
 
         public Task DeleteIngredientAsync(int id)
@@ -25,12 +28,15 @@ namespace CookBookApi.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<IngredientDto>> GetAllIngredientsAsync()
+        public async Task<IEnumerable<Ingredient>> GetAllIngredientsAsync()
         {
-            throw new NotImplementedException();
+            var ingredients = await _context.Ingredients
+                .ToListAsync();
+
+            return (IEnumerable<Ingredient>)ingredients;
         }
 
-        public Task<IngredientDto> GetIngredientByIdAsync(int id)
+        public Task<Ingredient> GetIngredientByIdAsync(int id)
         {
             throw new NotImplementedException();
         }
