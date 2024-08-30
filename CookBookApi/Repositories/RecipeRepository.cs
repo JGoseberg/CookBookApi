@@ -23,6 +23,11 @@ namespace CookBookApi.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task<bool> AnyRecipesWithCuisineAsync(int cuisineId)
+        {
+            return await _context.Recipes.AnyAsync(r => r.CuisineId == cuisineId);
+        }
+
         public async Task DeleteRecipeAsync(int id)
         {
             var recipe = await _context.Recipes.FindAsync(id);

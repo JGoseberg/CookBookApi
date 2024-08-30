@@ -22,6 +22,11 @@ namespace CookBookApi.Repositories
             var cuisineToAdd = await _context.Cuisines.AddAsync(_mapper.Map<Cuisine>(cuisine));
             _context.SaveChanges();
         }
+        
+        public async Task<bool> AnyCuisineWithSameNameAsync(string name)
+        {
+            return await _context.Cuisines.AnyAsync(c => c.Name == name);
+        }
 
         public async Task DeleteCuisineAsync(int id)
         {
@@ -56,5 +61,6 @@ namespace CookBookApi.Repositories
             var newCuisine = _context.Cuisines.Update(cuisine);
             await _context.SaveChangesAsync();
         }
+
     }
 }

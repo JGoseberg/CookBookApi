@@ -84,7 +84,9 @@ public class CookBookContext : DbContext
             .WithMany(r => r.IngredientRestrictions)
             .HasForeignKey(ir => ir.RestrictionId);
 
-        
+        modelBuilder.Entity<Cuisine>()
+            .HasIndex(c => c.Name)
+            .IsUnique();
     }
 
 }
