@@ -1,14 +1,15 @@
 ﻿using AutoMapper;
 using CookBookApi.DTOs;
 using CookBookApi.Interfaces.Repositories;
-using Microsoft.AspNetCore.Http.HttpResults;
+using CookBookApi.Models;
 using Microsoft.AspNetCore.Mvc;
+
 
 namespace CookBookApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CuisinesController
+    public class CuisinesController : ControllerBase
     {
         private readonly ICuisineRepository _cuisineRepository;
         private readonly IMapper _mapper;
@@ -19,6 +20,16 @@ namespace CookBookApi.Controllers
             _mapper = mapper;
         }
 
+        [HttpPost]
+        public async Task<ActionResult> AddCuisineAsync(CuisineDto cuisineDto)
+        {
+            var newCuisine = new Cuisine { Name = cuisineDto.Name };
+
+            await _cuisineRepository.AddCuisineAsync(newCuisine);
+
+            return Ok(newCuisine);
+        }
+        
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CuisineDto>>> GetCuisinesAsync()
         {
@@ -28,27 +39,38 @@ namespace CookBookApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<CuisineDto>> GetCuisineById(int id)
+        public async Task<ActionResult<Cuisine>> GetCuisineById(int id)
         {
-            throw new NotImplementedException();
-        }
+            var cuisine = await _cuisineRepository.GetCuisineByIdAsync(id);
 
-        [HttpPost]
-        public async Task<ActionResult> AddCuisineAsync(CuisineDto cuisineDto)
-        {
-            throw new NotImplementedException();
+            if (cuisine == null)
+                return null;
+            return Ok(cuisine);
         }
-        
+                
         [HttpPut("{id}")]
         public async Task<ActionResult<CuisineDto>> UpdateCuisineAsync(int id, CuisineDto cuisineDto)
         {
-            throw new NotImplementedException();
+            var updatedCuisine = new Cuisine { Id = id, Name = cuisineDto.Name };
+
+            await _cuisineRepository.UpdateCuisineAsync(updatedCuisine);
+
+            return Ok(updatedCuisine);
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteCuisineAsync(int id)
         {
-            throw new NotImplementedException();
+            // TODO FK_Constraint_Recipes
+            var cuisine = await _cuisineRepository.GetCuisineByIdAsync(id);
+            if (cuisine == null)
+                return NotFound($"Cuisine with {id} not found");
+
+            var hasRelatedRecipes = await _
+
+            await _cuisineRepository.DeleteCuisineAsync(id);
+
+            return NoContent();
         }
     }
 }

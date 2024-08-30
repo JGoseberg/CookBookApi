@@ -2,6 +2,8 @@
 using CookBookApi.DTOs;
 using CookBookApi.Interfaces.Repositories;
 using CookBookApi.Models;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace CookBookApi.Repositories
@@ -10,19 +12,26 @@ namespace CookBookApi.Repositories
     {
         private readonly CookBookContext _context;
         private readonly IMapper _mapper;
-        public CuisineRepository(CookBookContext context, IMapper mapper) 
+        public CuisineRepository(CookBookContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
         }
-        public Task AddCuisineAsync(Cuisine cuisine)
+        public async Task AddCuisineAsync(Cuisine cuisine)
         {
-            throw new NotImplementedException();
+            var cuisineToAdd = await _context.Cuisines.AddAsync(_mapper.Map<Cuisine>(cuisine));
+            _context.SaveChanges();
         }
 
-        public Task DeleteCuisineAsync(int id)
+        public async Task DeleteCuisineAsync(int id)
         {
-            throw new NotImplementedException();
+            var cuisineToDelete = await _context.Cuisines.FindAsync(id);
+
+            if (cuisineToDelete == null)
+                return;
+
+            _context.Cuisines.Remove(cuisineToDelete);
+            _context.SaveChanges();
         }
 
         public async Task<IEnumerable<CuisineDto>> GetAllCuisinesAsync()
@@ -32,14 +41,20 @@ namespace CookBookApi.Repositories
             return _mapper.Map<IEnumerable<CuisineDto>>(cuisines);
         }
 
-        public Task<CuisineDto> GetCuisineByIdAsync(int id)
+        public async Task<CuisineDto> GetCuisineByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var cuisine = await _context.Cuisines.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (cuisine == null)
+                return null;
+
+            return _mapper.Map<CuisineDto>(cuisine);
         }
 
-        public Task UpdateCuisineAsync(Cuisine cuisine)
+        public async Task UpdateCuisineAsync(Cuisine cuisine)
         {
-            throw new NotImplementedException();
+            var newCuisine = _context.Cuisines.Update(cuisine);
+            await _context.SaveChangesAsync();
         }
     }
 }

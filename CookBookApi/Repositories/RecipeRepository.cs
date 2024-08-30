@@ -31,7 +31,6 @@ namespace CookBookApi.Repositories
 
             _context.Recipes.Remove(recipe);
             await _context.SaveChangesAsync();
-
         }
 
         public async Task<IEnumerable<RecipeDto>> GetAllRecipesAsync()
