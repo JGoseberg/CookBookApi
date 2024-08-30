@@ -87,6 +87,10 @@ public class CookBookContext : DbContext
         modelBuilder.Entity<Cuisine>()
             .HasIndex(c => c.Name)
             .IsUnique();
+
+        modelBuilder.Entity<MeasurementUnit>()
+            .HasIndex(m => m.Name)
+            .IsUnique();
     }
 
 }

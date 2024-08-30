@@ -64,7 +64,7 @@ namespace CookBookApi.Controllers
             var cuisine = await _cuisineRepository.GetCuisineByIdAsync(id);
 
             if (cuisine == null)
-                return null;
+                return NotFound();
             return Ok(cuisine);
         }
                 

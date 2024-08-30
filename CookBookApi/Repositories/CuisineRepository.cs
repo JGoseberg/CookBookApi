@@ -19,6 +19,7 @@ namespace CookBookApi.Repositories
         }
         public async Task AddCuisineAsync(Cuisine cuisine)
         {
+            // TODO should work without mapper
             var cuisineToAdd = await _context.Cuisines.AddAsync(_mapper.Map<Cuisine>(cuisine));
             _context.SaveChanges();
         }

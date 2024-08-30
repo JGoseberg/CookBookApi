@@ -20,6 +20,7 @@ builder.Services.AddScoped<IRecipeRepository, RecipeRepository>();
 builder.Services.AddScoped<IIngredientRepository, IngredientRepository>();
 builder.Services.AddScoped<ICuisineRepository, CuisineRepository>();
 builder.Services.AddScoped<IRestrictionRepository, RestrictionRepository>();
+builder.Services.AddScoped<IMeasurementUnitRepository, MeasurementunitRepository>();
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
