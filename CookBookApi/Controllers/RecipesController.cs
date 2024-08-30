@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using CookBookApi.DTOs;
+using CookBookApi.DTOs.Recipes;
 using CookBookApi.Interfaces;
 using CookBookApi.Interfaces.Repositories;
 using CookBookApi.Repositories;
@@ -19,7 +19,6 @@ public class RecipesController : ControllerBase
         _recipeRepository = recipeRepository;
     }
 
-    // GET: api/Recipes
     [HttpGet]
     public async Task<ActionResult<IEnumerable<RecipeDto>>> GetRecipesAsync()
     {
@@ -28,7 +27,6 @@ public class RecipesController : ControllerBase
         return Ok(recipes);
     }
 
-    // GET: api/Recipes/5
     [HttpGet("{id}")]
     public async Task<ActionResult<RecipeDto>> GetRecipeByIdAsync(int id)
     {
@@ -37,20 +35,8 @@ public class RecipesController : ControllerBase
         return Ok(recipe);
     }
 
-    // POST: api/Recipes
-    [HttpPost("{id}")]
-    public async Task<ActionResult<RecipeDto>> PostRecipeAsync(int id, RecipeDto recipeDto)
-    {
-        var recipe = _mapper.Map<Recipe>(recipeDto);
-
-        await _recipeRepository.UpdateRecipeAsync(recipe);
-
-        return Ok(recipe);
-    }
-
-    // PUT: api/Recipes/5
-    [HttpPut]
-    public async Task<ActionResult> PutRecipeAsync(RecipeDto recipeDto)
+    [HttpPost]
+    public async Task<ActionResult> AddRecipeAsync(AddRecipeDto recipeDto)
     { 
         var recipe = _mapper.Map<Recipe>(recipeDto);
 
@@ -59,7 +45,16 @@ public class RecipesController : ControllerBase
         return Ok(recipe);
     }
 
-    // DELETE: api/Recipes/5
+    [HttpPut("{id}")]
+    public async Task<ActionResult<RecipeDto>> UpdateRecipeAsync(int id, RecipeDto recipeDto)
+    {
+        var recipe = _mapper.Map<Recipe>(recipeDto);
+
+        await _recipeRepository.UpdateRecipeAsync(recipe);
+
+        return Ok(recipe);
+    }
+
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteRecipeAsync(int id)
     {

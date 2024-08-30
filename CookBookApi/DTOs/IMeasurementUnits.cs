@@ -1,4 +1,6 @@
-﻿namespace CookBookApi.DTOs
+﻿using CookBookApi.DTOs.Recipes;
+
+namespace CookBookApi.DTOs
 {
     public interface IMeasurementUnits
     {

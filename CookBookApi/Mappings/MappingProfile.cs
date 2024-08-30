@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CookBookApi.DTOs;
 using CookBookApi.DTOs.Ingredient;
+using CookBookApi.DTOs.Recipes;
 using CookBookApi.Models;
 
 namespace CookBookApi.Mappings
@@ -27,8 +28,9 @@ namespace CookBookApi.Mappings
             CreateMap<Restriction, RestrictionDto>();
             CreateMap<Cuisine, CuisineDto>();
 
-            CreateMap<AddIngredientDto, Ingredient>();
 
+            CreateMap<AddIngredientDto, Ingredient>();
+            CreateMap<AddRecipeDto, Recipe>();
         }
     }
 }

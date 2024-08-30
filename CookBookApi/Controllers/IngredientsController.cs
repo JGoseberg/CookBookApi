@@ -19,7 +19,6 @@ namespace CookBookApi.Controllers
             _ingredientRepository = ingredientRepository;
         }
 
-        // GET: api/Ingredients
         [HttpGet]
         public async Task<ActionResult<IEnumerable<IngredientDto>>> GetIngredientsAsync()
         {
@@ -34,13 +33,7 @@ namespace CookBookApi.Controllers
             throw new NotImplementedException();
         }
 
-        [HttpPost("{id}")]
-        public async Task UpdateIngredientAsync(int id, Ingredient ingredient)
-        {
-            await _ingredientRepository.UpdateIngredientAsync(ingredient);
-        }
-
-        [HttpPut]
+        [HttpPost]
         public async Task<IngredientDto> AddIngredientAsync(AddIngredientDto ingredientDto)
         {
             var ingredient = _mapper.Map<Ingredient>(ingredientDto);
@@ -48,6 +41,12 @@ namespace CookBookApi.Controllers
             
             return _mapper.Map<IngredientDto>(ingredient);
 
+        }
+
+        [HttpPut("{id}")]
+        public async Task UpdateIngredientAsync(int id, Ingredient ingredient)
+        {
+            await _ingredientRepository.UpdateIngredientAsync(ingredient);
         }
 
         [HttpDelete("{id}")]

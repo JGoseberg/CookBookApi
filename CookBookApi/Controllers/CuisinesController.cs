@@ -1,5 +1,7 @@
-﻿using CookBookApi.DTOs;
+﻿using AutoMapper;
+using CookBookApi.DTOs;
 using CookBookApi.Interfaces.Repositories;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CookBookApi.Controllers
@@ -9,16 +11,20 @@ namespace CookBookApi.Controllers
     public class CuisinesController
     {
         private readonly ICuisineRepository _cuisineRepository;
+        private readonly IMapper _mapper;
 
-        public CuisinesController(ICuisineRepository cuisineRepository)
+        public CuisinesController(ICuisineRepository cuisineRepository, IMapper mapper)
         {
             _cuisineRepository = cuisineRepository;
+            _mapper = mapper;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CuisineDto>>> GetCuisinesAsync()
         {
-            throw new NotImplementedException();
+            var cuisines = await _cuisineRepository.GetAllCuisinesAsync();
+
+            return cuisines.ToList();
         }
 
         [HttpGet("{id}")]
@@ -27,14 +33,14 @@ namespace CookBookApi.Controllers
             throw new NotImplementedException();
         }
 
-        [HttpPost("{id}")]
-        public async Task<ActionResult<CuisineDto>> PostCuisineAsync(int id, CuisineDto cuisineDto)
+        [HttpPost]
+        public async Task<ActionResult> AddCuisineAsync(CuisineDto cuisineDto)
         {
             throw new NotImplementedException();
         }
-
-        [HttpPut]
-        public async Task<ActionResult> PutCuisineAsync()
+        
+        [HttpPut("{id}")]
+        public async Task<ActionResult<CuisineDto>> UpdateCuisineAsync(int id, CuisineDto cuisineDto)
         {
             throw new NotImplementedException();
         }

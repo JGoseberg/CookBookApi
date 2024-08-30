@@ -27,14 +27,14 @@ namespace CookBookApi.Controllers
             throw new NotImplementedException();
         }
 
-        [HttpPost("{id}")]
-        public async Task<ActionResult<RestrictionDto>> PostRestrictionAsync(int id, RestrictionDto restrictionDto)
+        [HttpPost]
+        public async Task<ActionResult> AddRestrictionAsync(RestrictionDto restrictionDto)
         {
             throw new NotImplementedException();
         }
-
-        [HttpPut]
-        public async Task<ActionResult> PutRestrictionAsync(RestrictionDto restrictionDto)
+        
+        [HttpPut("{id}")]
+        public async Task<ActionResult<RestrictionDto>> UpdateCuisineAsync(int id, RestrictionDto restrictionDto)
         {
             throw new NotImplementedException();
         }
