@@ -57,8 +57,12 @@ namespace CookBookApi.Repositories
         public async Task UpdateMeasurementUnitAsync(MeasurementUnit measurementUnit)
         {
             //  TODO does not update correcty instead add a new one
+            var existingMeasurementUnit = await _context.MeasurementUnits.FindAsync(measurementUnit.Id);
 
-            var newMeasurementUnit = _context.MeasurementUnits.Update(measurementUnit);
+            existingMeasurementUnit.Name = measurementUnit.Name;
+            existingMeasurementUnit.Abbreviation = measurementUnit.Abbreviation;
+
+            _context.MeasurementUnits.Update(existingMeasurementUnit);
             await _context.SaveChangesAsync();
         }
     }

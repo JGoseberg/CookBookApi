@@ -20,6 +20,8 @@ namespace CookBookApi.Controllers
         [HttpPost]
         public async Task<ActionResult> AddMeasurementUnitAsync(MeasurementUnitDto measurementUnitDto)
         {
+            // TODO Add specific DTO
+
             if (await _measurementUnitRepository.AnyMeasurementUnitWithSameNameAsync(measurementUnitDto.Name))
                 return BadRequest("A MeasurementUnit with this name already exists");
 
@@ -62,7 +64,15 @@ namespace CookBookApi.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<MeasurementUnitDto>> UpdateMeasurementUnitAsync(int id, MeasurementUnitDto measurementUnitDto)
         {
-            var updatedMeasurementUnit = new MeasurementUnit { Name = measurementUnitDto.Name, Abbreviation = measurementUnitDto.Abbreviation };
+            if (id != measurementUnitDto.id)
+                return BadRequest("MeasurementUnitId missmatch");
+
+            var updatedMeasurementUnit = new MeasurementUnit 
+            { 
+                Id = measurementUnitDto.id,
+                Name = measurementUnitDto.Name,
+                Abbreviation = measurementUnitDto.Abbreviation
+            };
 
             await _measurementUnitRepository.UpdateMeasurementUnitAsync(updatedMeasurementUnit);
 
