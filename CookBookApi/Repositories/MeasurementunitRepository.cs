@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using CookBookApi.DTOs;
+using CookBookApi.DTOs.MeasurementUnit;
 using CookBookApi.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,10 +15,11 @@ namespace CookBookApi.Repositories
             _mapper = mapper;
         }
 
-        public async Task AddMeasurementUnitAsync(MeasurementUnit measurementUnit)
+        public async Task<MeasurementUnit> AddMeasurementUnitAsync(MeasurementUnit measurementUnit)
         {
-            var measurementUnitToAdd = await _context.MeasurementUnits.AddAsync(measurementUnit);
+            var addedEntity = await _context.MeasurementUnits.AddAsync(measurementUnit);
             await _context.SaveChangesAsync();
+            return addedEntity.Entity;
         }
 
         public async Task<bool> AnyMeasurementUnitWithSameNameAsync(string name)

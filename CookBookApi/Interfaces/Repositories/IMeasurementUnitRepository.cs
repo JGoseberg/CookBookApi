@@ -1,11 +1,11 @@
-﻿using CookBookApi.DTOs;
+﻿using CookBookApi.DTOs.MeasurementUnit;
 
 namespace CookBookApi.Interfaces.Repositories
 {
     public interface IMeasurementUnitRepository
     {
         Task<bool> AnyMeasurementUnitWithSameNameAsync(string name);
-        Task AddMeasurementUnitAsync(MeasurementUnit measurementUnit);
+        Task<MeasurementUnit> AddMeasurementUnitAsync(MeasurementUnit measurementUnit);
         Task DeleteMeasurementUnitAsync(int id);
         Task<IEnumerable<MeasurementUnitDto>> GetAllMeasurementunitsAsync();
         Task<MeasurementUnitDto> GetMeasurementUnitByIdAsync(int id);

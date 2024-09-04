@@ -1,4 +1,4 @@
-﻿namespace CookBookApi.DTOs
+﻿namespace CookBookApi.DTOs.MeasurementUnit
 {
     public class MeasurementUnitDto
     {

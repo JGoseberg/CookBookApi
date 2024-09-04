@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using CookBookApi.DTOs;
+using CookBookApi.DTOs.MeasurementUnit;
 using CookBookApi.Interfaces.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,17 +18,17 @@ namespace CookBookApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddMeasurementUnitAsync(MeasurementUnitDto measurementUnitDto)
+        public async Task<ActionResult<MeasurementUnit>> AddMeasurementUnitAsync(AddMeasurementUnitDto addMeasurementUnitDto)
         {
-            // TODO Add specific DTO
-
-            if (await _measurementUnitRepository.AnyMeasurementUnitWithSameNameAsync(measurementUnitDto.Name))
+            if (await _measurementUnitRepository.AnyMeasurementUnitWithSameNameAsync(addMeasurementUnitDto.Name))
                 return BadRequest("A MeasurementUnit with this name already exists");
 
-            var newMeasurementUnit = new MeasurementUnit { Name = measurementUnitDto.Name, Abbreviation = measurementUnitDto.Abbreviation };
+            var newMeasurementUnit = new MeasurementUnit { Name = addMeasurementUnitDto.Name, Abbreviation = addMeasurementUnitDto.Abbreviation };
 
-            await _measurementUnitRepository.AddMeasurementUnitAsync(newMeasurementUnit);
-            return Ok(newMeasurementUnit);
+            var addedMeasurement = await _measurementUnitRepository.AddMeasurementUnitAsync(newMeasurementUnit);
+
+            var addedUnitDto = _mapper.Map<MeasurementUnitDto>(addedMeasurement);
+            return CreatedAtAction(nameof(GetMeasurementUnitByIdAsync), new { id = addedUnitDto.Id }, addedUnitDto);
         }
 
         [HttpDelete("{id}")]

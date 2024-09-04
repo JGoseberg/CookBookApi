@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using CookBookApi.Controllers;
-using CookBookApi.DTOs;
+using CookBookApi.DTOs.MeasurementUnit;
 using CookBookApi.Interfaces.Repositories;
 using CookBookApi.Mappings;
 using Microsoft.AspNetCore.Mvc;
@@ -29,16 +29,87 @@ namespace CookBookApi.Tests.Controllers
         }
 
         [Test]
-        public void AddMeasurementUnitTest()
+        public async Task AddMeasurementUnitTest_ReturnsOk()
         {
+            var unitDto = new AddMeasurementUnitDto
+            {
+                Name = "Test",
+                Abbreviation = "t",
+            };
+
+            var unit = new MeasurementUnit
+            {
+                Id = 1,
+                Name = unitDto.Name,
+                Abbreviation = unitDto.Abbreviation
+            };
+
+            _measurementUnitRepositoryMock
+                .Setup(r => r.AnyMeasurementUnitWithSameNameAsync(unitDto.Name))
+                .ReturnsAsync(false);
+
+            _measurementUnitRepositoryMock
+                .Setup(r => r.AddMeasurementUnitAsync(It.IsAny<MeasurementUnit>()))
+                .ReturnsAsync(unit);
+
+            var result = await _controller.AddMeasurementUnitAsync(unitDto);
+
+            Assert.IsInstanceOf<CreatedAtActionResult>(result.Result);
+            var createdResult = result.Result as CreatedAtActionResult;
+            Assert.IsNotNull(createdResult);
+            Assert.AreEqual(201, createdResult.StatusCode);
+        }
+
+        [Test]
+        public void AddExistingMeasurementUnit_ReturnsBadRequest()
+        { 
             throw new NotImplementedException();
         }
 
         [Test]
-        public void RemoveMeasurementUnitTest() { throw new NotImplementedException(); }
+        public void AddIncompleteMeasurementUnit_ReturnsBadRequest() { throw new NotImplementedException(); }
 
         [Test]
-        public async Task GetMeasurementUnitTest()
+        public void RemoveMeasurementUnitTest()
+        {
+            throw new NotImplementedException();
+        }
+
+        [TestCase(1)]
+        public async Task GetMeasurementUnitById_ValidInt_ReturnsOk(int id)
+        {
+            var unit = new MeasurementUnitDto
+            {
+                Id = 1,
+                Name = "gram",
+                Abbreviation = "g"
+            };
+
+            _measurementUnitRepositoryMock.Setup(r => r.GetMeasurementUnitByIdAsync(id)).ReturnsAsync(unit);
+
+            var result = await _controller.GetMeasurementUnitByIdAsync(id);
+
+            var okResult = result.Result as OkObjectResult;
+
+            Assert.That(unit, Is.EqualTo(okResult.Value));
+
+            Assert.IsNotNull(result);
+        }
+
+        [TestCase(99)]
+        public async Task GetMeasurementUnitById_InValidInt_Returns404(int id)
+        {
+            _measurementUnitRepositoryMock
+                .Setup(r => r.GetMeasurementUnitByIdAsync(id))
+                .ReturnsAsync((MeasurementUnitDto)null);
+
+            var result = await _controller.GetMeasurementUnitByIdAsync(id);
+
+            Assert.IsInstanceOf<NotFoundResult>(result.Result);
+        }
+
+        [Test]
+        public async Task GetMeasurementUnitsTests()
         {
             var units = new List<MeasurementUnitDto>
             {
@@ -47,8 +118,8 @@ namespace CookBookApi.Tests.Controllers
             };
 
             _measurementUnitRepositoryMock.Setup(r => r.GetAllMeasurementunitsAsync()).ReturnsAsync(units);
-                        
-            var  result = await _controller.GetAllMeasurementUnitsAsync();
+
+            var result = await _controller.GetAllMeasurementUnitsAsync();
 
             Assert.IsInstanceOf<ActionResult<IEnumerable<MeasurementUnitDto>>>(result);
 
@@ -57,9 +128,9 @@ namespace CookBookApi.Tests.Controllers
         }
 
         [Test]
-        public void GetMeasurementUnitsTests() { throw new NotImplementedException(); }
-
-        [Test]
-        public void UpdateMeasurementUnitTest() { throw new NotImplementedException(); }
+        public void UpdateMeasurementUnitTest()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

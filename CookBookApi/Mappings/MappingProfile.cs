@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CookBookApi.DTOs;
 using CookBookApi.DTOs.Ingredient;
+using CookBookApi.DTOs.MeasurementUnit;
 using CookBookApi.DTOs.Recipes;
 using CookBookApi.Models;
 
@@ -30,6 +31,7 @@ namespace CookBookApi.Mappings
 
             CreateMap<AddIngredientDto, Ingredient>();
             CreateMap<AddRecipeDto, Recipe>();
+            CreateMap<AddMeasurementUnitDto, MeasurementUnit>();
 
             CreateMap<MeasurementUnit, MeasurementUnitDto>();
         }
