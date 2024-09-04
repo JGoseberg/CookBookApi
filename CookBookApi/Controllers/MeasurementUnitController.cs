@@ -64,12 +64,12 @@ namespace CookBookApi.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<MeasurementUnitDto>> UpdateMeasurementUnitAsync(int id, MeasurementUnitDto measurementUnitDto)
         {
-            if (id != measurementUnitDto.id)
+            if (id != measurementUnitDto.Id)
                 return BadRequest("MeasurementUnitId missmatch");
 
             var updatedMeasurementUnit = new MeasurementUnit 
             { 
-                Id = measurementUnitDto.id,
+                Id = measurementUnitDto.Id,
                 Name = measurementUnitDto.Name,
                 Abbreviation = measurementUnitDto.Abbreviation
             };
