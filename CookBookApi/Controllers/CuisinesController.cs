@@ -11,6 +11,8 @@ namespace CookBookApi.Controllers
     [ApiController]
     public class CuisinesController : ControllerBase
     {
+        //TODO change to StatusCode 201
+
         private readonly ICuisineRepository _cuisineRepository;
         private readonly IRecipeRepository _recipeRepository;
         private readonly IMapper _mapper;
@@ -26,12 +28,14 @@ namespace CookBookApi.Controllers
         public async Task<ActionResult> AddCuisineAsync(CuisineDto cuisineDto)
         {
             if (await _cuisineRepository.AnyCuisineWithSameNameAsync(cuisineDto.Name))
+                // TODO BadRequest???
                 return BadRequest("A Cuisine with this name already exists");
 
             var newCuisine = new Cuisine { Name = cuisineDto.Name };
 
             await _cuisineRepository.AddCuisineAsync(newCuisine);
-            return Ok(newCuisine);
+
+            return CreatedAtAction(nameof(newCuisine), newCuisine);
         }
         
         [HttpDelete("{id}")]
@@ -54,7 +58,7 @@ namespace CookBookApi.Controllers
         {
             var cuisines = await _cuisineRepository.GetAllCuisinesAsync();
 
-            return cuisines.ToList();
+            return Ok(cuisines.ToList());
         }
 
         
