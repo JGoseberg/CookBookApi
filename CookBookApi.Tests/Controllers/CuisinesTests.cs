@@ -3,6 +3,7 @@ using CookBookApi.Controllers;
 using CookBookApi.DTOs;
 using CookBookApi.Interfaces.Repositories;
 using CookBookApi.Mappings;
+using CookBookApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System;
@@ -44,6 +45,26 @@ namespace CookBookApi.Tests.Controllers
         }
 
         [Test]
+        public async Task AddCuisineAsync_NameIsEmpty_ReturnsBadRequest()
+        {
+            var cuisineDto = new CuisineDto { Name= "" };
+
+            var result = await _controller.AddCuisineAsync(cuisineDto);
+
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
+        }
+
+        [Test]
+        public async Task AddCuisineAsync_NameIsNull_ReturnsBadRequest()
+        {
+            var cuisineDto = new CuisineDto {  };
+
+            var result = await _controller.AddCuisineAsync(cuisineDto);
+
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
+        }
+
+        [Test]
         public async Task AddCuisine_NameExists_ReturnsBadRequest()
         {
             var cuisineDto = new CuisineDto { Name = "Test" };
@@ -82,7 +103,7 @@ namespace CookBookApi.Tests.Controllers
         {
             var id = 999;
 
-            _cuisineRepositoryMock.Setup(c => c.GetCuisineByIdAsync(1))
+            _cuisineRepositoryMock.Setup(c => c.GetCuisineByIdAsync(id))
                 .ReturnsAsync((CuisineDto?)null);
 
             var result = await _controller.DeleteCuisineAsync(id);
@@ -112,7 +133,7 @@ namespace CookBookApi.Tests.Controllers
         }
 
         [Test]
-        public async Task GetCuisines_ReturnsListOfCuisines()
+        public async Task GetCuisines_ReturnsCuisines()
         {
             var cuisines = new List<CuisineDto>
             {
@@ -125,25 +146,89 @@ namespace CookBookApi.Tests.Controllers
 
             var result = await _controller.GetCuisinesAsync();
 
-            Assert.That(result, Is.InstanceOf<OkObjectResult>());
+            Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
         }
 
         [Test]
         public async Task GetCuisineById_ReturnsOk()
         {
-            throw new NotImplementedException();
+            var id = 1;
+
+            var cuisine = new CuisineDto { Name = "Test" };
+
+            _cuisineRepositoryMock.Setup(x => x.GetCuisineByIdAsync(id))
+                .ReturnsAsync(cuisine);
+
+            var result = await _controller.GetCuisineById(id);
+
+            Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
         }
 
         [Test]
         public async Task GetCuisineById_IdNotExists_ReturnsNotFound()
         {
-            throw new NotImplementedException();
+            var id = 404;
+
+            _cuisineRepositoryMock.Setup(c => c.GetCuisineByIdAsync(id))
+                .ReturnsAsync((CuisineDto?)null);
+
+            var result = await _controller.GetCuisineById(id);
+
+            Assert.That(result.Result, Is.InstanceOf<NotFoundResult>());
         }
 
         [Test]
         public async Task UpdateCuisineReturnsOK()
         {
-            throw new NotImplementedException();
+            var id = 1;
+
+            var cuisineDto = new CuisineDto { Name="Test" };
+
+            _cuisineRepositoryMock.Setup(c => c.GetCuisineByIdAsync(id))
+                .ReturnsAsync(cuisineDto);
+
+            _cuisineRepositoryMock.Setup(c => c.AnyCuisineWithSameNameAsync(cuisineDto.Name))
+                .ReturnsAsync(false);
+
+            var result = await _controller.UpdateCuisineAsync(id, cuisineDto);
+
+            Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
+        }
+
+        [Test]
+        public async Task UpdateCuisineAsync_IdNotFound_ReturnsNotFound()
+        {
+            var id = 1;
+
+            var cuisineDto = new CuisineDto { Name = "Test" };
+
+            _cuisineRepositoryMock.Setup(c => c.GetCuisineByIdAsync(id))
+                .ReturnsAsync((CuisineDto)null);
+
+            _cuisineRepositoryMock.Setup(c => c.AnyCuisineWithSameNameAsync(cuisineDto.Name))
+                .ReturnsAsync(false);
+
+            var result = await _controller.UpdateCuisineAsync(id, cuisineDto);
+
+            Assert.That(result.Result, Is.InstanceOf<NotFoundObjectResult>());
+        }
+
+        [Test]
+        public async Task UpdateCuisineAsync_CuisineWithSameName_ReturnsBadRequest()
+        {
+            var id = 1;
+
+            var cuisineDto = new CuisineDto { Name = "Test" };
+
+            _cuisineRepositoryMock.Setup(c => c.GetCuisineByIdAsync(id))
+                .ReturnsAsync(cuisineDto);
+
+            _cuisineRepositoryMock.Setup(c => c.AnyCuisineWithSameNameAsync(cuisineDto.Name))
+                .ReturnsAsync(true);
+
+            var result = await _controller.UpdateCuisineAsync(id, cuisineDto);
+
+            Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
         }
     }
 }

@@ -3,6 +3,7 @@ using CookBookApi.DTOs;
 using CookBookApi.Interfaces.Repositories;
 using CookBookApi.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 
 namespace CookBookApi.Controllers
@@ -11,8 +12,6 @@ namespace CookBookApi.Controllers
     [ApiController]
     public class CuisinesController : ControllerBase
     {
-        //TODO change to StatusCode 201
-
         private readonly ICuisineRepository _cuisineRepository;
         private readonly IRecipeRepository _recipeRepository;
         private readonly IMapper _mapper;
@@ -27,15 +26,17 @@ namespace CookBookApi.Controllers
         [HttpPost]
         public async Task<ActionResult> AddCuisineAsync(CuisineDto cuisineDto)
         {
+            if (cuisineDto.Name.IsNullOrEmpty())
+                return BadRequest($"Name: {cuisineDto.Name } cannot be empty");
+
             if (await _cuisineRepository.AnyCuisineWithSameNameAsync(cuisineDto.Name))
-                // TODO BadRequest???
                 return BadRequest("A Cuisine with this name already exists");
 
             var newCuisine = new Cuisine { Name = cuisineDto.Name };
 
             await _cuisineRepository.AddCuisineAsync(newCuisine);
 
-            return CreatedAtAction(nameof(newCuisine), newCuisine);
+            return CreatedAtAction(nameof(GetCuisineById), new { id = newCuisine.Id}, newCuisine);
         }
         
         [HttpDelete("{id}")]
@@ -58,7 +59,7 @@ namespace CookBookApi.Controllers
         {
             var cuisines = await _cuisineRepository.GetAllCuisinesAsync();
 
-            return Ok(cuisines.ToList());
+            return Ok(cuisines);
         }
 
         
@@ -69,17 +70,28 @@ namespace CookBookApi.Controllers
 
             if (cuisine == null)
                 return NotFound();
-            return Ok(cuisine);
+
+            var cuisineDto = _mapper.Map<CuisineDto>(cuisine);
+            return Ok(cuisineDto);
         }
                 
         [HttpPut("{id}")]
         public async Task<ActionResult<CuisineDto>> UpdateCuisineAsync(int id, CuisineDto cuisineDto)
         {
+            var existingCuisine = await _cuisineRepository.GetCuisineByIdAsync(id);
+            
+            if (existingCuisine == null)
+                return NotFound($"Cuisine with ID {id} not found.");
+
+            if (await _cuisineRepository.AnyCuisineWithSameNameAsync(cuisineDto.Name))
+                return BadRequest("A cuisine with this name already exists.");
+
             var updatedCuisine = new Cuisine { Id = id, Name = cuisineDto.Name };
 
             await _cuisineRepository.UpdateCuisineAsync(updatedCuisine);
 
-            return Ok(updatedCuisine);
+            var updatedCuisineDto = _mapper.Map<CuisineDto>(updatedCuisine);
+            return Ok(updatedCuisineDto);
         }
     }
 }
