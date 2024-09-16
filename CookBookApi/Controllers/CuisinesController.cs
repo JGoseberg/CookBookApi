@@ -83,6 +83,7 @@ namespace CookBookApi.Controllers
             if (existingCuisine == null)
                 return NotFound($"Cuisine with ID {id} not found.");
 
+            // Ingredients
             if (await _cuisineRepository.AnyCuisineWithSameNameAsync(cuisineDto.Name))
                 return BadRequest("A cuisine with this name already exists.");
 

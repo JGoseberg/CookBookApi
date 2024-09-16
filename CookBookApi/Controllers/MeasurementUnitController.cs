@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using CookBookApi.DTOs.MeasurementUnit;
 using CookBookApi.Interfaces.Repositories;
+using CookBookApi.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CookBookApi.Controllers
 {
@@ -10,25 +12,38 @@ namespace CookBookApi.Controllers
     public class MeasurementUnitController : ControllerBase
     {
         private readonly IMeasurementUnitRepository _measurementUnitRepository;
+        private readonly IRecipeIngredientRepository _recipeIngredientRepository;
         private readonly IMapper _mapper;
-        public MeasurementUnitController(IMeasurementUnitRepository measurementUnitRepository, IMapper mapper)
+
+        public MeasurementUnitController
+            (
+            IMeasurementUnitRepository measurementUnitRepository,
+            IRecipeIngredientRepository recipeIngredientRepository , 
+            IMapper mapper
+            )
         {
             _measurementUnitRepository = measurementUnitRepository;
             _mapper = mapper;
+            _recipeIngredientRepository = recipeIngredientRepository;
         }
 
         [HttpPost]
         public async Task<ActionResult<MeasurementUnit>> AddMeasurementUnitAsync(AddMeasurementUnitDto addMeasurementUnitDto)
         {
+            if (addMeasurementUnitDto.Name.IsNullOrEmpty())
+                return BadRequest("Name cannot be empty");
+
+            if (addMeasurementUnitDto.Abbreviation.IsNullOrEmpty())
+                return BadRequest("Abbreviation cannot be empty");
+
             if (await _measurementUnitRepository.AnyMeasurementUnitWithSameNameAsync(addMeasurementUnitDto.Name))
                 return BadRequest("A MeasurementUnit with this name already exists");
 
             var newMeasurementUnit = new MeasurementUnit { Name = addMeasurementUnitDto.Name, Abbreviation = addMeasurementUnitDto.Abbreviation };
 
-            var addedMeasurement = await _measurementUnitRepository.AddMeasurementUnitAsync(newMeasurementUnit);
+            await _measurementUnitRepository.AddMeasurementUnitAsync(newMeasurementUnit);
 
-            var addedUnitDto = _mapper.Map<MeasurementUnitDto>(addedMeasurement);
-            return CreatedAtAction(nameof(GetMeasurementUnitByIdAsync), new { id = addedUnitDto.Id }, addedUnitDto);
+            return CreatedAtAction(nameof(GetMeasurementUnitByIdAsync), new { id = newMeasurementUnit.Id }, newMeasurementUnit);
         }
 
         [HttpDelete("{id}")]
@@ -37,6 +52,9 @@ namespace CookBookApi.Controllers
             var measurementUnit = await _measurementUnitRepository.GetMeasurementUnitByIdAsync(id);
             if (measurementUnit == null)
                 return NotFound($"MeasurementUnit with {id} not found");
+
+            if (await _recipeIngredientRepository.AnyRecipesWithMeasurementUnitAsync(id))
+                return BadRequest("Cannot delete MeasurementUnit, it is used by a recipe");
 
             await _measurementUnitRepository.DeleteMeasurementUnitAsync(id);
             return NoContent();
@@ -47,7 +65,7 @@ namespace CookBookApi.Controllers
         {
             var measurementUnits = await _measurementUnitRepository.GetAllMeasurementunitsAsync();
 
-            return measurementUnits.ToList();
+            return Ok(measurementUnits);
         }
 
         [HttpGet("{id}")]
@@ -64,8 +82,13 @@ namespace CookBookApi.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<MeasurementUnitDto>> UpdateMeasurementUnitAsync(int id, MeasurementUnitDto measurementUnitDto)
         {
-            if (id != measurementUnitDto.Id)
-                return BadRequest("MeasurementUnitId missmatch");
+            var existingMeasurementUnit = await _measurementUnitRepository.GetMeasurementUnitByIdAsync(id);
+
+            if (existingMeasurementUnit == null)
+                return NotFound($"MeasurementUnit with Id {id} not found");
+
+            if (await _measurementUnitRepository.AnyMeasurementUnitWithSameNameAsync(measurementUnitDto.Name))
+                return BadRequest("A MeasurementUnit with this already exists.");
 
             var updatedMeasurementUnit = new MeasurementUnit 
             { 
@@ -76,7 +99,9 @@ namespace CookBookApi.Controllers
 
             await _measurementUnitRepository.UpdateMeasurementUnitAsync(updatedMeasurementUnit);
 
-            return Ok(updatedMeasurementUnit);
+            var updatedMeasurementUnitDto = _mapper.Map<MeasurementUnitDto>(updatedMeasurementUnit);
+
+            return Ok(updatedMeasurementUnitDto);
         }
     }
 }
