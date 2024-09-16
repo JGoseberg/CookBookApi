@@ -18,117 +18,158 @@ namespace CookBookApi.Tests.Controllers
     {
         private MeasurementUnitController _controller;
         private Mock<IMeasurementUnitRepository> _measurementUnitRepositoryMock;
+        private Mock<IRecipeIngredientRepository> _recipeIngredientRepositoryMock;
         private IMapper _mapper;
 
         [SetUp]
         public void Setup()
         {
             _measurementUnitRepositoryMock = new Mock<IMeasurementUnitRepository>();
+            _recipeIngredientRepositoryMock = new Mock<IRecipeIngredientRepository>();
             _mapper = MapperTestConfig.InitializeAutoMapper();
-            _controller = new MeasurementUnitController(_measurementUnitRepositoryMock.Object, _mapper);
+            _controller = new MeasurementUnitController(_measurementUnitRepositoryMock.Object, _recipeIngredientRepositoryMock.Object, _mapper);
+        }
+
+        [Test]
+        public async Task AddMeasurementUnit_EmptyName_ReturnsBadRequest()
+        {
+            var addMeasurementUnitDto = new AddMeasurementUnitDto { Name = "", Abbreviation = "bar" };
+
+            var result = await _controller.AddMeasurementUnitAsync(addMeasurementUnitDto);
+
+            // more unique Asserts
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
+        }
+
+        [Test]
+        public async Task AddMeasurementUnit_EmptyAbbreviation_ReturnsBadRequest()
+        {
+            var addMeasurementUnitDto = new AddMeasurementUnitDto { Name = "foo", Abbreviation = "" };
+
+            var result = await _controller.AddMeasurementUnitAsync(addMeasurementUnitDto);
+
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
+        }
+
+        [Test]
+        public async Task AddMeasurementUnit_NameExists_ReturnsBadRequest()
+        {
+            var addMeasurementUnitDto = new AddMeasurementUnitDto { Name = "foo", Abbreviation = "bar" };
+
+            _measurementUnitRepositoryMock.Setup(m => m.AnyMeasurementUnitWithSameNameAsync(addMeasurementUnitDto.Name))
+                .ReturnsAsync(true);
+
+            var result = await _controller.AddMeasurementUnitAsync(addMeasurementUnitDto);
+
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]
         public async Task AddMeasurementUnitTest_ReturnsOk()
         {
-            var unitDto = new AddMeasurementUnitDto
-            {
-                Name = "Test",
-                Abbreviation = "t",
-            };
+            var addMeasurementUnitDto = new AddMeasurementUnitDto { Name = "foo", Abbreviation = "bar" };
 
-            var unit = new MeasurementUnit
-            {
-                Id = 1,
-                Name = unitDto.Name,
-                Abbreviation = unitDto.Abbreviation
-            };
-
-            _measurementUnitRepositoryMock
-                .Setup(r => r.AnyMeasurementUnitWithSameNameAsync(unitDto.Name))
+            _measurementUnitRepositoryMock.Setup(m => m.AnyMeasurementUnitWithSameNameAsync(addMeasurementUnitDto.Name))
                 .ReturnsAsync(false);
 
-            _measurementUnitRepositoryMock
-                .Setup(r => r.AddMeasurementUnitAsync(It.IsAny<MeasurementUnit>()))
-                .ReturnsAsync(unit);
+            var result = await _controller.AddMeasurementUnitAsync(addMeasurementUnitDto);
 
-            var result = await _controller.AddMeasurementUnitAsync(unitDto);
-
-            Assert.IsInstanceOf<CreatedAtActionResult>(result.Result);
-            var createdResult = result.Result as CreatedAtActionResult;
-            Assert.IsNotNull(createdResult);
-            Assert.AreEqual(201, createdResult.StatusCode);
+            Assert.IsInstanceOf<CreatedAtActionResult>(result);
         }
 
         [Test]
-        public void AddExistingMeasurementUnit_ReturnsBadRequest()
-        { 
-            throw new NotImplementedException();
-        }
-
-        [Test]
-        public void AddIncompleteMeasurementUnit_ReturnsBadRequest() { throw new NotImplementedException(); }
-
-        [Test]
-        public void RemoveMeasurementUnitTest()
+        public async Task DeleteMeasurementUnit_MeasurementUnitDoesNotExists_ReturnsNotFound()
         {
-            throw new NotImplementedException();
+            var id = 404;
+
+            _measurementUnitRepositoryMock.Setup(m => m.GetMeasurementUnitByIdAsync(id))
+                .ReturnsAsync((MeasurementUnitDto?)null);
+
+            var result = await _controller.DeleteMeasurementUnitAsync(id);
+
+            Assert.That(result, Is.InstanceOf<NotFoundObjectResult>());
+        }
+
+        [Test]
+        public async Task DeleteMeasurementUnit_RelatedToRecipe_ReturnsBadRequest()
+        {
+            var id = 404;
+
+            var measurementUnitDto = new MeasurementUnitDto { Name = "foo", Abbreviation = "bar" };
+
+            _measurementUnitRepositoryMock.Setup(m => m.GetMeasurementUnitByIdAsync(id))
+                .ReturnsAsync(measurementUnitDto);
+
+            _recipeIngredientRepositoryMock.Setup(ri => ri.AnyRecipesWithMeasurementUnitAsync(id))
+                .ReturnsAsync(true);
+
+            var result = await _controller.DeleteMeasurementUnitAsync(id);
+
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
+        }
+
+        [Test]
+        public async Task DeleteMeasurementUnit_ReturnsNoContent()
+        {
+            var id = 404;
+
+            var measurementUnitDto = new MeasurementUnitDto { Name = "foo", Abbreviation = "bar" };
+
+            _measurementUnitRepositoryMock.Setup(m => m.GetMeasurementUnitByIdAsync(id))
+                .ReturnsAsync(measurementUnitDto);
+
+            _recipeIngredientRepositoryMock.Setup(ri => ri.AnyRecipesWithMeasurementUnitAsync(id))
+                .ReturnsAsync(false);
+
+            var result = await _controller.DeleteMeasurementUnitAsync(id);
+
+            Assert.That(result, Is.InstanceOf<NoContentResult>());
+
+        }
+
+        [Test]
+        public async Task GetAllMeasurements_ReturnsOk()
+        {
+            IEnumerable<MeasurementUnitDto> measurementUnits = new MeasurementUnitDto[]
+            {
+                new MeasurementUnitDto { Name =  "foo", Abbreviation = "bar" },
+                new MeasurementUnitDto { Name = "bar", Abbreviation = "foo"}
+            };
+
+            _measurementUnitRepositoryMock.Setup(m => m.GetAllMeasurementunitsAsync())
+                .ReturnsAsync(measurementUnits);
+
+            var result = await _controller.GetAllMeasurementUnitsAsync();
+
+            Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
         }
 
         [TestCase(1)]
         public async Task GetMeasurementUnitById_ValidInt_ReturnsOk(int id)
         {
-            var unit = new MeasurementUnitDto
-            {
-                Id = 1,
-                Name = "gram",
-                Abbreviation = "g"
-            };
-
-            _measurementUnitRepositoryMock.Setup(r => r.GetMeasurementUnitByIdAsync(id)).ReturnsAsync(unit);
-
-            var result = await _controller.GetMeasurementUnitByIdAsync(id);
-
-            var okResult = result.Result as OkObjectResult;
-
-            Assert.That(unit, Is.EqualTo(okResult.Value));
-
-            Assert.IsNotNull(result);
+            throw new NotImplementedException();
         }
 
         [TestCase(99)]
-        public async Task GetMeasurementUnitById_InValidInt_Returns404(int id)
+        public async Task GetMeasurementUnitById_InValidInt_ReturnsNotFound(int id)
         {
-            _measurementUnitRepositoryMock
-                .Setup(r => r.GetMeasurementUnitByIdAsync(id))
-                .ReturnsAsync((MeasurementUnitDto)null);
-
-            var result = await _controller.GetMeasurementUnitByIdAsync(id);
-
-            Assert.IsInstanceOf<NotFoundResult>(result.Result);
+            throw new NotImplementedException();
         }
 
         [Test]
-        public async Task GetMeasurementUnitsTests()
+        public void UpdateMeasurementUnitTest_NotExistingMeasurementUnit_ReturnsNotFound()
         {
-            var units = new List<MeasurementUnitDto>
-            {
-                new MeasurementUnitDto { Id = 1, Name = "gram", Abbreviation = "g"},
-                new MeasurementUnitDto { Id = 2, Name = "kilogram", Abbreviation = "kg"},
-            };
-
-            _measurementUnitRepositoryMock.Setup(r => r.GetAllMeasurementunitsAsync()).ReturnsAsync(units);
-
-            var result = await _controller.GetAllMeasurementUnitsAsync();
-
-            Assert.IsInstanceOf<ActionResult<IEnumerable<MeasurementUnitDto>>>(result);
-
-            var returnedUnits = result.Value as List<MeasurementUnitDto>;
-            Assert.AreEqual(2, returnedUnits.Count);
+            throw new NotImplementedException();
         }
 
         [Test]
-        public void UpdateMeasurementUnitTest()
+        public void UpdateMeasurementUnitTest_ExistingName_ReturnsBadRequest()
+        {
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        public void UpdateMeasurementUnitTest_ReturnsOk()
         {
             throw new NotImplementedException();
         }

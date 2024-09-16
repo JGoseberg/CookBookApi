@@ -28,18 +28,18 @@ namespace CookBookApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<MeasurementUnit>> AddMeasurementUnitAsync(AddMeasurementUnitDto addMeasurementUnitDto)
+        public async Task<ActionResult> AddMeasurementUnitAsync(AddMeasurementUnitDto AddMeasurementUnitDto)
         {
-            if (addMeasurementUnitDto.Name.IsNullOrEmpty())
+            if (AddMeasurementUnitDto.Name.IsNullOrEmpty())
                 return BadRequest("Name cannot be empty");
 
-            if (addMeasurementUnitDto.Abbreviation.IsNullOrEmpty())
+            if (AddMeasurementUnitDto.Abbreviation.IsNullOrEmpty())
                 return BadRequest("Abbreviation cannot be empty");
 
-            if (await _measurementUnitRepository.AnyMeasurementUnitWithSameNameAsync(addMeasurementUnitDto.Name))
+            if (await _measurementUnitRepository.AnyMeasurementUnitWithSameNameAsync(AddMeasurementUnitDto.Name))
                 return BadRequest("A MeasurementUnit with this name already exists");
 
-            var newMeasurementUnit = new MeasurementUnit { Name = addMeasurementUnitDto.Name, Abbreviation = addMeasurementUnitDto.Abbreviation };
+            var newMeasurementUnit = new MeasurementUnit { Name = AddMeasurementUnitDto.Name, Abbreviation = AddMeasurementUnitDto.Abbreviation };
 
             await _measurementUnitRepository.AddMeasurementUnitAsync(newMeasurementUnit);
 
