@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace CookBookApi.Tests.Controllers
 {
     [TestFixture]
-    public class MeasureMentUnitTests
+    public class MeasureMentUnitControllerTests
     {
         private MeasurementUnitController _controller;
         private Mock<IMeasurementUnitRepository> _measurementUnitRepositoryMock;
@@ -144,34 +144,91 @@ namespace CookBookApi.Tests.Controllers
             Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
         }
 
-        [TestCase(1)]
-        public async Task GetMeasurementUnitById_ValidInt_ReturnsOk(int id)
+        [Test]
+        public async Task GetMeasurementUnitById_ValidInt_ReturnsOk()
         {
-            throw new NotImplementedException();
-        }
+            var id = 1;
 
-        [TestCase(99)]
-        public async Task GetMeasurementUnitById_InValidInt_ReturnsNotFound(int id)
-        {
-            throw new NotImplementedException();
+            MeasurementUnitDto measurementUnitDto = new()
+            { Name = "foo", Abbreviation = "bar" };
+
+            _measurementUnitRepositoryMock.Setup(m => m.GetMeasurementUnitByIdAsync(id))
+                .ReturnsAsync(measurementUnitDto);
+
+            var result = await _controller.GetMeasurementUnitByIdAsync(id);
+
+            Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
         }
 
         [Test]
-        public void UpdateMeasurementUnitTest_NotExistingMeasurementUnit_ReturnsNotFound()
+        public async Task GetMeasurementUnitById_InvalidInt_ReturnsNotFound()
         {
-            throw new NotImplementedException();
+            var id = 404;
+
+            MeasurementUnitDto measurementUnitDto = new()
+            { Name = "foo", Abbreviation = "bar" };
+
+            _measurementUnitRepositoryMock.Setup(m => m.GetMeasurementUnitByIdAsync(id))
+                .ReturnsAsync((MeasurementUnitDto?)null);
+
+            var result = await _controller.GetMeasurementUnitByIdAsync(id);
+
+            Assert.That(result.Result, Is.InstanceOf<NotFoundResult>());
         }
 
         [Test]
-        public void UpdateMeasurementUnitTest_ExistingName_ReturnsBadRequest()
+        public async Task UpdateMeasurementUnitTest_NotExistingMeasurementUnit_ReturnsNotFound()
         {
-            throw new NotImplementedException();
+            var id = 404;
+
+            MeasurementUnitDto measurementUnitDto = new()
+            { Name = "foo", Abbreviation= "bar" };
+
+            _measurementUnitRepositoryMock.Setup(m => m.GetMeasurementUnitByIdAsync(id))
+                .ReturnsAsync((MeasurementUnitDto?)null);
+
+            var result = await _controller.UpdateMeasurementUnitAsync(id, measurementUnitDto);
+
+            Assert.That(result.Result, Is.InstanceOf<NotFoundObjectResult>());
         }
 
         [Test]
-        public void UpdateMeasurementUnitTest_ReturnsOk()
+        public async Task UpdateMeasurementUnitTest_ExistingName_ReturnsBadRequest()
         {
-            throw new NotImplementedException();
+            var id = 400;
+
+            MeasurementUnitDto measurementUnitDto = new()
+            { Name = "foo", Abbreviation = "bar" };
+
+            _measurementUnitRepositoryMock.Setup(m => m.GetMeasurementUnitByIdAsync(id))
+                .ReturnsAsync(measurementUnitDto);
+
+            _measurementUnitRepositoryMock.Setup(m => m.AnyMeasurementUnitWithSameNameAsync(measurementUnitDto.Name))
+                .ReturnsAsync(true);
+
+            var result = await _controller.UpdateMeasurementUnitAsync(id, measurementUnitDto);
+
+            Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
+        }
+
+        [Test]
+        public async Task UpdateMeasurementUnitTest_ReturnsOk()
+        {
+            var id = 200;
+
+            MeasurementUnitDto measurementUnitDto = new()
+            { Name = "foo", Abbreviation = "bar" };
+
+            _measurementUnitRepositoryMock.Setup(m => m.GetMeasurementUnitByIdAsync(id))
+                .ReturnsAsync(measurementUnitDto);
+
+            _measurementUnitRepositoryMock.Setup(m => m.AnyMeasurementUnitWithSameNameAsync(measurementUnitDto.Name))
+                .ReturnsAsync(false);
+
+            var result = await _controller.UpdateMeasurementUnitAsync(id, measurementUnitDto);
+
+            Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
+
         }
     }
 }

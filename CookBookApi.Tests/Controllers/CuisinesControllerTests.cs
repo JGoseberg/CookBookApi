@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace CookBookApi.Tests.Controllers
 {
     [TestFixture]
-    public class CuisinesTests
+    public class CuisinesControllerTests
     {
         private CuisinesController _controller;
         private Mock<ICuisineRepository> _cuisineRepositoryMock;
