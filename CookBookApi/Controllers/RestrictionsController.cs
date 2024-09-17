@@ -1,4 +1,5 @@
-﻿using CookBookApi.DTOs;
+﻿using AutoMapper;
+using CookBookApi.DTOs;
 using CookBookApi.Interfaces.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,20 +10,22 @@ namespace CookBookApi.Controllers
     public class RestrictionsController : ControllerBase
     {
         private readonly IRestrictionRepository _restrictionRepository;
-        
-        public RestrictionsController(IRestrictionRepository restrictionRepository)
+        private readonly IMapper _mapper;
+
+        public RestrictionsController(IRestrictionRepository restrictionRepository, IMapper mapper)
         {
             _restrictionRepository = restrictionRepository;
+            _mapper = mapper;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<RestrictionDto>>> GetRestrictionsAsync()
+        public async Task<ActionResult<IEnumerable<RestrictionDto>>> GetAllRestrictionsAsync()
         {
             throw new NotImplementedException();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<RestrictionDto>> GetRestrictionById(int id)
+        public async Task<ActionResult<RestrictionDto>> GetRestrictionByIdAsync(int id)
         {
             throw new NotImplementedException();
         }
@@ -34,7 +37,7 @@ namespace CookBookApi.Controllers
         }
         
         [HttpPut("{id}")]
-        public async Task<ActionResult<RestrictionDto>> UpdateCuisineAsync(int id, RestrictionDto restrictionDto)
+        public async Task<ActionResult<RestrictionDto>> UpdateRestrictionAsync(int id, RestrictionDto restrictionDto)
         {
             throw new NotImplementedException();
         }
