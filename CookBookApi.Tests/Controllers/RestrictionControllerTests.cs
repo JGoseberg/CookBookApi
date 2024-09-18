@@ -30,7 +30,7 @@ namespace CookBookApi.Tests.Controllers
             _ingredientRepository = new Mock<IIngredientRepository>();
             _recipeRepository = new Mock<IRecipeRepository>();
             _mapper = MapperTestConfig.InitializeAutoMapper();
-            _controller = new RestrictionsController(_restrictionRepository.Object, _mapper);
+            _controller = new RestrictionsController(_restrictionRepository.Object, _ingredientRepository.Object, _recipeRepository.Object, _mapper);
         }
 
         [Test]
@@ -66,7 +66,7 @@ namespace CookBookApi.Tests.Controllers
 
             var result = await _controller.AddRestrictionAsync(restrictionDto);
 
-            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
+            Assert.That(result, Is.InstanceOf<CreatedResult>());
         }
 
 
@@ -158,7 +158,7 @@ namespace CookBookApi.Tests.Controllers
 
             var result = await _controller.GetAllRestrictionsAsync();
 
-            Assert.That(result, Is.InstanceOf<OkObjectResult>());
+            Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
         }
 
         [Test]
@@ -173,7 +173,7 @@ namespace CookBookApi.Tests.Controllers
 
             var result = await _controller.GetRestrictionByIdAsync(id);
 
-            Assert.That(result, Is.InstanceOf<NotFoundResult>());
+            Assert.That(result.Result, Is.InstanceOf<NotFoundObjectResult>());
         }
 
         [Test]
@@ -188,7 +188,7 @@ namespace CookBookApi.Tests.Controllers
 
             var result = await _controller.GetRestrictionByIdAsync(id);
 
-            Assert.That(result, Is.InstanceOf<OkObjectResult>());
+            Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
         }
 
         [Test]
@@ -203,7 +203,7 @@ namespace CookBookApi.Tests.Controllers
 
             var result = await _controller.UpdateRestrictionAsync(id, restrictionDto);
 
-            Assert.That(result, Is.InstanceOf<NotFoundObjectResult>());
+            Assert.That(result.Result, Is.InstanceOf<NotFoundObjectResult>());
         }
 
         [Test]
@@ -221,7 +221,7 @@ namespace CookBookApi.Tests.Controllers
 
             var result = await _controller.UpdateRestrictionAsync(id, restrictionDto);
 
-            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
+            Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]
@@ -239,7 +239,7 @@ namespace CookBookApi.Tests.Controllers
 
             var result = await _controller.UpdateRestrictionAsync(id, restrictionDto);
 
-            Assert.That(result, Is.InstanceOf<OkObjectResult>());
+            Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
         }
     }
 }

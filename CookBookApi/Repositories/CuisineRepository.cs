@@ -47,7 +47,7 @@ namespace CookBookApi.Repositories
             return _mapper.Map<IEnumerable<CuisineDto>>(cuisines);
         }
 
-        public async Task<CuisineDto> GetCuisineByIdAsync(int id)
+        public async Task<CuisineDto?> GetCuisineByIdAsync(int id)
         {
             var cuisine = await _context.Cuisines.FirstOrDefaultAsync(x => x.Id == id);
 

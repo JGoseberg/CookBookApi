@@ -41,7 +41,7 @@ namespace CookBookApi.Tests.Controllers
 
             var result = await _controller.AddCuisineAsync(cuisineDto);
 
-            Assert.That(result, Is.InstanceOf<CreatedAtActionResult>());
+            Assert.That(result, Is.InstanceOf<CreatedResult>());
         }
 
         [Test]
@@ -159,7 +159,7 @@ namespace CookBookApi.Tests.Controllers
             _cuisineRepositoryMock.Setup(x => x.GetCuisineByIdAsync(id))
                 .ReturnsAsync(cuisine);
 
-            var result = await _controller.GetCuisineById(id);
+            var result = await _controller.GetCuisineByIdAsync(id);
 
             Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
         }
@@ -172,7 +172,7 @@ namespace CookBookApi.Tests.Controllers
             _cuisineRepositoryMock.Setup(c => c.GetCuisineByIdAsync(id))
                 .ReturnsAsync((CuisineDto?)null);
 
-            var result = await _controller.GetCuisineById(id);
+            var result = await _controller.GetCuisineByIdAsync(id);
 
             Assert.That(result.Result, Is.InstanceOf<NotFoundResult>());
         }
@@ -203,7 +203,7 @@ namespace CookBookApi.Tests.Controllers
             var cuisineDto = new CuisineDto { Name = "Test" };
 
             _cuisineRepositoryMock.Setup(c => c.GetCuisineByIdAsync(id))
-                .ReturnsAsync((CuisineDto)null);
+                .ReturnsAsync((CuisineDto?)null);
 
             _cuisineRepositoryMock.Setup(c => c.AnyCuisineWithSameNameAsync(cuisineDto.Name))
                 .ReturnsAsync(false);

@@ -74,7 +74,7 @@ namespace CookBookApi.Tests.Controllers
 
             var result = await _controller.AddMeasurementUnitAsync(addMeasurementUnitDto);
 
-            Assert.IsInstanceOf<CreatedAtActionResult>(result);
+            Assert.IsInstanceOf<CreatedResult>(result);
         }
 
         [Test]

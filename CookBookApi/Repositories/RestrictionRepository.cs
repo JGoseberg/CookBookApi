@@ -34,7 +34,7 @@ namespace CookBookApi.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<RestrictionDto> GetRestrictionByIdAsync(int id)
+        public Task<RestrictionDto?> GetRestrictionByIdAsync(int id)
         {
             throw new NotImplementedException();
         }

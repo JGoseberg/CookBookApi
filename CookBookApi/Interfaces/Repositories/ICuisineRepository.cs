@@ -10,7 +10,7 @@ namespace CookBookApi.Interfaces.Repositories
         Task AddCuisineAsync(Cuisine cuisine);
         Task DeleteCuisineAsync(int id);
         Task<IEnumerable<CuisineDto>> GetAllCuisinesAsync();
-        Task<CuisineDto> GetCuisineByIdAsync(int id);
+        Task<CuisineDto?> GetCuisineByIdAsync(int id);
         Task UpdateCuisineAsync(Cuisine cuisine);
     }
 }

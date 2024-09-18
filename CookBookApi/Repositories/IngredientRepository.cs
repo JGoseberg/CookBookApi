@@ -24,6 +24,11 @@ namespace CookBookApi.Repositories
             _context.SaveChanges();
         }
 
+        public Task<bool> AnyIngredientsWithRestrictionAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task DeleteIngredientAsync(int id)
         {
             throw new NotImplementedException();

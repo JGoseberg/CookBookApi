@@ -28,7 +28,7 @@ namespace CookBookApi.Mappings
 
             CreateMap<Restriction, RestrictionDto>();
             CreateMap<Cuisine, CuisineDto>();
-
+                      
             CreateMap<AddIngredientDto, Ingredient>();
             CreateMap<AddRecipeDto, Recipe>();
             CreateMap<AddMeasurementUnitDto, MeasurementUnit>();

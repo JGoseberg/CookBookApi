@@ -8,7 +8,7 @@ namespace CookBookApi.Interfaces.Repositories
         Task<MeasurementUnit> AddMeasurementUnitAsync(MeasurementUnit measurementUnit);
         Task DeleteMeasurementUnitAsync(int id);
         Task<IEnumerable<MeasurementUnitDto>> GetAllMeasurementunitsAsync();
-        Task<MeasurementUnitDto> GetMeasurementUnitByIdAsync(int id);
+        Task<MeasurementUnitDto?> GetMeasurementUnitByIdAsync(int id);
         Task UpdateMeasurementUnitAsync(MeasurementUnit measurementUnit);
     }
 }

@@ -36,7 +36,7 @@ namespace CookBookApi.Controllers
 
             await _cuisineRepository.AddCuisineAsync(newCuisine);
 
-            return CreatedAtAction(nameof(GetCuisineById), new { id = newCuisine.Id}, newCuisine);
+            return Created("", newCuisine);
         }
         
         [HttpDelete("{id}")]
@@ -64,7 +64,7 @@ namespace CookBookApi.Controllers
 
         
         [HttpGet("{id}")]
-        public async Task<ActionResult<Cuisine>> GetCuisineById(int id)
+        public async Task<ActionResult<Cuisine>> GetCuisineByIdAsync(int id)
         {
             var cuisine = await _cuisineRepository.GetCuisineByIdAsync(id);
 

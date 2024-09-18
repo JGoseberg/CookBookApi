@@ -43,7 +43,7 @@ namespace CookBookApi.Controllers
 
             await _measurementUnitRepository.AddMeasurementUnitAsync(newMeasurementUnit);
 
-            return CreatedAtAction(nameof(GetMeasurementUnitByIdAsync), new { id = newMeasurementUnit.Id }, newMeasurementUnit);
+            return Created("", newMeasurementUnit);
         }
 
         [HttpDelete("{id}")]

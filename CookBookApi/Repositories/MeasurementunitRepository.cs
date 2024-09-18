@@ -45,7 +45,7 @@ namespace CookBookApi.Repositories
             return _mapper.Map<IEnumerable<MeasurementUnitDto>>(measurementUnits);
         }
 
-        public async Task<MeasurementUnitDto> GetMeasurementUnitByIdAsync(int id)
+        public async Task<MeasurementUnitDto?> GetMeasurementUnitByIdAsync(int id)
         {
             var measurementUnit = await _context.MeasurementUnits.FirstOrDefaultAsync(m => m.Id == id);
 
@@ -59,7 +59,7 @@ namespace CookBookApi.Repositories
         {
             //  TODO does not update correcty instead add a new one
             var existingMeasurementUnit = await _context.MeasurementUnits.FindAsync(measurementUnit.Id);
-
+            
             existingMeasurementUnit.Name = measurementUnit.Name;
             existingMeasurementUnit.Abbreviation = measurementUnit.Abbreviation;
 
