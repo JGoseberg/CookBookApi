@@ -34,7 +34,7 @@ namespace CookBookApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IngredientDto> AddIngredientAsync(AddIngredientDto ingredientDto)
+        public async Task<IngredientDto> AddIngredientAsync(IngredientDto ingredientDto)
         {
             var ingredient = _mapper.Map<Ingredient>(ingredientDto);
             await _ingredientRepository.AddIngredientAsync(_mapper.Map<Ingredient>(ingredient));
