@@ -12,7 +12,7 @@ namespace CookBookApi.Repositories
         private readonly CookBookContext _context;
         private readonly IMapper _mapper;
 
-        public IngredientRepository (CookBookContext context, IMapper mapper)
+        public IngredientRepository(CookBookContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
@@ -24,7 +24,12 @@ namespace CookBookApi.Repositories
             _context.SaveChanges();
         }
 
-        public Task<bool> AnyIngredientsWithRestrictionAsync(int id)
+        public Task<bool> AnyIngredientWithRestrictionAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> AnyIngredientWithSameName(string name) 
         {
             throw new NotImplementedException();
         }
@@ -34,15 +39,12 @@ namespace CookBookApi.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<Ingredient>> GetAllIngredientsAsync()
+        public async Task<IEnumerable<IngredientDto>> GetAllIngredientsAsync()
         {
-            var ingredients = await _context.Ingredients
-                .ToListAsync();
-
-            return (IEnumerable<Ingredient>)ingredients;
+            throw new NotImplementedException();
         }
 
-        public Task<Ingredient> GetIngredientByIdAsync(int id)
+        public Task<IngredientDto?> GetIngredientByIdAsync(int id)
         {
             throw new NotImplementedException();
         }

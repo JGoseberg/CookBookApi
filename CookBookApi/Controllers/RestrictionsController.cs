@@ -94,7 +94,7 @@ namespace CookBookApi.Controllers
             if (restrictionExists == null)
                 return NotFound($"restriction with Id {id} does not Exist");
 
-            var restrictionHasIngredientRelations = await _ingredientRepository.AnyIngredientsWithRestrictionAsync(id);
+            var restrictionHasIngredientRelations = await _ingredientRepository.AnyIngredientWithRestrictionAsync(id);
             if (restrictionHasIngredientRelations)
                 return BadRequest($"restriction with Id {id} has existing Relations to Ingredients, cannot delete");
 

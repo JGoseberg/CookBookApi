@@ -80,7 +80,7 @@ namespace CookBookApi.Tests.Controllers
         [Test]
         public async Task DeleteCuisine_ReturnsNoContent()
         {
-            var id = 1;
+            var id = 204;
 
             var cuisineDto = new CuisineDto
             {

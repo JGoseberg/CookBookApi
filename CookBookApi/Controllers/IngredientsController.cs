@@ -28,7 +28,7 @@ namespace CookBookApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<IngredientDto>> GetIngredientByIdAsync()
+        public async Task<ActionResult<IngredientDto>> GetIngredientByIdAsync(int id)
         {
             throw new NotImplementedException();
         }
@@ -44,9 +44,9 @@ namespace CookBookApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task UpdateIngredientAsync(int id, Ingredient ingredient)
+        public async Task<ActionResult<IngredientDto>> UpdateIngredientAsync(int id, IngredientDto ingredientDto)
         {
-            await _ingredientRepository.UpdateIngredientAsync(ingredient);
+            throw new NotImplementedException();
         }
 
         [HttpDelete("{id}")]

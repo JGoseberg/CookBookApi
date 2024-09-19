@@ -33,6 +33,11 @@ namespace CookBookApi.Repositories
             throw new NotImplementedException();
         }
 
+        public Task<bool> AnyRecipeWithIngredientAsync(int ingredientId)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task DeleteRecipeAsync(int id)
         {
             var recipe = await _context.Recipes.FindAsync(id);

@@ -93,7 +93,7 @@ namespace CookBookApi.Tests.Controllers
             _restrictionRepository.Setup(r => r.GetRestrictionByIdAsync(id))
                 .ReturnsAsync(restrictionDto);
 
-            _ingredientRepository.Setup(i => i.AnyIngredientsWithRestrictionAsync(id))
+            _ingredientRepository.Setup(i => i.AnyIngredientWithRestrictionAsync(id))
                 .ReturnsAsync(true);
 
             var result = await _controller.DeleteRestrictionAsync(id);
@@ -111,7 +111,7 @@ namespace CookBookApi.Tests.Controllers
             _restrictionRepository.Setup(r => r.GetRestrictionByIdAsync(id))
                 .ReturnsAsync(restrictionDto);
 
-            _ingredientRepository.Setup(i => i.AnyIngredientsWithRestrictionAsync(id))
+            _ingredientRepository.Setup(i => i.AnyIngredientWithRestrictionAsync(id))
                 .ReturnsAsync(false);
 
             _recipeRepository.Setup(rc => rc.AnyRecipesWithRestrictionAsync(id))
@@ -133,7 +133,7 @@ namespace CookBookApi.Tests.Controllers
             _restrictionRepository.Setup(r => r.GetRestrictionByIdAsync(id))
                 .ReturnsAsync(restrictionDto);
 
-            _ingredientRepository.Setup(i => i.AnyIngredientsWithRestrictionAsync(id))
+            _ingredientRepository.Setup(i => i.AnyIngredientWithRestrictionAsync(id))
                 .ReturnsAsync(false);
 
             _recipeRepository.Setup(rc => rc.AnyRecipesWithRestrictionAsync(id))

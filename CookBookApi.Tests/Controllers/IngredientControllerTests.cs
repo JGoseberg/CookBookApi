@@ -90,53 +90,129 @@ namespace CookBookApi.Tests.Controllers
             _ingredientRepository.Setup(i => i.GetIngredientByIdAsync(id))
                 .ReturnsAsync(ingredientDto);
 
-            _recipeRepository.Setup(r => r.)
+            _recipeRepository.Setup(r => r.AnyRecipeWithIngredientAsync(id))
+                .ReturnsAsync(true);
 
             var result = await _controller.DeleteIngredientAsync(id);
 
-            Assert.That(result, Is.InstanceOf<NotFoundObjectResult>());
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]
         public async Task DeleteIngredientAsync_ReturnsNoContent()
         {
-            throw new NotImplementedException();
+            var id = 204;
+
+            var ingredientDto = new IngredientDto { Name = "Foo" };
+
+            _ingredientRepository.Setup(i => i.GetIngredientByIdAsync(id))
+                .ReturnsAsync(ingredientDto);
+
+            _recipeRepository.Setup(r => r.AnyRecipeWithIngredientAsync(id))
+                .ReturnsAsync(false);
+
+            var result = await _controller.DeleteIngredientAsync(id);
+
+            Assert.That(result, Is.InstanceOf<NoContentResult>());
         }
 
         [Test]
         public async Task GetAllIngredientsAsync_ReturnsOk()
         {
-            throw new NotImplementedException();
+            var ingredients = new List<IngredientDto>
+            {
+                new IngredientDto { Name = "Foo"},
+                new IngredientDto { Name = "Bar"}
+            };
+
+            _ingredientRepository.Setup(i => i.GetAllIngredientsAsync())
+                .ReturnsAsync(ingredients);
+
+            var result = await _controller.GetIngredientsAsync();
+
+            Assert.That(result, Is.InstanceOf<OkObjectResult>());
         }
 
         [Test]
         public async Task GetIngredientsByIdAsync_InvalidId_ReturnsNotFound()
         {
-            throw new NotImplementedException();
+            var id = 404;
+            
+            _ingredientRepository.Setup(i => i.GetIngredientByIdAsync(id))
+                .ReturnsAsync((IngredientDto?)null);
+
+            var result = await _controller.GetIngredientByIdAsync(id);
+
+            Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
         }
 
         [Test]
         public async Task GetIngredientsByIdAsync_ReturnsOk()
         {
-            throw new NotImplementedException();
+            var id = 404;
+
+            var ingredientDto = new IngredientDto { Name = "Foo" };
+
+            _ingredientRepository.Setup(i => i.GetIngredientByIdAsync(id))
+                .ReturnsAsync(ingredientDto);
+
+            var result = await _controller.GetIngredientByIdAsync(id);
+
+            Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
         }
 
         [Test]
         public async Task UpdateIngredientAsync_IngredientNotExists_ReturnsNotFound()
         {
-            throw new NotImplementedException();
+            var id = 404;
+
+            var ingredientDto = new IngredientDto { Name = "Foo" };
+
+            _ingredientRepository.Setup(i => i.GetIngredientByIdAsync(id))
+                .ReturnsAsync((IngredientDto?)null);
+
+            _ingredientRepository.Setup(i => i.AnyIngredientWithSameName(ingredientDto.Name))
+                .ReturnsAsync(false);
+
+            var result = await _controller.UpdateIngredientAsync(id, ingredientDto);
+
+            Assert.That(result, Is.InstanceOf<NotFoundObjectResult>());
         }
 
         [Test]
         public async Task UpdateIngredientAsync_ExistingName_ReturnsBadRequest()
         {
-            throw new NotImplementedException();
+            var id = 404;
+
+            var ingredientDto = new IngredientDto { Name = "Foo" };
+
+            _ingredientRepository.Setup(i => i.GetIngredientByIdAsync(id))
+                .ReturnsAsync(ingredientDto);
+
+            _ingredientRepository.Setup(i => i.AnyIngredientWithSameName(ingredientDto.Name))
+                .ReturnsAsync(true);
+
+            var result = await _controller.UpdateIngredientAsync(id, ingredientDto);
+
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]
         public async Task UpdateIngredientAsync_ReturnsOk()
         {
-            throw new NotImplementedException();
+            var id = 404;
+
+            var ingredientDto = new IngredientDto { Name = "Foo" };
+
+            _ingredientRepository.Setup(i => i.GetIngredientByIdAsync(id))
+                .ReturnsAsync(ingredientDto);
+
+            _ingredientRepository.Setup(i => i.AnyIngredientWithSameName(ingredientDto.Name))
+                .ReturnsAsync(false);
+
+            var result = await _controller.UpdateIngredientAsync(id, ingredientDto);
+
+            Assert.That(result, Is.InstanceOf<OkResult>());
         }
     }
 }

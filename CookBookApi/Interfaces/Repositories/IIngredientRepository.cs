@@ -9,7 +9,7 @@ namespace CookBookApi.Interfaces.Repositories
         Task<bool> AnyIngredientWithRestrictionAsync(int id);
         Task<bool> AnyIngredientWithSameName(string name);
         Task<IngredientDto?> GetIngredientByIdAsync(int id);
-        Task<IEnumerable<Ingredient>> GetAllIngredientsAsync();
+        Task<IEnumerable<IngredientDto>> GetAllIngredientsAsync();
         Task UpdateIngredientAsync(Ingredient ingredient);
         Task DeleteIngredientAsync(int id);
     }
