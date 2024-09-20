@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using CookBookApi.DTOs;
+using CookBookApi.DTOs.Ingredient;
 using CookBookApi.DTOs.Recipes;
 using CookBookApi.Interfaces;
 using CookBookApi.Interfaces.Repositories;
@@ -19,47 +21,77 @@ public class RecipesController : ControllerBase
         _recipeRepository = recipeRepository;
     }
 
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<RecipeDto>>> GetRecipesAsync()
+    [HttpPost]
+    public async Task<ActionResult> AddRecipeAsync(AddRecipeDto recipeDto)
     {
-        var recipes = await _recipeRepository.GetAllRecipesAsync();
+        // TODO NameIsEmpty
+        // TODO SameName
 
-        return Ok(recipes);
+        // TODO AutoAddIngredient
+        // TODO AutoAddRestriction
+        // TODO AutoAddCuisines
+
+        throw new NotImplementedException();
+    }
+    
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeleteRecipeAsync(int id)
+    {
+        // TODO NotExisting
+
+        throw new NotImplementedException();
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<RecipeDto>> GetRandomRecipeAsync()
+    {
+        // TODO rnd -> GetbyID 
+
+        throw new NotImplementedException();
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<RecipeDto>>> GetAllRecipesAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<RecipeDto>> GetRecipesWithCuisinesAsync(List<CuisineDto> cuisineDtos)
+    {
+        // TODO cuisines == empty -> GetAll
+        // TODO no recipes Found
+        // TODO cuisine not exists
+
+        throw new NotImplementedException();
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<RecipeDto>> GetRecipesWithIngredientsAsync(List<IngredientDto> ingredients)
+    {
+        // TODO ingredients == empty -> GetAll
+        // TODO no recipes Found
+        // TODO ingredient not exists
+
+        throw new NotImplementedException();
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<RecipeDto>> GetRecipeByIdAsync(int id)
     {
-        var recipe = await _recipeRepository.GetRecipeByIdAsync(id);
+        // TODO not Found
 
-        return Ok(recipe);
+        throw new NotImplementedException();
     }
 
-    [HttpPost]
-    public async Task<ActionResult> AddRecipeAsync(AddRecipeDto recipeDto)
-    { 
-        var recipe = _mapper.Map<Recipe>(recipeDto);
-
-        await _recipeRepository.AddRecipeAsync(recipe);
-
-        return Ok(recipe);
-    }
 
     [HttpPut("{id}")]
     public async Task<ActionResult<RecipeDto>> UpdateRecipeAsync(int id, RecipeDto recipeDto)
     {
-        var recipe = _mapper.Map<Recipe>(recipeDto);
+        // TODO existing name
+        // TODO not exists
 
-        await _recipeRepository.UpdateRecipeAsync(recipe);
-
-        return Ok(recipe);
+        throw new NotImplementedException();
     }
 
-    [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteRecipeAsync(int id)
-    {
-        await _recipeRepository.DeleteRecipeAsync(id);
-
-        return NoContent();
-    }
 }
