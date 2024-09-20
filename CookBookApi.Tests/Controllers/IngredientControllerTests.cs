@@ -28,7 +28,7 @@ namespace CookBookApi.Tests.Controllers
             _ingredientRepository = new Mock<IIngredientRepository>();
             _recipeRepository = new Mock<IRecipeRepository>();
             _mapper = MapperTestConfig.InitializeAutoMapper();
-            _controller = new IngredientsController(_ingredientRepository.Object, _mapper);
+            _controller = new IngredientsController(_ingredientRepository.Object, _recipeRepository.Object, _mapper);
         }
 
         [Test]
@@ -128,9 +128,9 @@ namespace CookBookApi.Tests.Controllers
             _ingredientRepository.Setup(i => i.GetAllIngredientsAsync())
                 .ReturnsAsync(ingredients);
 
-            var result = await _controller.GetIngredientsAsync();
+            var result = await _controller.GetAllIngredientsAsync();
 
-            Assert.That(result, Is.InstanceOf<OkObjectResult>());
+            Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
         }
 
         [Test]
@@ -176,7 +176,7 @@ namespace CookBookApi.Tests.Controllers
 
             var result = await _controller.UpdateIngredientAsync(id, ingredientDto);
 
-            Assert.That(result, Is.InstanceOf<NotFoundObjectResult>());
+            Assert.That(result.Result, Is.InstanceOf<NotFoundObjectResult>());
         }
 
         [Test]
@@ -194,7 +194,7 @@ namespace CookBookApi.Tests.Controllers
 
             var result = await _controller.UpdateIngredientAsync(id, ingredientDto);
 
-            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
+            Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]
@@ -212,7 +212,7 @@ namespace CookBookApi.Tests.Controllers
 
             var result = await _controller.UpdateIngredientAsync(id, ingredientDto);
 
-            Assert.That(result, Is.InstanceOf<OkResult>());
+            Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
         }
     }
 }

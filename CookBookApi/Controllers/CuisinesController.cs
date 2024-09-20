@@ -44,7 +44,7 @@ namespace CookBookApi.Controllers
         {
             var cuisine = await _cuisineRepository.GetCuisineByIdAsync(id);
             if (cuisine == null)
-                return NotFound($"Cuisine with {id} not found");
+                return NotFound($"Cuisine with id {id} not found");
 
             var hasRelatedRecipes = await _recipeRepository.AnyRecipesWithCuisineAsync(id);
             if (hasRelatedRecipes)
