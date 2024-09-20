@@ -13,11 +13,9 @@ using Microsoft.EntityFrameworkCore;
 public class RecipesController : ControllerBase
 {
     private readonly IRecipeRepository _recipeRepository;
-    private readonly IMapper _mapper;
 
-    public RecipesController(IRecipeRepository recipeRepository, IMapper mapper)
+    public RecipesController(IRecipeRepository recipeRepository)
     {
-        _mapper = mapper;
         _recipeRepository = recipeRepository;
     }
 
@@ -43,6 +41,12 @@ public class RecipesController : ControllerBase
     }
 
     [HttpGet]
+    public async Task<ActionResult<IEnumerable<RecipeDto>>> GetAllRecipesAsync()
+    {
+        throw new NotImplementedException();
+    }
+    
+    [HttpGet]
     public async Task<ActionResult<RecipeDto>> GetRandomRecipeAsync()
     {
         // TODO rnd -> GetbyID 
@@ -50,9 +54,11 @@ public class RecipesController : ControllerBase
         throw new NotImplementedException();
     }
 
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<RecipeDto>>> GetAllRecipesAsync()
+    [HttpGet("{id}")]
+    public async Task<ActionResult<RecipeDto>> GetRecipeByIdAsync(int id)
     {
+        // TODO not Found
+
         throw new NotImplementedException();
     }
 
@@ -76,14 +82,15 @@ public class RecipesController : ControllerBase
         throw new NotImplementedException();
     }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<RecipeDto>> GetRecipeByIdAsync(int id)
+    [HttpGet]
+    public async Task<ActionResult<RecipeDto>> GetRecipesWithRestrictionsAsync(List<IngredientDto> ingredients)
     {
-        // TODO not Found
+        // TODO ingredients == empty -> GetAll
+        // TODO no recipes Found
+        // TODO ingredient not exists
 
         throw new NotImplementedException();
     }
-
 
     [HttpPut("{id}")]
     public async Task<ActionResult<RecipeDto>> UpdateRecipeAsync(int id, RecipeDto recipeDto)
