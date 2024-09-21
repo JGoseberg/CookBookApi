@@ -86,7 +86,7 @@ namespace CookBookApi.Controllers
                 return NotFound($"Ingredient with id {id} not found");
 
             if (await _ingredientRepository.AnyIngredientWithSameName(ingredientDto.Name))
-                return BadRequest("A cuisine with this name already exists.");
+                return BadRequest("A Ingredient with this name already exists.");
 
             var updatedIngredient = new Ingredient { Id = id, Name = ingredientDto.Name };
 

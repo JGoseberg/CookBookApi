@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using CookBookApi.DTOs;
+using CookBookApi.DTOs.Ingredient;
 using CookBookApi.DTOs.Recipes;
 using CookBookApi.Interfaces.Repositories;
 using CookBookApi.Models;
@@ -29,6 +31,11 @@ namespace CookBookApi.Repositories
         }
 
         public Task<bool> AnyRecipesWithRestrictionAsync(int restrictionId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> AnyRecipesWithSameNameAsync(string name)
         {
             throw new NotImplementedException();
         }
@@ -64,7 +71,7 @@ namespace CookBookApi.Repositories
             return _mapper.Map<IEnumerable<RecipeDto>>(recipes);
         }
 
-        public async Task<RecipeDto> GetRecipeByIdAsync(int id)
+        public async Task<RecipeDto?> GetRecipeByIdAsync(int id)
         {
             var recipe = await _context.Recipes
                 .Include(r => r.Cuisine)
@@ -82,6 +89,36 @@ namespace CookBookApi.Repositories
                 .FirstOrDefaultAsync(r => r.Id == id);
 
             return _mapper.Map<RecipeDto>(recipe);
+        }
+
+        public async Task<IEnumerable<RecipeDto?>> GetRecipesWithSpecificCuisineAsync(CuisineDto cuisineDto)
+        {
+            var recipes = await _context.Recipes
+                .Include(r => r.Cuisine)
+
+                .Include(r => r.RecipeIngredients)
+                    .ThenInclude(ri => ri.Ingredient)
+
+                .Include(r => r.RecipeIngredients)
+                    .ThenInclude(ri => ri.MeasurementUnit)
+
+                .Include(r => r.RecipeRestrictions)
+                    .ThenInclude(rr => rr.Restriction)
+                    .ThenInclude(rr => rr.IngredientRestrictions)
+                .Include(r => r.Subrecipes)
+                .Where(r => r.CuisineId == cuisineDto.Id).ToListAsync();
+
+            return _mapper.Map<IEnumerable<RecipeDto>>(recipes);
+        }
+
+        public Task<IEnumerable<RecipeDto?>> GetRecipesWithSpecificIngredientsAsync(IEnumerable<IngredientDto> ingredientDto)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<RecipeDto?>> GetRecipesWithSpecificRestrictionsAsync(IEnumerable<RestrictionDto> restrictionDto)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task UpdateRecipeAsync(Recipe recipe)

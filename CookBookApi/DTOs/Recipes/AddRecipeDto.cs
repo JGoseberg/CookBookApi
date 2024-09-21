@@ -8,6 +8,8 @@
         public string Creator { get; set; }
         public List<RecipeIngredientDto> Ingredients { get; set; }
         public List<RecipeDto> Subrecipes { get; set; }
+        public List<RecipeDto> ParentRecipes { get; set; }
+
         public int CuisineId { get; set; }
         public List<RestrictionDto> Restrictions { get; set; }
     }

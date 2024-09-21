@@ -1,4 +1,8 @@
-﻿using CookBookApi.Interfaces.Repositories;
+﻿using AutoMapper;
+using CookBookApi.DTOs.Recipes;
+using CookBookApi.Interfaces.Repositories;
+using CookBookApi.Mappings;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Moq;
 using System;
@@ -13,55 +17,182 @@ namespace CookBookApi.Tests.Controllers
     public class RecipesControllerTests
     {
         private Mock<IRecipeRepository> _recipeRepositoryMock;
-        private RecipesController _recipeController;
+        private RecipesController _controller;
+        private IMapper _mapper;
 
         [SetUp]
         public void Setup()
         {
             _recipeRepositoryMock = new Mock<IRecipeRepository>();
-            _recipeController = new RecipesController(_recipeRepositoryMock.Object);
+            _mapper = MapperTestConfig.InitializeAutoMapper();
+            _controller = new RecipesController(_recipeRepositoryMock.Object, _mapper);
         }
 
         [Test]
         public async Task AddRecipeAsync_NameIsEmpty_ReturnsBadRequest()
         {
-            throw new NotImplementedException();
+            var recipeDto = new AddRecipeDto { Name = string.Empty };
+
+            var result = await _controller.AddRecipeAsync(recipeDto);
+
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]
         public async Task AddRecipeAsync_InstructionIsEmpty_ReturnsBadRequest()
         {
-            throw new NotImplementedException();
+            var recipeDto = new AddRecipeDto
+            {
+                Name = "Foo",
+                Instruction = string.Empty
+            };
+
+            var result = await _controller.AddRecipeAsync(recipeDto);
+
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]
         public async Task AddRecipeAsync_RecipeWithExactNameExists_ReturnsBadRequest()
         {
-            throw new NotImplementedException();
+            var recipeDto = new AddRecipeDto
+            {
+                Name = "Foo",
+                Instruction = "Bar",
+            };
+
+            _recipeRepositoryMock.Setup(r => r.AnyRecipesWithSameNameAsync(recipeDto.Name))
+                .ReturnsAsync(true);
+
+            var result = await _controller.AddRecipeAsync(recipeDto);
+
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]
-        public async Task AddRecipeAsync_ReturnsOk()
+        public async Task AddRecipeAsync_SubRecipesAndParentRecipesNull_ReturnsOk()
         {
-            throw new NotImplementedException();
+            var recipeDto = new AddRecipeDto
+            {
+                Name = "Foo",
+                Instruction = "Bar",
+            };
+
+            _recipeRepositoryMock.Setup(r => r.AnyRecipesWithSameNameAsync(recipeDto.Name))
+                .ReturnsAsync(false);
+
+            var result = await _controller.AddRecipeAsync(recipeDto);
+
+            Assert.That(result, Is.InstanceOf<CreatedResult>());
+        }
+
+        [Test]
+        public async Task AddRecipeAsync_SubRecipesNotNull_AddSubrecipes()
+        {
+            var subRecipes = new List<RecipeDto>
+            {
+                new RecipeDto {Name = "Foo", Instruction = "Bar"},
+                new RecipeDto {Name = "Bar", Instruction = "Foo"},
+            };
+
+            var recipeDto = new AddRecipeDto
+            {
+                Name = "Foo",
+                Instruction = "Bar",
+                Subrecipes = subRecipes
+            };
+
+            _recipeRepositoryMock.Setup(r => r.AnyRecipesWithSameNameAsync(recipeDto.Name))
+                .ReturnsAsync(false);
+
+            var result = await _controller.AddRecipeAsync(recipeDto);
+
+            Assert.That(result, Is.InstanceOf<CreatedResult>());
+
+            var createdResult = result as CreatedResult;
+
+            Assert.That(createdResult.Value, Is.Not.Null);
+
+            var recipe = createdResult.Value as Recipe;
+
+            Assert.That(recipe.Subrecipes.Count.Equals(subRecipes.Count));
+        }
+
+        [Test]
+        public async Task AddRecipeAsync_ParentRecipesNotNull_AddParentRecipes()
+        {
+            var parentRecipes = new List<RecipeDto>
+            {
+                new RecipeDto {Name = "Foo", Instruction = "Bar"},
+                new RecipeDto {Name = "Bar", Instruction = "Foo"},
+            };
+
+            var recipeDto = new AddRecipeDto
+            {
+                Name = "Foo",
+                Instruction = "Bar",
+                ParentRecipes = parentRecipes
+            };
+
+            _recipeRepositoryMock.Setup(r => r.AnyRecipesWithSameNameAsync(recipeDto.Name))
+                .ReturnsAsync(false);
+
+            var result = await _controller.AddRecipeAsync(recipeDto);
+
+            Assert.That(result, Is.InstanceOf<CreatedResult>());
+
+            var createdResult = result as CreatedResult;
+
+            Assert.That(createdResult.Value, Is.Not.Null);
+
+            var recipe = createdResult.Value as Recipe;
+
+            Assert.That(recipe.ParentRecipes.Count.Equals(parentRecipes.Count));
         }
 
         [Test]
         public async Task DeleteRecipeAsync_NotFound_ReturnsNotFound()
         {
-            throw new NotImplementedException();
+            var id = 404;
+
+            _recipeRepositoryMock.Setup(r => r.GetRecipeByIdAsync(id))
+                .ReturnsAsync((RecipeDto?)null);
+
+            var result = await _controller.DeleteRecipeAsync(id);
+
+            Assert.That(result, Is.InstanceOf<NotFoundObjectResult>());
         }
 
         [Test]
         public async Task DeleteRecipeAsync_ReturnsNoContent()
         {
-            throw new NotImplementedException();
+            var id = 404;
+
+            var recipeDto = new RecipeDto { Name = "Foo", Instruction = "Bar" };
+
+            _recipeRepositoryMock.Setup(r => r.GetRecipeByIdAsync(id))
+                .ReturnsAsync(recipeDto);
+
+            var result = await _controller.DeleteRecipeAsync(id);
+
+            Assert.That(result, Is.InstanceOf<NoContentResult>());
         }
 
         [Test]
         public async Task GetAllRecipeAsync_ReturnsOK()
         {
-            throw new NotImplementedException();
+            var recipes = new List<RecipeDto>()
+            {
+                new RecipeDto { Name ="Foo", Instruction = "Bar" },
+                new RecipeDto { Name ="Bar", Instruction ="Foo" },
+            };
+
+            _recipeRepositoryMock.Setup(r => r.GetAllRecipesAsync())
+                .ReturnsAsync(recipes);
+
+            var result = await _controller.GetAllRecipesAsync();
+
+            Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
         }
 
         [Test]

@@ -10,6 +10,7 @@ namespace CookBookApi.DTOs.Recipes
         public string Instruction { get; set; }
         public List<RecipeIngredientDto> Ingredients { get; set; }
         public List<RecipeDto> Subrecipes { get; set; }
+        public List<RecipeDto> ParentRecipes { get; set; }
         public CuisineDto Cuisine { get; set; }
         public List<RestrictionDto> Restrictions { get; set; }
     }
