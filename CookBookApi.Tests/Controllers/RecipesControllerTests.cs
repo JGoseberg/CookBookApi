@@ -29,25 +29,13 @@ namespace CookBookApi.Tests.Controllers
         }
 
         [Test]
+        public async Task AddRecipeAsync_InstructionIsEmpty_ReturnsBadRequest()
+        {
+            throw new NotImplementedException();
+        }
+
+        [Test]
         public async Task AddRecipeAsync_RecipeWithExactNameExists_ReturnsBadRequest()
-        {
-            throw new NotImplementedException();
-        }
-
-        [Test]
-        public async Task AddRecipeAsync_AddIngredientIfNotExists()
-        {
-            throw new NotImplementedException();
-        }
-
-        [Test]
-        public async Task AddRecipeAsync_AddRestrictionIfNotExists()
-        {
-            throw new NotImplementedException();
-        }
-
-        [Test]
-        public async Task AddRecipeAsync_AddCuisineIfNotExists()
         {
             throw new NotImplementedException();
         }
