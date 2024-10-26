@@ -26,7 +26,7 @@ namespace CookBookApi.Tests.Controllers
         }
 
         [Test]
-        public async Task AddIngredientAsync_NameisEmpty_ReturnsBadRequest() 
+        public async Task AddIngredientAsync_NameIsEmpty_ReturnsBadRequest() 
         {
             var ingredientDto = new IngredientDto { Name = string.Empty };
 
@@ -46,6 +46,12 @@ namespace CookBookApi.Tests.Controllers
             var result = await _controller.AddIngredientAsync(ingredientDto);
 
             Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
+        }
+
+        [Test]
+        public async Task AddIngredientAsync_NoCuisineGiven_ReturnsBadRequest()
+        {
+            throw new NotImplementedException();
         }
 
         [Test]

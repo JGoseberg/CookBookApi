@@ -6,59 +6,53 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CookBookApi.Repositories
 {
-    public class CuisineRepository : ICuisineRepository
+    public class CuisineRepository(CookBookContext context, IMapper mapper) : ICuisineRepository
     {
-        private readonly CookBookContext _context;
-        private readonly IMapper _mapper;
-        public CuisineRepository(CookBookContext context, IMapper mapper)
-        {
-            _context = context;
-            _mapper = mapper;
-        }
         public async Task AddCuisineAsync(Cuisine cuisine)
         {
             // TODO should work without mapper
-            var cuisineToAdd = await _context.Cuisines.AddAsync(_mapper.Map<Cuisine>(cuisine));
-            _context.SaveChanges();
+            var cuisineToAdd = await context.Cuisines.AddAsync(mapper.Map<Cuisine>(cuisine));
+            await context.SaveChangesAsync();
         }
         
         public async Task<bool> AnyCuisineWithSameNameAsync(string name)
         {
-            return await _context.Cuisines.AnyAsync(c => c.Name == name);
+            return await context.Cuisines.AnyAsync(c => c.Name == name);
         }
 
         public async Task DeleteCuisineAsync(int id)
         {
-            var cuisineToDelete = await _context.Cuisines.FindAsync(id);
+            var cuisineToDelete = await context.Cuisines.FindAsync(id);
 
             if (cuisineToDelete == null)
                 return;
 
-            _context.Cuisines.Remove(cuisineToDelete);
-            _context.SaveChanges();
+            context.Cuisines.Remove(cuisineToDelete);
+            await context.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<CuisineDto>> GetAllCuisinesAsync()
         {
-            var cuisines = await _context.Cuisines.ToListAsync();
+            var cuisines = await context.Cuisines.ToListAsync();
 
-            return _mapper.Map<IEnumerable<CuisineDto>>(cuisines);
+            return mapper.Map<IEnumerable<CuisineDto>>(cuisines);
         }
 
         public async Task<CuisineDto?> GetCuisineByIdAsync(int id)
         {
-            var cuisine = await _context.Cuisines.FirstOrDefaultAsync(x => x.Id == id);
+            var cuisine = await context.Cuisines.FirstOrDefaultAsync(x => x.Id == id);
 
-            if (cuisine == null)
-                return null;
-
-            return _mapper.Map<CuisineDto>(cuisine);
+            return cuisine == null ? null : mapper.Map<CuisineDto>(cuisine);
         }
 
         public async Task UpdateCuisineAsync(Cuisine cuisine)
         {
-            var newCuisine = _context.Cuisines.Update(cuisine);
-            await _context.SaveChangesAsync();
+            var cuisineToUpdate = await context.Cuisines.FindAsync(cuisine.Id);
+
+            if (cuisineToUpdate != null)
+                cuisineToUpdate.Name = cuisine.Name;
+            
+            await context.SaveChangesAsync();
         }
 
     }

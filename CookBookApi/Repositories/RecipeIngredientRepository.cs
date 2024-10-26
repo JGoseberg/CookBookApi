@@ -15,6 +15,12 @@ namespace CookBookApi.Repositories
             _mapper = mapper;
         }
 
+        public async Task<bool> AnyRecipesWithIngredientAsync(int ingredientId)
+        {
+            return await _context.Recipes.AnyAsync(r => r.RecipeIngredients.Any(ri => ri.IngredientId == ingredientId));
+        }
+
+        
         public async Task<bool> AnyRecipesWithMeasurementUnitAsync(int measurementUnitIdId)
         {
             return await _context.RecipeIngredients.AnyAsync(x => x.MeasurementUnitId == measurementUnitIdId);

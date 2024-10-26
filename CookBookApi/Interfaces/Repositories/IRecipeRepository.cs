@@ -9,7 +9,6 @@ namespace CookBookApi.Interfaces.Repositories
     {
         //TODO Method name is wrong
         Task<bool> AnyRecipesWithCuisineAsync(int cuisineId);
-        Task<bool> AnyRecipeWithIngredientAsync(int ingredientId);
         Task<bool> AnyRecipesWithRestrictionAsync(int restrictionId);
         Task<bool> AnyRecipesWithSameNameAsync(string name);
         Task<IEnumerable<RecipeDto>> GetAllRecipesAsync();

@@ -1,6 +1,7 @@
 ﻿using CookBookApi.Interfaces.Repositories;
 using AutoMapper;
 using CookBookApi.DTOs.Ingredient;
+using Microsoft.EntityFrameworkCore;
 
 namespace CookBookApi.Repositories
 {
@@ -18,7 +19,7 @@ namespace CookBookApi.Repositories
         public async Task AddIngredientAsync(Ingredient ingredient)
         {
             await _context.Ingredients.AddAsync(ingredient);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         public Task<bool> AnyIngredientWithRestrictionAsync(int id)
@@ -26,29 +27,43 @@ namespace CookBookApi.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<bool> AnyIngredientWithSameName(string name) 
+        public async Task<bool> AnyIngredientWithSameName(string name) 
         {
-            throw new NotImplementedException();
+            return await _context.Ingredients.AnyAsync(ingredient => ingredient.Name == name);
         }
 
-        public Task DeleteIngredientAsync(int id)
+        public async Task DeleteIngredientAsync(int id)
         {
-            throw new NotImplementedException();
+            var ingredientToDelete = await _context.Ingredients.FindAsync(id);
+            
+            if (ingredientToDelete == null)
+                return;
+            
+            _context.Ingredients.Remove(ingredientToDelete);
         }
 
         public async Task<IEnumerable<IngredientDto>> GetAllIngredientsAsync()
         {
-            throw new NotImplementedException();
+            var ingredients = await _context.Ingredients.ToListAsync();
+
+            return _mapper.Map<IEnumerable<IngredientDto>>(ingredients);
         }
 
-        public Task<IngredientDto?> GetIngredientByIdAsync(int id)
+        public async Task<IngredientDto?> GetIngredientByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var ingredient = await _context.Ingredients.FirstOrDefaultAsync(ingredient => ingredient.Id == id);
+            
+            return _mapper.Map<IngredientDto>(ingredient);
         }
 
-        public Task UpdateIngredientAsync(Ingredient ingredient)
+        public async Task UpdateIngredientAsync(Ingredient ingredient)
         {
-            throw new NotImplementedException();
+            var ingredientToUpdate = await _context.Ingredients.FindAsync(ingredient.Id);
+
+            if (ingredientToUpdate != null)
+                ingredientToUpdate.Name = ingredient.Name;
+            
+            await _context.SaveChangesAsync();
         }
     }
 }

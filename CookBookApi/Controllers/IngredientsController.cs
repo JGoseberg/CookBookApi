@@ -9,23 +9,28 @@ namespace CookBookApi.Controllers
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class IngredientsController(
+        ICuisineRepository cuisineRepository,
         IIngredientRepository ingredientRepository,
         IRecipeRepository recipeRepository,
+        IRecipeIngredientRepository recipeIngredientRepository,
         IMapper mapper)
         : ControllerBase
     {
         [HttpPost]
         [ActionName("AddIngredient")]
-        public async Task<ActionResult> AddIngredientAsync(IngredientDto ingredientDto)
+        public async Task<ActionResult> AddIngredientAsync(string name, int cuisineId)
         {
-            if (ingredientDto.Name.IsNullOrEmpty())
-                return BadRequest($"Name: cannot be empty");
+            if (name.IsNullOrEmpty())
+                return BadRequest($"Name cannot be empty");
 
-            var isExisting = await ingredientRepository.AnyIngredientWithSameName(ingredientDto.Name);
+            if (await cuisineRepository.GetCuisineByIdAsync(cuisineId) == null)
+                return BadRequest($"CuisineId cannot be null");
+            
+            var isExisting = await ingredientRepository.AnyIngredientWithSameName(name);
             if (isExisting)
                 return BadRequest("An Ingredient with this Name already exists");
-
-            var newIngredient = new Ingredient { Name = ingredientDto.Name };
+            
+            var newIngredient = new Ingredient { Name = name, CuisineId = cuisineId };
 
             await ingredientRepository.AddIngredientAsync(newIngredient);
 
@@ -40,7 +45,7 @@ namespace CookBookApi.Controllers
             if (ingredient == null)
                 return NotFound($"Ingredient with id {id} not found");
 
-            var hasRelatedRecipes = await recipeRepository.AnyRecipeWithIngredientAsync(id);
+            var hasRelatedRecipes = await recipeIngredientRepository.AnyRecipesWithIngredientAsync(id);
             if (hasRelatedRecipes)
                 return BadRequest($"Ingredient with id {id} has existing relations to recipes, please remove them first");
 
@@ -49,7 +54,7 @@ namespace CookBookApi.Controllers
         }
 
         [HttpGet]
-        [ActionName("GetIngredients")]
+        [ActionName("GetAllIngredients")]
         public async Task<ActionResult<IEnumerable<IngredientDto>>> GetAllIngredientsAsync()
         {
             var ingredients = await ingredientRepository.GetAllIngredientsAsync();
