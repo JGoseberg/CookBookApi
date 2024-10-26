@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
-[Route("api/[controller]")]
+[Route("api/[controller]/[action]")]
 [ApiController]
 public class RecipesController : ControllerBase
 {
@@ -100,6 +100,7 @@ public class RecipesController : ControllerBase
     }
 
     [HttpGet]
+    [ActionName("GetRecipes")]
     public async Task<ActionResult<IEnumerable<RecipeDto>>> GetAllRecipesAsync()
     {
         var recipes = await _recipeRepository.GetAllRecipesAsync();
@@ -108,6 +109,7 @@ public class RecipesController : ControllerBase
     }
 
     [HttpGet]
+    [ActionName("GetRandomRecipes")]
     public async Task<ActionResult<RecipeDto>> GetRandomRecipeAsync()
     {
         var recipes = await _recipeRepository.GetAllRecipesAsync();
@@ -122,6 +124,7 @@ public class RecipesController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [ActionName("GetRecipeById")]
     public async Task<ActionResult<RecipeDto>> GetRecipeByIdAsync(int id)
     {
         var recipe = await _recipeRepository.GetRecipeByIdAsync(id);
@@ -132,6 +135,7 @@ public class RecipesController : ControllerBase
     }
 
     [HttpGet]
+    [ActionName("GetRecipesByCuisine")]
     public async Task<ActionResult<RecipeDto>> GetRecipesWithCuisinesAsync(CuisineDto cuisineDto)
     {
         if (cuisineDto == null)
@@ -149,6 +153,7 @@ public class RecipesController : ControllerBase
     }
 
     [HttpGet]
+    [ActionName("GetRecipesByIngredient")]
     public async Task<ActionResult<RecipeDto>> GetRecipesWithIngredientsAsync(List<IngredientDto> ingredients)
     {
         if (ingredients.Count() == 0)
@@ -167,6 +172,7 @@ public class RecipesController : ControllerBase
     }
 
     [HttpGet]
+    [ActionName("GetRecipesByRestriction")]
     public async Task<ActionResult<RecipeDto>> GetRecipesWithRestrictionsAsync(List<RestrictionDto> restrictions)
     {
         if (restrictions.Count() == 0)
@@ -194,7 +200,7 @@ public class RecipesController : ControllerBase
         if (await _recipeRepository.AnyRecipesWithSameNameAsync(recipeDto.Name))
             return BadRequest("A Recipe With this Name Already exists");
 
-        var updatedRecipe = new Recipe
+        var recipeToUpdate = new Recipe
         {
             Name = recipeDto.Name,
             Description = recipeDto.Description,
@@ -202,9 +208,11 @@ public class RecipesController : ControllerBase
             Cuisine = _mapper.Map<Cuisine>(recipeDto.Cuisine),
             Subrecipes = _mapper.Map<List<Recipe>>(recipeDto.Subrecipes),
             ParentRecipes = _mapper.Map<List<Recipe>>(recipeDto.ParentRecipes),
-            RecipeRestrictions = recipeDto.Restrictions
+        };
 
-        }
+        await _recipeRepository.UpdateRecipeAsync(recipeToUpdate);
+
+        return Ok(recipeDto);
     }
 
 }
