@@ -1,16 +1,8 @@
-﻿using AutoMapper;
-using CookBookApi.Controllers;
+﻿using CookBookApi.Controllers;
 using CookBookApi.DTOs;
 using CookBookApi.Interfaces.Repositories;
-using CookBookApi.Mappings;
-using CookBookApi.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CookBookApi.Tests.Controllers
 {
@@ -21,7 +13,6 @@ namespace CookBookApi.Tests.Controllers
         private Mock<IRestrictionRepository> _restrictionRepository;
         private Mock<IIngredientRepository> _ingredientRepository;
         private Mock<IRecipeRepository> _recipeRepository;
-        private IMapper _mapper;
 
         [SetUp]
         public void Setup()
@@ -29,8 +20,7 @@ namespace CookBookApi.Tests.Controllers
             _restrictionRepository = new Mock<IRestrictionRepository>();
             _ingredientRepository = new Mock<IIngredientRepository>();
             _recipeRepository = new Mock<IRecipeRepository>();
-            _mapper = MapperTestConfig.InitializeAutoMapper();
-            _controller = new RestrictionsController(_restrictionRepository.Object, _ingredientRepository.Object, _recipeRepository.Object, _mapper);
+            _controller = new RestrictionsController(_restrictionRepository.Object, _ingredientRepository.Object, _recipeRepository.Object);
         }
 
         [Test]
@@ -147,7 +137,7 @@ namespace CookBookApi.Tests.Controllers
         [Test]
         public async Task GetAllRestrictions_ReturnsOk()
         {
-            var restrictions = new RestrictionDto[]
+            var restrictions = new[]
             {
                 new RestrictionDto { Name = "Foo"},
                 new RestrictionDto{ Name = "Bar"}
@@ -165,8 +155,6 @@ namespace CookBookApi.Tests.Controllers
         public async Task GetRestrictionById_InvalidInt_ReturnsNotFound()
         {
             var id = 404;
-
-            var restriction = new RestrictionDto { Name= "Foo" };
 
             _restrictionRepository.Setup(r => r.GetRestrictionByIdAsync(id))
                 .ReturnsAsync((RestrictionDto?)null);
