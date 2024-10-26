@@ -19,6 +19,7 @@ public class RecipesController(
     : ControllerBase
 {
     [HttpPost]
+    [ActionName("AddRecipe")]
     public async Task<ActionResult> AddRecipeAsync(AddRecipeDto recipeDto)
     {
         if (recipeDto.Name.IsNullOrEmpty())
@@ -73,6 +74,7 @@ public class RecipesController(
     }
 
     [HttpDelete("{id}")]
+    [ActionName("DeleteRecipe")]
     public async Task<ActionResult> DeleteRecipeAsync(int id)
     {
         var recipe = await recipeRepository.GetRecipeByIdAsync(id);
@@ -175,6 +177,7 @@ public class RecipesController(
     }
 
     [HttpPut("{id}")]
+    [ActionName("UpdateRecipe")]
     public async Task<ActionResult<RecipeDto>> UpdateRecipeAsync(int id, RecipeDto recipeDto)
     {
         var existingRecipe = await recipeRepository.GetRecipeByIdAsync(id);

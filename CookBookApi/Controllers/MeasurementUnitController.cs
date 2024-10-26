@@ -6,7 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace CookBookApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class MeasurementUnitController(
         IMeasurementUnitRepository measurementUnitRepository,
@@ -15,6 +15,7 @@ namespace CookBookApi.Controllers
         : ControllerBase
     {
         [HttpPost]
+        [ActionName("AddMeasurementUnit")]
         public async Task<ActionResult> AddMeasurementUnitAsync(AddMeasurementUnitDto addMeasurementUnitDto)
         {
             if (addMeasurementUnitDto.Name.IsNullOrEmpty())
@@ -34,6 +35,7 @@ namespace CookBookApi.Controllers
         }
 
         [HttpDelete("{id}")]
+        [ActionName("DeleteMeasurementUnit")]
         public async Task<ActionResult> DeleteMeasurementUnitAsync(int id)
         {
             var measurementUnit = await measurementUnitRepository.GetMeasurementUnitByIdAsync(id);
@@ -48,6 +50,7 @@ namespace CookBookApi.Controllers
         }
 
         [HttpGet]
+        [ActionName("GetMeasurementUnits")]
         public async Task<ActionResult<IEnumerable<MeasurementUnitDto>>> GetAllMeasurementUnitsAsync()
         {
             var measurementUnits = await measurementUnitRepository.GetAllMeasurementunitsAsync();
@@ -56,6 +59,7 @@ namespace CookBookApi.Controllers
         }
 
         [HttpGet("{id}")]
+        [ActionName("GetMeasurementUnitById")]
         public async Task<ActionResult<MeasurementUnitDto>> GetMeasurementUnitByIdAsync(int id)
         {
             var measurementUnit = await measurementUnitRepository.GetMeasurementUnitByIdAsync(id);
@@ -67,6 +71,7 @@ namespace CookBookApi.Controllers
         }
 
         [HttpPut("{id}")]
+        [ActionName("UpdateMeasurementUnit")]
         public async Task<ActionResult<MeasurementUnitDto>> UpdateMeasurementUnitAsync(int id, MeasurementUnitDto measurementUnitDto)
         {
             var existingMeasurementUnit = await measurementUnitRepository.GetMeasurementUnitByIdAsync(id);

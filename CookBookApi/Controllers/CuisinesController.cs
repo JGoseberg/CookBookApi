@@ -8,7 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace CookBookApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class CuisinesController(
         ICuisineRepository cuisineRepository,
@@ -17,6 +17,7 @@ namespace CookBookApi.Controllers
         : ControllerBase
     {
         [HttpPost]
+        [ActionName("AddCuisine")]
         public async Task<ActionResult> AddCuisineAsync(CuisineDto cuisineDto)
         {
             if (cuisineDto.Name.IsNullOrEmpty())
@@ -33,6 +34,7 @@ namespace CookBookApi.Controllers
         }
         
         [HttpDelete("{id}")]
+        [ActionName("DeleteCuisine")]
         public async Task<ActionResult> DeleteCuisineAsync(int id)
         {
             var cuisine = await cuisineRepository.GetCuisineByIdAsync(id);
@@ -48,6 +50,7 @@ namespace CookBookApi.Controllers
         }
         
         [HttpGet]
+        [ActionName("GetAllCuisines")]
         public async Task<ActionResult<IEnumerable<CuisineDto>>> GetCuisinesAsync()
         {
             var cuisines = await cuisineRepository.GetAllCuisinesAsync();
@@ -57,6 +60,7 @@ namespace CookBookApi.Controllers
 
         
         [HttpGet("{id}")]
+        [ActionName("GetCuisineId")]
         public async Task<ActionResult<Cuisine>> GetCuisineByIdAsync(int id)
         {
             var cuisine = await cuisineRepository.GetCuisineByIdAsync(id);
@@ -69,6 +73,7 @@ namespace CookBookApi.Controllers
         }
                 
         [HttpPut("{id}")]
+        [ActionName("UpdateCuisine")]
         public async Task<ActionResult<CuisineDto>> UpdateCuisineAsync(int id, CuisineDto cuisineDto)
         {
             var existingCuisine = await cuisineRepository.GetCuisineByIdAsync(id);

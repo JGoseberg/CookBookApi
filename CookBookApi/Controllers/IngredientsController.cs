@@ -6,7 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace CookBookApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class IngredientsController(
         IIngredientRepository ingredientRepository,
@@ -15,6 +15,7 @@ namespace CookBookApi.Controllers
         : ControllerBase
     {
         [HttpPost]
+        [ActionName("AddIngredient")]
         public async Task<ActionResult> AddIngredientAsync(IngredientDto ingredientDto)
         {
             if (ingredientDto.Name.IsNullOrEmpty())
@@ -32,6 +33,7 @@ namespace CookBookApi.Controllers
         }
 
         [HttpDelete("{id}")]
+        [ActionName("DeleteIngredient")]
         public async Task<ActionResult> DeleteIngredientAsync(int id)
         {
             var ingredient = await ingredientRepository.GetIngredientByIdAsync(id);
@@ -47,6 +49,7 @@ namespace CookBookApi.Controllers
         }
 
         [HttpGet]
+        [ActionName("GetIngredients")]
         public async Task<ActionResult<IEnumerable<IngredientDto>>> GetAllIngredientsAsync()
         {
             var ingredients = await ingredientRepository.GetAllIngredientsAsync();
@@ -55,6 +58,7 @@ namespace CookBookApi.Controllers
         }
 
         [HttpGet("{id}")]
+        [ActionName("GetIngredientById")]
         public async Task<ActionResult<IngredientDto>> GetIngredientByIdAsync(int id)
         {
             var ingredient = await ingredientRepository.GetIngredientByIdAsync(id);
@@ -66,6 +70,7 @@ namespace CookBookApi.Controllers
 
 
         [HttpPut("{id}")]
+        [ActionName("UpdateIngredient")]
         public async Task<ActionResult<IngredientDto>> UpdateIngredientAsync(int id, IngredientDto ingredientDto)
         {
             var existingIngredient = await ingredientRepository.GetIngredientByIdAsync(id);
