@@ -8,12 +8,24 @@ namespace CookBookApi.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class MeasurementUnitController(
-        IMeasurementUnitRepository measurementUnitRepository,
-        IRecipeIngredientRepository recipeIngredientRepository,
-        IMapper mapper)
-        : ControllerBase
+    public class MeasurementUnitController : ControllerBase
     {
+        private readonly IMeasurementUnitRepository _measurementUnitRepository;
+        private readonly IRecipeRepository _recipeRepository;
+        private readonly IRecipeIngredientRepository _recipeIngredientRepository;
+        private readonly IMapper _mapper;
+        
+        public MeasurementUnitController(
+            IMeasurementUnitRepository measurementUnitRepository,
+            IRecipeIngredientRepository recipeIngredientRepository,
+            IMapper mapper, 
+            IRecipeRepository recipeRepository)
+        {
+            _measurementUnitRepository = measurementUnitRepository;
+            _recipeIngredientRepository = recipeIngredientRepository;
+            _mapper = mapper;
+            _recipeRepository = recipeRepository;
+        }
         [HttpPost]
         [ActionName("AddMeasurementUnit")]
         public async Task<ActionResult> AddMeasurementUnitAsync(AddMeasurementUnitDto addMeasurementUnitDto)
@@ -24,12 +36,12 @@ namespace CookBookApi.Controllers
             if (addMeasurementUnitDto.Abbreviation.IsNullOrEmpty())
                 return BadRequest("Abbreviation cannot be empty");
 
-            if (await measurementUnitRepository.AnyMeasurementUnitWithSameNameAsync(addMeasurementUnitDto.Name))
+            if (await _measurementUnitRepository.AnyMeasurementUnitWithSameNameAsync(addMeasurementUnitDto.Name))
                 return BadRequest("A MeasurementUnit with this name already exists");
 
             var newMeasurementUnit = new MeasurementUnit { Name = addMeasurementUnitDto.Name, Abbreviation = addMeasurementUnitDto.Abbreviation };
 
-            await measurementUnitRepository.AddMeasurementUnitAsync(newMeasurementUnit);
+            await _measurementUnitRepository.AddMeasurementUnitAsync(newMeasurementUnit);
 
             return Created("", newMeasurementUnit);
         }
@@ -38,14 +50,14 @@ namespace CookBookApi.Controllers
         [ActionName("DeleteMeasurementUnit")]
         public async Task<ActionResult> DeleteMeasurementUnitAsync(int id)
         {
-            var measurementUnit = await measurementUnitRepository.GetMeasurementUnitByIdAsync(id);
+            var measurementUnit = await _measurementUnitRepository.GetMeasurementUnitByIdAsync(id);
             if (measurementUnit == null)
                 return NotFound($"MeasurementUnit with {id} not found");
 
-            if (await recipeIngredientRepository.AnyRecipesWithMeasurementUnitAsync(id))
+            if (await _recipeIngredientRepository.AnyRecipesWithMeasurementUnitAsync(id))
                 return BadRequest("Cannot delete MeasurementUnit, it is used by a recipe");
 
-            await measurementUnitRepository.DeleteMeasurementUnitAsync(id);
+            await _measurementUnitRepository.DeleteMeasurementUnitAsync(id);
             return NoContent();
         }
 
@@ -53,7 +65,7 @@ namespace CookBookApi.Controllers
         [ActionName("GetMeasurementUnits")]
         public async Task<ActionResult<IEnumerable<MeasurementUnitDto>>> GetAllMeasurementUnitsAsync()
         {
-            var measurementUnits = await measurementUnitRepository.GetAllMeasurementunitsAsync();
+            var measurementUnits = await _measurementUnitRepository.GetAllMeasurementunitsAsync();
 
             return Ok(measurementUnits);
         }
@@ -62,7 +74,7 @@ namespace CookBookApi.Controllers
         [ActionName("GetMeasurementUnitById")]
         public async Task<ActionResult<MeasurementUnitDto>> GetMeasurementUnitByIdAsync(int id)
         {
-            var measurementUnit = await measurementUnitRepository.GetMeasurementUnitByIdAsync(id);
+            var measurementUnit = await _measurementUnitRepository.GetMeasurementUnitByIdAsync(id);
 
             if (measurementUnit == null)
                 return NotFound();
@@ -74,12 +86,12 @@ namespace CookBookApi.Controllers
         [ActionName("UpdateMeasurementUnit")]
         public async Task<ActionResult<MeasurementUnitDto>> UpdateMeasurementUnitAsync(int id, MeasurementUnitDto measurementUnitDto)
         {
-            var existingMeasurementUnit = await measurementUnitRepository.GetMeasurementUnitByIdAsync(id);
+            var existingMeasurementUnit = await _measurementUnitRepository.GetMeasurementUnitByIdAsync(id);
 
             if (existingMeasurementUnit == null)
                 return NotFound($"MeasurementUnit with Id {id} not found");
 
-            if (await measurementUnitRepository.AnyMeasurementUnitWithSameNameAsync(measurementUnitDto.Name))
+            if (await _measurementUnitRepository.AnyMeasurementUnitWithSameNameAsync(measurementUnitDto.Name))
                 return BadRequest("A MeasurementUnit with this already exists.");
 
             var updatedMeasurementUnit = new MeasurementUnit 
@@ -89,9 +101,9 @@ namespace CookBookApi.Controllers
                 Abbreviation = measurementUnitDto.Abbreviation
             };
 
-            await measurementUnitRepository.UpdateMeasurementUnitAsync(updatedMeasurementUnit);
+            await _measurementUnitRepository.UpdateMeasurementUnitAsync(updatedMeasurementUnit);
 
-            var updatedMeasurementUnitDto = mapper.Map<MeasurementUnitDto>(updatedMeasurementUnit);
+            var updatedMeasurementUnitDto = _mapper.Map<MeasurementUnitDto>(updatedMeasurementUnit);
 
             return Ok(updatedMeasurementUnitDto);
         }

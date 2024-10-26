@@ -8,14 +8,27 @@ namespace CookBookApi.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class IngredientsController(
-        ICuisineRepository cuisineRepository,
-        IIngredientRepository ingredientRepository,
-        IRecipeRepository recipeRepository,
-        IRecipeIngredientRepository recipeIngredientRepository,
-        IMapper mapper)
-        : ControllerBase
+    public class IngredientsController : ControllerBase
     {
+        private readonly ICuisineRepository _cuisineRepository;
+        private readonly IIngredientRepository _ingredientRepository;
+        private readonly IRecipeRepository _recipeRepository;
+        private readonly IRecipeIngredientRepository _recipeIngredientRepository;
+        private readonly IMapper _mapper;
+
+        public IngredientsController(
+            ICuisineRepository cuisineRepository,
+            IIngredientRepository ingredientRepository,
+            IRecipeRepository recipeRepository,
+            IRecipeIngredientRepository recipeIngredientRepository,
+            IMapper mapper)
+        {
+            _cuisineRepository = cuisineRepository;
+            _ingredientRepository = ingredientRepository;
+            _recipeRepository = recipeRepository;
+            _recipeIngredientRepository = recipeIngredientRepository;
+            _mapper = mapper;
+        }
         [HttpPost]
         [ActionName("AddIngredient")]
         public async Task<ActionResult> AddIngredientAsync(string name, int cuisineId)
@@ -23,16 +36,16 @@ namespace CookBookApi.Controllers
             if (name.IsNullOrEmpty())
                 return BadRequest($"Name cannot be empty");
 
-            if (await cuisineRepository.GetCuisineByIdAsync(cuisineId) == null)
+            if (await _cuisineRepository.GetCuisineByIdAsync(cuisineId) == null)
                 return BadRequest($"CuisineId cannot be null");
             
-            var isExisting = await ingredientRepository.AnyIngredientWithSameName(name);
+            var isExisting = await _ingredientRepository.AnyIngredientWithSameName(name);
             if (isExisting)
                 return BadRequest("An Ingredient with this Name already exists");
             
             var newIngredient = new Ingredient { Name = name, CuisineId = cuisineId };
 
-            await ingredientRepository.AddIngredientAsync(newIngredient);
+            await _ingredientRepository.AddIngredientAsync(newIngredient);
 
             return Created("", newIngredient);
         }
@@ -41,15 +54,15 @@ namespace CookBookApi.Controllers
         [ActionName("DeleteIngredient")]
         public async Task<ActionResult> DeleteIngredientAsync(int id)
         {
-            var ingredient = await ingredientRepository.GetIngredientByIdAsync(id);
+            var ingredient = await _ingredientRepository.GetIngredientByIdAsync(id);
             if (ingredient == null)
                 return NotFound($"Ingredient with id {id} not found");
 
-            var hasRelatedRecipes = await recipeIngredientRepository.AnyRecipesWithIngredientAsync(id);
+            var hasRelatedRecipes = await _recipeIngredientRepository.AnyRecipesWithIngredientAsync(id);
             if (hasRelatedRecipes)
                 return BadRequest($"Ingredient with id {id} has existing relations to recipes, please remove them first");
 
-            await ingredientRepository.DeleteIngredientAsync(id);
+            await _ingredientRepository.DeleteIngredientAsync(id);
             return NoContent();
         }
 
@@ -57,7 +70,7 @@ namespace CookBookApi.Controllers
         [ActionName("GetAllIngredients")]
         public async Task<ActionResult<IEnumerable<IngredientDto>>> GetAllIngredientsAsync()
         {
-            var ingredients = await ingredientRepository.GetAllIngredientsAsync();
+            var ingredients = await _ingredientRepository.GetAllIngredientsAsync();
 
             return Ok(ingredients);
         }
@@ -66,7 +79,7 @@ namespace CookBookApi.Controllers
         [ActionName("GetIngredientById")]
         public async Task<ActionResult<IngredientDto>> GetIngredientByIdAsync(int id)
         {
-            var ingredient = await ingredientRepository.GetIngredientByIdAsync(id);
+            var ingredient = await _ingredientRepository.GetIngredientByIdAsync(id);
             if (ingredient == null)
                 return NotFound($"Ingredient with id {id} not found");
 
@@ -78,21 +91,19 @@ namespace CookBookApi.Controllers
         [ActionName("UpdateIngredient")]
         public async Task<ActionResult<IngredientDto>> UpdateIngredientAsync(int id, IngredientDto ingredientDto)
         {
-            var existingIngredient = await ingredientRepository.GetIngredientByIdAsync(id);
+            var existingIngredient = await _ingredientRepository.GetIngredientByIdAsync(id);
             if (existingIngredient == null)
                 return NotFound($"Ingredient with id {id} not found");
 
-            if (await ingredientRepository.AnyIngredientWithSameName(ingredientDto.Name))
+            if (await _ingredientRepository.AnyIngredientWithSameName(ingredientDto.Name))
                 return BadRequest("A Ingredient with this name already exists.");
 
             var updatedIngredient = new Ingredient { Id = id, Name = ingredientDto.Name };
 
-            await ingredientRepository.UpdateIngredientAsync(updatedIngredient);
+            await _ingredientRepository.UpdateIngredientAsync(updatedIngredient);
 
-            var updatedIngredientDto = mapper.Map<IngredientDto>(updatedIngredient);
+            var updatedIngredientDto = _mapper.Map<IngredientDto>(updatedIngredient);
             return Ok(updatedIngredientDto);
         }
-
-
     }
 }

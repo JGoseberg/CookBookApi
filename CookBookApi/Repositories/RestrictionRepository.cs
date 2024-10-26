@@ -1,16 +1,20 @@
-﻿using CookBookApi.DTOs;
+﻿using AutoMapper;
+using CookBookApi.DTOs;
 using CookBookApi.Interfaces.Repositories;
 using CookBookApi.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace CookBookApi.Repositories
 {
     public class RestrictionRepository : IRestrictionRepository
     {
         private readonly CookBookContext _context;
+        private readonly IMapper _mapper;
 
-        public RestrictionRepository(CookBookContext context) 
+        public RestrictionRepository(CookBookContext context, IMapper mapper) 
         {
             _context = context;
+            _mapper = mapper;
         }
         public Task AddRestrictionAsync(Restriction restriction)
         {
@@ -27,9 +31,11 @@ namespace CookBookApi.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<RestrictionDto>> GetAllRestrictionsAsync()
+        public async Task<IEnumerable<RestrictionDto>> GetAllRestrictionsAsync()
         {
-            throw new NotImplementedException();
+            var restrictions = await _context.Restrictions.ToListAsync();
+            
+            return _mapper.Map<IEnumerable<RestrictionDto>>(restrictions);
         }
 
         public Task<RestrictionDto?> GetRestrictionByIdAsync(int id)

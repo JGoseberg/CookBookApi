@@ -11,13 +11,23 @@ namespace CookBookApi.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class RecipesController(
-    ICuisineRepository cuisineRepository,
-    IIngredientRepository ingredientRepository,
-    IRecipeRepository recipeRepository,
-    IMapper mapper)
-    : ControllerBase
+public class RecipesController : ControllerBase
 {
+    private readonly ICuisineRepository _cuisineRepository;
+    private readonly IIngredientRepository _ingredientRepository;
+    private readonly IRecipeRepository _recipeRepository;
+    private readonly IMapper _mapper;
+    public RecipesController(
+        ICuisineRepository cuisineRepository,
+        IIngredientRepository ingredientRepository,
+        IRecipeRepository recipeRepository,
+        IMapper mapper)
+    {
+        _cuisineRepository = cuisineRepository;
+        _ingredientRepository = ingredientRepository;
+        _recipeRepository = recipeRepository;
+        _mapper = mapper;
+    }
     [HttpPost]
     [ActionName("AddRecipe")]
     public async Task<ActionResult> AddRecipeAsync(AddRecipeDto recipeDto)
@@ -28,7 +38,7 @@ public class RecipesController(
         if (recipeDto.Instruction.IsNullOrEmpty())
             return BadRequest("Name Cannot be empty");
 
-        var isExisting = await recipeRepository.AnyRecipesWithSameNameAsync(recipeDto.Name);
+        var isExisting = await _recipeRepository.AnyRecipesWithSameNameAsync(recipeDto.Name);
         if (isExisting)
             return BadRequest("A Recipe with this Name already Exists");
 
@@ -38,9 +48,9 @@ public class RecipesController(
         {
             foreach (var subRecipe in recipeDto.Subrecipes)
             {
-                var recipe = await recipeRepository.GetRecipeByIdAsync(subRecipe.Id);
+                var recipe = await _recipeRepository.GetRecipeByIdAsync(subRecipe.Id);
 
-                subRecipes.Add(mapper.Map<Recipe>(recipe));
+                subRecipes.Add(_mapper.Map<Recipe>(recipe));
             }
         }
 
@@ -50,9 +60,9 @@ public class RecipesController(
         {
             foreach (var parentRecipe in recipeDto.ParentRecipes)
             {
-                var recipe = await recipeRepository.GetRecipeByIdAsync(parentRecipe.Id);
+                var recipe = await _recipeRepository.GetRecipeByIdAsync(parentRecipe.Id);
 
-                parentRecipes.Add(mapper.Map<Recipe>(recipe));
+                parentRecipes.Add(_mapper.Map<Recipe>(recipe));
             }
         }
 
@@ -68,7 +78,7 @@ public class RecipesController(
             ParentRecipes = parentRecipes,
         };
 
-        await recipeRepository.AddRecipeAsync(newRecipe);
+        await _recipeRepository.AddRecipeAsync(newRecipe);
 
         return Created("", newRecipe);
     }
@@ -77,11 +87,11 @@ public class RecipesController(
     [ActionName("DeleteRecipe")]
     public async Task<ActionResult> DeleteRecipeAsync(int id)
     {
-        var recipe = await recipeRepository.GetRecipeByIdAsync(id);
+        var recipe = await _recipeRepository.GetRecipeByIdAsync(id);
         if (recipe == null)
             return NotFound($"Recipe with Id: {id} not Found");
 
-        await recipeRepository.DeleteRecipeAsync(id);
+        await _recipeRepository.DeleteRecipeAsync(id);
         return NoContent();
     }
 
@@ -89,7 +99,7 @@ public class RecipesController(
     [ActionName("GetRecipes")]
     public async Task<ActionResult<IEnumerable<RecipeDto>>> GetAllRecipesAsync()
     {
-        var recipes = await recipeRepository.GetAllRecipesAsync();
+        var recipes = await _recipeRepository.GetAllRecipesAsync();
 
         return Ok(recipes);
     }
@@ -98,7 +108,7 @@ public class RecipesController(
     [ActionName("GetRandomRecipes")]
     public async Task<ActionResult<RecipeDto>> GetRandomRecipeAsync()
     {
-        var recipes = await recipeRepository.GetAllRecipesAsync();
+        var recipes = await _recipeRepository.GetAllRecipesAsync();
 
         var numberOfRecipes = recipes.Count();
 
@@ -113,7 +123,7 @@ public class RecipesController(
     [ActionName("GetRecipeById")]
     public async Task<ActionResult<RecipeDto>> GetRecipeByIdAsync(int id)
     {
-        var recipe = await recipeRepository.GetRecipeByIdAsync(id);
+        var recipe = await _recipeRepository.GetRecipeByIdAsync(id);
         if (recipe == null)
             return NotFound($"recipe with Id: {id} not found");
 
@@ -127,10 +137,10 @@ public class RecipesController(
         if (cuisineDto == null)
             return BadRequest("cuisine cannot be empty");
 
-        if (await cuisineRepository.GetCuisineByIdAsync(cuisineDto.Id) == null)
+        if (await _cuisineRepository.GetCuisineByIdAsync(cuisineDto.Id) == null)
             return BadRequest("cuisine does not exists");
 
-        var recipes = await recipeRepository.GetRecipesWithSpecificCuisineAsync(cuisineDto);
+        var recipes = await _recipeRepository.GetRecipesWithSpecificCuisineAsync(cuisineDto);
 
         if (!recipes.Any())
             return NotFound($"No recipes with cuisine: {cuisineDto.Name} found");
@@ -146,10 +156,10 @@ public class RecipesController(
             return BadRequest("select one or more ingredients");
 
         foreach (var ingredient in ingredients)
-            if (ingredientRepository.GetIngredientByIdAsync(ingredient.Id) == null)
+            if (_ingredientRepository.GetIngredientByIdAsync(ingredient.Id) == null)
                 return BadRequest($"ingredient with name: {ingredient.Name} does not exist");
 
-        var recipes = await recipeRepository.GetRecipesWithSpecificIngredientsAsync(ingredients);
+        var recipes = await _recipeRepository.GetRecipesWithSpecificIngredientsAsync(ingredients);
 
         if (recipes.Count() == 0)
             return NotFound($"No recipes with specified ingredients found");
@@ -165,10 +175,10 @@ public class RecipesController(
             return BadRequest("select one or more ingredients");
 
         foreach (var restriction in restrictions)
-            if (ingredientRepository.GetIngredientByIdAsync(restriction.Id) == null)
+            if (_ingredientRepository.GetIngredientByIdAsync(restriction.Id) == null)
                 return BadRequest($"ingredient with name: {restriction.Name} does not exist");
 
-        var recipes = await recipeRepository.GetRecipesWithSpecificRestrictionsAsync(restrictions);
+        var recipes = await _recipeRepository.GetRecipesWithSpecificRestrictionsAsync(restrictions);
 
         if (recipes.Count() == 0)
             return NotFound($"No recipes with specified ingredients found");
@@ -180,11 +190,11 @@ public class RecipesController(
     [ActionName("UpdateRecipe")]
     public async Task<ActionResult<RecipeDto>> UpdateRecipeAsync(int id, RecipeDto recipeDto)
     {
-        var existingRecipe = await recipeRepository.GetRecipeByIdAsync(id);
+        var existingRecipe = await _recipeRepository.GetRecipeByIdAsync(id);
         if (existingRecipe == null)
             return NotFound($"Recipe With Id {id} not found");
 
-        if (await recipeRepository.AnyRecipesWithSameNameAsync(recipeDto.Name))
+        if (await _recipeRepository.AnyRecipesWithSameNameAsync(recipeDto.Name))
             return BadRequest("A Recipe With this Name Already exists");
 
         var recipeToUpdate = new Recipe
@@ -192,12 +202,12 @@ public class RecipesController(
             Name = recipeDto.Name,
             Description = recipeDto.Description,
             Instruction = recipeDto.Instruction,
-            Cuisine = mapper.Map<Cuisine>(recipeDto.Cuisine),
-            Subrecipes = mapper.Map<List<Recipe>>(recipeDto.Subrecipes),
-            ParentRecipes = mapper.Map<List<Recipe>>(recipeDto.ParentRecipes),
+            Cuisine = _mapper.Map<Cuisine>(recipeDto.Cuisine),
+            Subrecipes = _mapper.Map<List<Recipe>>(recipeDto.Subrecipes),
+            ParentRecipes = _mapper.Map<List<Recipe>>(recipeDto.ParentRecipes),
         };
 
-        await recipeRepository.UpdateRecipeAsync(recipeToUpdate);
+        await _recipeRepository.UpdateRecipeAsync(recipeToUpdate);
 
         return Ok(recipeDto);
     }
