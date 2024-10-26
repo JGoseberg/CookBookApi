@@ -16,19 +16,27 @@ namespace CookBookApi.Repositories
             _context = context;
             _mapper = mapper;
         }
-        public Task AddRestrictionAsync(Restriction restriction)
+        public async Task AddRestrictionAsync(Restriction restriction)
         {
-            throw new NotImplementedException();
+            await _context.Restrictions.AddAsync(restriction);
+            
+            await _context.SaveChangesAsync();
         }
 
-        public Task<bool> AnyRestrictionWithSameNameAsync(string name)
+        public async Task<bool> AnyRestrictionWithSameNameAsync(string name)
         {
-            throw new NotImplementedException();
+            return await _context.Restrictions.AnyAsync(x => x.Name == name);
         }
 
-        public Task DeleteRestrictionAsync(int id)
+        public async Task DeleteRestrictionAsync(int id)
         {
-            throw new NotImplementedException();
+            var restriction = await _context.Restrictions.FindAsync(id);
+            
+            if (restriction == null)
+                return;
+            
+            _context.Restrictions.Remove(restriction);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<RestrictionDto>> GetAllRestrictionsAsync()
@@ -38,14 +46,21 @@ namespace CookBookApi.Repositories
             return _mapper.Map<IEnumerable<RestrictionDto>>(restrictions);
         }
 
-        public Task<RestrictionDto?> GetRestrictionByIdAsync(int id)
+        public async Task<RestrictionDto?> GetRestrictionByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var restriction = await _context.Restrictions.FirstOrDefaultAsync(x => x.Id == id);
+            
+            return _mapper.Map<RestrictionDto>(restriction);
         }
 
-        public Task UpdateRestrictionAsync(Restriction restriction)
+        public async Task UpdateRestrictionAsync(Restriction restriction)
         {
-            throw new NotImplementedException();
+            var existingRestriction = await _context.Restrictions.FirstOrDefaultAsync(x => x.Id == restriction.Id);
+            
+            if (existingRestriction != null)
+                existingRestriction.Name = restriction.Name;
+            
+            await _context.SaveChangesAsync();
         }
     }
 }

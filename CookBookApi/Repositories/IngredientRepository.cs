@@ -22,13 +22,15 @@ namespace CookBookApi.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public Task<bool> AnyIngredientWithRestrictionAsync(int id)
+        public async Task<bool> AnyIngredientWithRestrictionAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _context.Ingredients.AnyAsync(x => x.Id == id);
         }
 
         public async Task<bool> AnyIngredientWithSameName(string name) 
         {
+            // TODO add recipeRestrictionRepository and ingredientRestrictionRepository to implement if restriction is attached
+            
             return await _context.Ingredients.AnyAsync(ingredient => ingredient.Name == name);
         }
 
