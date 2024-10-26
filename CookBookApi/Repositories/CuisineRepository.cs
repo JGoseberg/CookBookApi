@@ -2,8 +2,6 @@
 using CookBookApi.DTOs;
 using CookBookApi.Interfaces.Repositories;
 using CookBookApi.Models;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace CookBookApi.Repositories

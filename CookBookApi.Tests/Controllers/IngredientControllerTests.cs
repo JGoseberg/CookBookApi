@@ -3,14 +3,8 @@ using CookBookApi.Controllers;
 using CookBookApi.DTOs.Ingredient;
 using CookBookApi.Interfaces.Repositories;
 using CookBookApi.Mappings;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CookBookApi.Tests.Controllers
 {
@@ -143,7 +137,7 @@ namespace CookBookApi.Tests.Controllers
 
             var result = await _controller.GetIngredientByIdAsync(id);
 
-            Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
+            Assert.That(result.Result, Is.InstanceOf<NotFoundObjectResult>());
         }
 
         [Test]

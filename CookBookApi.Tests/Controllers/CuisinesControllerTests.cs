@@ -3,14 +3,8 @@ using CookBookApi.Controllers;
 using CookBookApi.DTOs;
 using CookBookApi.Interfaces.Repositories;
 using CookBookApi.Mappings;
-using CookBookApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CookBookApi.Tests.Controllers
 {
@@ -57,9 +51,7 @@ namespace CookBookApi.Tests.Controllers
         [Test]
         public async Task AddCuisineAsync_NameIsNull_ReturnsBadRequest()
         {
-            var cuisineDto = new CuisineDto {  };
-
-            var result = await _controller.AddCuisineAsync(cuisineDto);
+            var result = await _controller.AddCuisineAsync(new CuisineDto());
 
             Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         }
@@ -178,7 +170,7 @@ namespace CookBookApi.Tests.Controllers
         }
 
         [Test]
-        public async Task UpdateCuisineReturnsOK()
+        public async Task UpdateCuisineReturnsOk()
         {
             var id = 1;
 

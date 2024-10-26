@@ -5,11 +5,6 @@ using CookBookApi.Interfaces.Repositories;
 using CookBookApi.Mappings;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CookBookApi.Tests.Controllers
 {
@@ -164,9 +159,6 @@ namespace CookBookApi.Tests.Controllers
         public async Task GetMeasurementUnitById_InvalidInt_ReturnsNotFound()
         {
             var id = 404;
-
-            MeasurementUnitDto measurementUnitDto = new()
-            { Name = "foo", Abbreviation = "bar" };
 
             _measurementUnitRepositoryMock.Setup(m => m.GetMeasurementUnitByIdAsync(id))
                 .ReturnsAsync((MeasurementUnitDto?)null);

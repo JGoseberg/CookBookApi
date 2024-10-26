@@ -1,6 +1,4 @@
-﻿using CookBookApi.Models;
-
-namespace CookBookApi.DTOs.Ingredient
+﻿namespace CookBookApi.DTOs.Ingredient
 {
     public class AddIngredientDto
     {

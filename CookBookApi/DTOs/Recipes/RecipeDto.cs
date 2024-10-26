@@ -1,6 +1,4 @@
-﻿using CookBookApi.DTOs.Ingredient;
-
-namespace CookBookApi.DTOs.Recipes
+﻿namespace CookBookApi.DTOs.Recipes
 {
     public class RecipeDto
     {

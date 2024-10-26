@@ -3,13 +3,7 @@ using CookBookApi.DTOs.Recipes;
 using CookBookApi.Interfaces.Repositories;
 using CookBookApi.Mappings;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CookBookApi.Controllers;
 
 namespace CookBookApi.Tests.Controllers

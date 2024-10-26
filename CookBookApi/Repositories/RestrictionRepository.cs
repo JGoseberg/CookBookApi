@@ -1,8 +1,6 @@
 ﻿using CookBookApi.DTOs;
-using CookBookApi.DTOs.Recipes;
 using CookBookApi.Interfaces.Repositories;
 using CookBookApi.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace CookBookApi.Repositories
 {

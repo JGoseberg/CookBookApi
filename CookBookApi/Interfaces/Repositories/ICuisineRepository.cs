@@ -1,6 +1,5 @@
 ﻿using CookBookApi.DTOs;
 using CookBookApi.Models;
-using Microsoft.AspNetCore.Mvc;
 
 namespace CookBookApi.Interfaces.Repositories
 {

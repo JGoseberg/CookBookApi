@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using CookBookApi.Interfaces.Repositories;
+﻿using CookBookApi.Interfaces.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CookBookApi.Controllers
