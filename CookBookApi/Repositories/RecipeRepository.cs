@@ -80,7 +80,7 @@ namespace CookBookApi.Repositories
             return _mapper.Map<RecipeDto>(recipe);
         }
 
-        public async Task<IEnumerable<RecipeDto?>> GetRecipesWithSpecificCuisineAsync(CuisineDto cuisineDto)
+        public async Task<IEnumerable<RecipeDto?>> GetRecipesWithSpecificCuisineAsync(int cuisineId)
         {
             var recipes = await _context.Recipes
                 .Include(r => r.Cuisine)
@@ -95,12 +95,17 @@ namespace CookBookApi.Repositories
                     .ThenInclude(rr => rr.Restriction)
                     .ThenInclude(rr => rr.IngredientRestrictions)
                 .Include(r => r.Subrecipes)
-                .Where(r => r.CuisineId == cuisineDto.Id).ToListAsync();
+                .Where(r => r.CuisineId == cuisineId).ToListAsync();
 
             return _mapper.Map<IEnumerable<RecipeDto>>(recipes);
         }
 
-        public Task<IEnumerable<RecipeDto?>> GetRecipesWithSpecificIngredientsAsync(IEnumerable<IngredientDto> ingredientDto)
+        public async Task<IEnumerable<RecipeDto?>> GetRecipesWithSpecificIngredientAsync(int ingredientId)
+        {
+            throw new NotImplementedException();
+        }
+        
+        public async Task<IEnumerable<RecipeDto?>> GetRecipesWithSpecificIngredientsAsync(IEnumerable<int> ingredientIds)
         {
             throw new NotImplementedException();
         }

@@ -12,8 +12,9 @@ namespace CookBookApi.Interfaces.Repositories
         Task<bool> AnyRecipesWithSameNameAsync(string name);
         Task<IEnumerable<RecipeDto>> GetAllRecipesAsync();
         Task<RecipeDto?> GetRecipeByIdAsync(int id);
-        Task<IEnumerable<RecipeDto?>> GetRecipesWithSpecificCuisineAsync(CuisineDto cuisineDto);
-        Task<IEnumerable<RecipeDto?>> GetRecipesWithSpecificIngredientsAsync(IEnumerable<IngredientDto> ingredientDto);
+        Task<IEnumerable<RecipeDto?>> GetRecipesWithSpecificCuisineAsync(int cuisineId);
+        Task<IEnumerable<RecipeDto>> GetRecipesWithSpecificIngredientAsync(int ingredientId);
+        Task<IEnumerable<RecipeDto?>> GetRecipesWithSpecificIngredientsAsync(IEnumerable<int> ingredientIds);
         Task<IEnumerable<RecipeDto?>> GetRecipesWithSpecificRestrictionsAsync(IEnumerable<RestrictionDto> restrictionDto);
         Task AddRecipeAsync(Recipe recipe);
         Task UpdateRecipeAsync(Recipe recipe);
