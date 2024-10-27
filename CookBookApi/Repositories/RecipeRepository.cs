@@ -29,11 +29,6 @@ namespace CookBookApi.Repositories
             return await _context.Recipes.AnyAsync(r => r.CuisineId == cuisineId);
         }
 
-        public Task<bool> AnyRecipesWithRestrictionAsync(int restrictionId)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<bool> AnyRecipesWithSameNameAsync(string name)
         {
             throw new NotImplementedException();

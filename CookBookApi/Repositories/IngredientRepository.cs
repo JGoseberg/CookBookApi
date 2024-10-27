@@ -22,11 +22,6 @@ namespace CookBookApi.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<bool> AnyIngredientWithRestrictionAsync(int id)
-        {
-            return await _context.Ingredients.AnyAsync(x => x.Id == id);
-        }
-
         public async Task<bool> AnyIngredientWithSameName(string name) 
         {
             // TODO add recipeRestrictionRepository and ingredientRestrictionRepository to implement if restriction is attached

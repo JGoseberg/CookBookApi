@@ -17,8 +17,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IRecipeRepository, RecipeRepository>();
+builder.Services.AddScoped<IRecipeRestrictionRepository, RecipeRestrictionRepository>();
 builder.Services.AddScoped<IIngredientRepository, IngredientRepository>();
-builder.Services.AddScoped<IRecipeIngredientRepository,  RecipeIngredientRepository>();
+builder.Services.AddScoped<IIngredientRestrictionRepository, IngredientRestrictionRepository>();
+builder.Services.AddScoped<IRecipeIngredientRepository, RecipeIngredientRepository>();
 builder.Services.AddScoped<ICuisineRepository, CuisineRepository>();
 builder.Services.AddScoped<IRestrictionRepository, RestrictionRepository>();
 builder.Services.AddScoped<IMeasurementUnitRepository, MeasurementunitRepository>();

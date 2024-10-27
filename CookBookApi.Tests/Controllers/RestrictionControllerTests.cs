@@ -83,7 +83,7 @@ namespace CookBookApi.Tests.Controllers
             _restrictionRepository.Setup(r => r.GetRestrictionByIdAsync(id))
                 .ReturnsAsync(restrictionDto);
 
-            _ingredientRepository.Setup(i => i.AnyIngredientWithRestrictionAsync(id))
+            _ingredientRepository.Setup(i => i.AnyIngredientWithRestrictionAsync(id))//TODO ingredientRestrictionRepository
                 .ReturnsAsync(true);
 
             var result = await _controller.DeleteRestrictionAsync(id);
@@ -101,10 +101,10 @@ namespace CookBookApi.Tests.Controllers
             _restrictionRepository.Setup(r => r.GetRestrictionByIdAsync(id))
                 .ReturnsAsync(restrictionDto);
 
-            _ingredientRepository.Setup(i => i.AnyIngredientWithRestrictionAsync(id))
+            _ingredientRepository.Setup(i => i.AnyIngredientWithRestrictionAsync(id))//TODO ingredientRestrictionRepository
                 .ReturnsAsync(false);
 
-            _recipeRepository.Setup(rc => rc.AnyRecipesWithRestrictionAsync(id))
+            _recipeRepository.Setup(rc => rc.AnyRecipesWithRestrictionAsync(id))//TODO recipeRestrictionRepository
                 .ReturnsAsync(true);
 
             var result = await _controller.DeleteRestrictionAsync(id);
@@ -123,10 +123,10 @@ namespace CookBookApi.Tests.Controllers
             _restrictionRepository.Setup(r => r.GetRestrictionByIdAsync(id))
                 .ReturnsAsync(restrictionDto);
 
-            _ingredientRepository.Setup(i => i.AnyIngredientWithRestrictionAsync(id))
+            _ingredientRepository.Setup(i => i.AnyIngredientWithRestrictionAsync(id))//TODO ingredientRestrictionRepository
                 .ReturnsAsync(false);
 
-            _recipeRepository.Setup(rc => rc.AnyRecipesWithRestrictionAsync(id))
+            _recipeRepository.Setup(rc => rc.AnyRecipesWithRestrictionAsync(id))//TODO recipeRestrictionRepository
                 .ReturnsAsync(false);
 
             var result = await _controller.DeleteRestrictionAsync(id);
