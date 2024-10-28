@@ -6,6 +6,19 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//cors for frontend
+builder.Services.AddCors(opt =>
+{
+    opt.AddPolicy("AllowSpecificOrigins",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:3000")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
+
+
 // Add services to the container.
 builder.Services.AddDbContext<CookBookContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("CookBookContext")));
@@ -53,6 +66,9 @@ using (var scope = app.Services.CreateScope())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+//Cors
+app.UseCors("AllowSpecificOrigins");
 
 app.MapControllers();
 
