@@ -2,6 +2,7 @@
 using CookBookApi.Interfaces.Repositories;
 using CookBookApi.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CookBookApi.Repositories
 {
@@ -30,18 +31,15 @@ namespace CookBookApi.Repositories
 
         public async Task<IEnumerable<int>?> GetRecipesWithIngredientsAsync(List<int> ingredientIds)
         {
-            List<RecipeIngredient> recipeIngredients = null;
-
-            foreach (var ingredientId in ingredientIds)
-            {
-                recipeIngredients.AddRange(await _context.RecipeIngredients.Where(ri => ri.IngredientId == ingredientId).ToListAsync());
-            }
-            
-            if (recipeIngredients == null)
+            if (ingredientIds.IsNullOrEmpty() || ingredientIds.Count < 2)
                 return null;
             
-            var recipeIds = recipeIngredients.Select(ri => ri.RecipeId).Distinct();
-            
+            var recipeIds = await _context.RecipeIngredients
+                .Where(ri => ingredientIds.Contains(ri.IngredientId))
+                .GroupBy(ri => ri.RecipeId)
+                .Where(group => group.Select(ri => ri.IngredientId).Distinct().Count() == ingredientIds.Count)
+                .Select(group => group.Key)
+                .ToListAsync();
             return recipeIds;
         }
         
