@@ -109,5 +109,17 @@ public static class DbInitializer
 
         context.IngredientRestrictions.AddRange(ingredientRestrictions);
         context.SaveChanges();
+
+        // little Red Dot as base64
+        var base64String =
+            "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==";
+            
+        var recipeImages = new RecipeImage[]
+        {
+            new RecipeImage { ImageData = Convert.FromBase64String(base64String), RecipeId = recipes[0].Id, MimeType = "image/jpeg" },
+        };
+
+        context.RecipeImages.AddRange(recipeImages);
+        context.SaveChanges();
     }
 }

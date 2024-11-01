@@ -34,6 +34,8 @@ namespace CookBookApi.Mappings
             CreateMap<AddMeasurementUnitDto, MeasurementUnit>();
 
             CreateMap<MeasurementUnit, MeasurementUnitDto>();
+            
+            CreateMap<RecipeImage, RecipeImageDto>();
         }
     }
 }

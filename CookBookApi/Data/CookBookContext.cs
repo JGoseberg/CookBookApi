@@ -12,6 +12,7 @@ public class CookBookContext : DbContext
     public DbSet<RecipeRestriction> RecipeRestrictions { get; set; }
     public DbSet<IngredientRestriction> IngredientRestrictions { get; set; }
     public DbSet<RecipeIngredient> RecipeIngredients { get; set; }
+    public DbSet<RecipeImage> RecipeImages { get; set; }
 
     public CookBookContext(DbContextOptions<CookBookContext> options)
         : base(options)
@@ -91,6 +92,18 @@ public class CookBookContext : DbContext
         modelBuilder.Entity<MeasurementUnit>()
             .HasIndex(m => m.Name)
             .IsUnique();
+
+        modelBuilder.Entity<Recipe>()
+            .HasMany(r => r.RecipeImages)
+            .WithOne(ri => ri.Recipe)
+            .HasForeignKey(ri => ri.RecipeId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        modelBuilder.Entity<RecipeImage>()
+            .HasOne(ri => ri.Recipe)
+            .WithMany(r => r.RecipeImages)
+            .HasForeignKey(ri => ri.RecipeId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 
 }
