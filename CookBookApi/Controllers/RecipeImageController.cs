@@ -4,6 +4,7 @@ using CookBookApi.Interfaces;
 using CookBookApi.Interfaces.Repositories;
 using CookBookApi.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CookBookApi.Controllers;
 
@@ -36,15 +37,21 @@ public class RecipeImageController : ControllerBase
 
         if (recipe == null)
             return NotFound($"Recipe with id {recipeId} not found");
+
+        try
+        {
+            var recipeImage = await _recipeImageService.ProcessAndCreateRecipeImageAsync(file);
+            recipeImage.RecipeId = recipeId;
+            var recipeImageDto = _mapper.Map<RecipeImageDto>(recipeImage);
         
-        var recipeImage = await _recipeImageService.ProcessAndCreateRecipeImageAsync(file);
-        recipeImage.RecipeId = recipeId;
-        
-        var recipeImageDto = _mapper.Map<RecipeImageDto>(recipeImage);
-        
-        await _recipeImageRepository.AddRecipeImageAsync(recipeImage);
-        
-        return Created("", recipeImageDto);
+            await _recipeImageRepository.AddRecipeImageAsync(recipeImage);
+            
+            return Created("", recipeImageDto);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
     
     [HttpGet]

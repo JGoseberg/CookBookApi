@@ -45,6 +45,27 @@ public class RecipeImageControllerTest
     }
 
     [Test]
+    public async Task AddRecipeImage_ImageExists_ReturnsNotFound()
+    {
+        var recipeId = 1;
+        
+        var recipe = new RecipeDto { Id = recipeId };
+        
+        var recipeImage = new RecipeImage {Id = 1, RecipeId = recipe.Id};
+        
+        IFormFile file = null;
+        
+        _recipeRepository.Setup(rr => rr.GetRecipeByIdAsync(recipe.Id)).ReturnsAsync(recipe);
+        _recipeImageRepository.Setup(ri => ri.ImageExistsAsync(It.IsAny<byte[]>(), It.IsAny<string>()))
+            .ReturnsAsync(true);
+        _recipeImageService.Setup(ri => ri.ProcessAndCreateRecipeImageAsync(file)).ReturnsAsync(recipeImage);
+        
+        var result = await _controller.AddRecipeImage(recipeId, file);
+        
+        Assert.That(result, Is.TypeOf<CreatedResult>());
+    }
+    
+    [Test]
     public async Task AddRecipeImage_ValidRecipe_ReturnsOk()
     {
         var recipeId = 1;
