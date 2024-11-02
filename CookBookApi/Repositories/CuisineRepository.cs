@@ -3,6 +3,7 @@ using CookBookApi.DTOs;
 using CookBookApi.Interfaces.Repositories;
 using CookBookApi.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CookBookApi.Repositories
 {
@@ -17,7 +18,6 @@ namespace CookBookApi.Repositories
         }
         public async Task AddCuisineAsync(Cuisine cuisine)
         {
-            // TODO should work without mapper
             var cuisineToAdd = await _context.Cuisines.AddAsync(_mapper.Map<Cuisine>(cuisine));
             await _context.SaveChangesAsync();
         }
@@ -56,8 +56,13 @@ namespace CookBookApi.Repositories
         {
             var cuisineToUpdate = await _context.Cuisines.FindAsync(cuisine.Id);
 
-            if (cuisineToUpdate != null)
-                cuisineToUpdate.Name = cuisine.Name;
+            if (cuisineToUpdate == null)
+                return;
+            
+            if (cuisine.Name.IsNullOrEmpty())
+                return;
+
+            cuisineToUpdate.Name = cuisine.Name;
             
             await _context.SaveChangesAsync();
         }
