@@ -18,21 +18,23 @@ public class RecipeImageService : IRecipeImageService
     public async Task<RecipeImage> ProcessAndCreateRecipeImageAsync(IFormFile file)
     {
         if (file == null || file.Length == 0)
-            throw new ArgumentException("Invalid File");
+            return null;
         
         if (file.Length > FileSize)
-            throw new ArgumentException("File is too large. Please use only Files smaller than 5 MB");
+            return null;
         
         if (!_allowedMimeTypes.Contains(file.ContentType.ToLower()))
-            throw new ArgumentException("Unsupported File type Allowed are only jpg, jpeg, png, webp");
+            return null;
         var mimeType = file.ContentType;
         
         using var memoryStream = new MemoryStream();
         await file.CopyToAsync(memoryStream);
         var imageData = memoryStream.ToArray();
 
-        if (await _repository.ImageExistsAsync(imageData, mimeType))
-            throw new InvalidOperationException("Image already exists");
+        var existingImage = await _repository.GetExistingImageAsync(imageData, mimeType);
+        
+        if (existingImage != null)
+            return existingImage;
         
         var base64 = Convert.ToBase64String(imageData);
 

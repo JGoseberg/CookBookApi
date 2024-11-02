@@ -26,9 +26,9 @@ public class RecipeImageRepository : IRecipeImageRepository
             .ToListAsync();
     }
 
-    public async Task<bool> ImageExistsAsync(byte[] imageData, string mimeType)
+    public async Task<RecipeImage?> GetExistingImageAsync(byte[] imageData, string mimeType)
     {
         return await _context.RecipeImages
-            .AnyAsync((r) => r.MimeType == mimeType && r.ImageData == imageData);
+            .FirstOrDefaultAsync((r) => r.MimeType == mimeType && r.ImageData == imageData);
     }
 }

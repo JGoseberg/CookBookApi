@@ -30,9 +30,7 @@ public class RecipeImageRepositoryTests
     public void TearDown()
     {
         using var context = new CookBookContext(_options);
-        {
-            context.Database.EnsureDeleted();
-        }
+        context.Database.EnsureDeleted();
     }
 
     [Test]
@@ -84,7 +82,7 @@ public class RecipeImageRepositoryTests
     }
     
     [Test]
-    public async Task ImageExistsAsync_RecipeImageExists_ReturnsTrue()
+    public async Task GetExistingImageAsync_RecipeImageExists_ReturnsExistingRecipeImage()
     {
         await using var context = new CookBookContext(_options);
         var repository = new RecipeImageRepository(context);
@@ -92,13 +90,13 @@ public class RecipeImageRepositoryTests
         await context.RecipeImages.AddAsync(_recipeImage);
         await context.SaveChangesAsync();
         
-        var result = await repository.ImageExistsAsync(_recipeImage.ImageData, _recipeImage.MimeType);
+        var result = await repository.GetExistingImageAsync(_recipeImage.ImageData, _recipeImage.MimeType);
         
-        Assert.That(result, Is.True);
+        Assert.That(result, Is.EqualTo(_recipeImage));
     }
     
     [Test]
-    public async Task ImageExistsAsync_RecipeImageDoesNotExist_ReturnsFalse()
+    public async Task GetExistingImageAsync_RecipeImageDoesNotExist_ReturnsNull()
     {
         await using var context = new CookBookContext(_options);
         var repository = new RecipeImageRepository(context);
@@ -108,10 +106,8 @@ public class RecipeImageRepositoryTests
         await context.RecipeImages.AddAsync(_recipeImage);
         await context.SaveChangesAsync();
         
-        var result = await repository.ImageExistsAsync(newImageData, _recipeImage.MimeType);
+        var result = await repository.GetExistingImageAsync(newImageData, _recipeImage.MimeType);
         
-        Assert.That(result, Is.False);
-        
-        
+        Assert.That(result, Is.Null);
     }
 }

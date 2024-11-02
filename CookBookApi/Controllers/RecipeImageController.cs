@@ -37,21 +37,17 @@ public class RecipeImageController : ControllerBase
 
         if (recipe == null)
             return NotFound($"Recipe with id {recipeId} not found");
-
-        try
-        {
-            var recipeImage = await _recipeImageService.ProcessAndCreateRecipeImageAsync(file);
-            recipeImage.RecipeId = recipeId;
-            var recipeImageDto = _mapper.Map<RecipeImageDto>(recipeImage);
         
-            await _recipeImageRepository.AddRecipeImageAsync(recipeImage);
-            
-            return Created("", recipeImageDto);
-        }
-        catch (Exception e)
-        {
-            return BadRequest(e.Message);
-        }
+        var recipeImage = await _recipeImageService.ProcessAndCreateRecipeImageAsync(file); 
+        if (recipeImage == null)
+            return BadRequest("Recipe image could not be created. Please make sure it meets all requirements.");
+        
+        recipeImage.RecipeId = recipeId; 
+        await _recipeImageRepository.AddRecipeImageAsync(recipeImage);
+        
+        var recipeImageDto = _mapper.Map<RecipeImageDto>(recipeImage);
+
+        return Created("", recipeImageDto);
     }
     
     [HttpGet]

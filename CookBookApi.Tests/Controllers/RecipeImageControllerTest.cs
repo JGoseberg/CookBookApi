@@ -56,8 +56,8 @@ public class RecipeImageControllerTest
         IFormFile file = null;
         
         _recipeRepository.Setup(rr => rr.GetRecipeByIdAsync(recipe.Id)).ReturnsAsync(recipe);
-        _recipeImageRepository.Setup(ri => ri.ImageExistsAsync(It.IsAny<byte[]>(), It.IsAny<string>()))
-            .ReturnsAsync(true);
+        _recipeImageRepository.Setup(ri => ri.GetExistingImageAsync(It.IsAny<byte[]>(), It.IsAny<string>()))
+            .ReturnsAsync((RecipeImage)null);
         _recipeImageService.Setup(ri => ri.ProcessAndCreateRecipeImageAsync(file)).ReturnsAsync(recipeImage);
         
         var result = await _controller.AddRecipeImage(recipeId, file);

@@ -26,47 +26,47 @@ public class RecipeImageServiceTest
     }
 
     [Test]
-    public async Task ProcessAndCreateRecipeImage_FileIsNull_ThrowsArgumentNullException()
+    public async Task ProcessAndCreateRecipeImage_FileIsNull_ReturnsNull()
     {
         IFormFile file = null;
 
-        Assert.ThrowsAsync<ArgumentException>(async () =>
-                await _recipeImageService.ProcessAndCreateRecipeImageAsync(file),
-            "Invalid File");
+        var result = await _recipeImageService.ProcessAndCreateRecipeImageAsync(file);
+        
+        Assert.That(result, Is.Null);
     }
 
     [Test]
-    public async Task ProcessAndCreateRecipeImage_FileIsEmpty_ThrowsArgumentNullException()
+    public async Task ProcessAndCreateRecipeImage_FileIsEmpty_ReturnsNull()
     {
-        IFormFile file = null;
+        var file = new Mock<IFormFile>();
+        file.Setup(f => f.Length).Returns(0);
         
-        Assert.ThrowsAsync<ArgumentException>(async () =>
-            await _recipeImageService.ProcessAndCreateRecipeImageAsync(file),
-            "Invalid File");
+        var result = await _recipeImageService.ProcessAndCreateRecipeImageAsync(file.Object);
+        
+        Assert.That(result, Is.Null);
     }
     
     [Test]
-    public async Task ProcessAndCreateRecipeImage_FileIsToBig_ThrowsArgumentException()
+    public async Task ProcessAndCreateRecipeImage_FileIsToBig_ReturnsNull()
     {
         var file = new Mock<IFormFile>();
         file.Setup(f => f.Length).Returns(BigFileSize);
 
-        var ax = Assert.ThrowsAsync<ArgumentException>(async () =>
-            await _recipeImageService.ProcessAndCreateRecipeImageAsync(file.Object));
-        Assert.That(ax.Message, Is.EqualTo(
-            "File is too large. Please use only Files smaller than 5 MB"));
+        var result = await _recipeImageService.ProcessAndCreateRecipeImageAsync(file.Object);
+        
+        Assert.That(result, Is.Null);
     }
     
     [Test]
-    public async Task ProcessAndCreateRecipeImage_InvalidMimeType_ThrowsArgumentException()
+    public async Task ProcessAndCreateRecipeImage_InvalidMimeType_ReturnsNull()
     {
         var file = new Mock<IFormFile>();
         file.Setup(f => f.Length).Returns(NormalFileSize);
-        file.Setup(f => f.ContentType).Returns("image/gif");
+        file.Setup(f => f.ContentType).Returns("Foo");
         
-        var ax = Assert.ThrowsAsync<ArgumentException>(async () =>
-            await _recipeImageService.ProcessAndCreateRecipeImageAsync(file.Object));
-        Assert.That(ax.Message, Is.EqualTo("Unsupported File type Allowed are only jpg, jpeg, png, webp"));
+        var result = await _recipeImageService.ProcessAndCreateRecipeImageAsync(file.Object);
+        
+        Assert.That(result, Is.Null);
     }
 
     [Test]
@@ -75,13 +75,15 @@ public class RecipeImageServiceTest
         var file = new Mock<IFormFile>();
         file.Setup(f => f.Length).Returns(NormalFileSize);
         file.Setup(f => f.ContentType).Returns("image/jpeg");
+
+        var imageData = new byte[] { 1, 2, 3 };
         
-        _recipeImageRepositoryMock.Setup(r => r.ImageExistsAsync(It.IsAny<byte[]>(), It.IsAny<string>()))
-            .ReturnsAsync(true);
+        _recipeImageRepositoryMock.Setup(r => r.GetExistingImageAsync(It.IsAny<byte[]>(), It.IsAny<string>()))
+            .ReturnsAsync(new RecipeImage{ImageData = imageData});
         
-        var ax = Assert.ThrowsAsync<InvalidOperationException>(async () =>
-            await _recipeImageService.ProcessAndCreateRecipeImageAsync(file.Object));
-        Assert.That(ax.Message, Is.EqualTo("Image already exists"));
+        var result = await _recipeImageService.ProcessAndCreateRecipeImageAsync(file.Object);
+        
+        Assert.That(result.ImageData, Is.EqualTo(imageData));
     }
     
     [Test]
@@ -97,8 +99,8 @@ public class RecipeImageServiceTest
             .Callback<Stream, CancellationToken>((stream, token) =>
                 stream.Write(imagedata, 0, imagedata.Length));
         
-        _recipeImageRepositoryMock.Setup(r => r.ImageExistsAsync(It.IsAny<byte[]>(), It.IsAny<string>()))
-            .ReturnsAsync(false);
+        _recipeImageRepositoryMock.Setup(r => r.GetExistingImageAsync(It.IsAny<byte[]>(), It.IsAny<string>()))
+            .ReturnsAsync((RecipeImage)null);
         
         var result = await _recipeImageService.ProcessAndCreateRecipeImageAsync(file.Object);
         
