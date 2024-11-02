@@ -39,7 +39,7 @@ namespace CookBookApi.Controllers
             if (await _cuisineRepository.GetCuisineByIdAsync(cuisineId) == null)
                 return BadRequest($"CuisineId cannot be null");
             
-            var isExisting = await _ingredientRepository.AnyIngredientWithSameName(name);
+            var isExisting = await _ingredientRepository.AnyIngredientWithSameNameAsync(name);
             if (isExisting)
                 return BadRequest("An Ingredient with this Name already exists");
             
@@ -95,7 +95,7 @@ namespace CookBookApi.Controllers
             if (existingIngredient == null)
                 return NotFound($"Ingredient with id {id} not found");
 
-            if (await _ingredientRepository.AnyIngredientWithSameName(ingredientDto.Name))
+            if (await _ingredientRepository.AnyIngredientWithSameNameAsync(ingredientDto.Name))
                 return BadRequest("A Ingredient with this name already exists.");
 
             var updatedIngredient = new Ingredient { Id = id, Name = ingredientDto.Name };

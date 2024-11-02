@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CookBookApi.Controllers;
+using CookBookApi.DTOs;
 using CookBookApi.DTOs.Ingredient;
 using CookBookApi.Interfaces.Repositories;
 using CookBookApi.Mappings;
@@ -15,22 +16,30 @@ namespace CookBookApi.Tests.Controllers
         private IMapper _mapper;
         private Mock<IIngredientRepository> _ingredientRepository;
         private Mock<IRecipeRepository> _recipeRepository;
+        private Mock<IRecipeIngredientRepository> _recipeIngredientRepository;
+        private Mock<ICuisineRepository> _cuisineRepository;
 
         [SetUp]
         public void Setup()
         {
+            _cuisineRepository = new Mock<ICuisineRepository>();
             _ingredientRepository = new Mock<IIngredientRepository>();
             _recipeRepository = new Mock<IRecipeRepository>();
             _mapper = MapperTestConfig.InitializeAutoMapper();
-            _controller = new IngredientsController(_ingredientRepository.Object, _recipeRepository.Object, _mapper);
+            _recipeIngredientRepository = new Mock<IRecipeIngredientRepository>();
+            _controller = new IngredientsController(_cuisineRepository.Object, _ingredientRepository.Object, _recipeRepository.Object, _recipeIngredientRepository.Object, _mapper);
         }
 
         [Test]
         public async Task AddIngredientAsync_NameIsEmpty_ReturnsBadRequest() 
         {
-            var ingredientDto = new IngredientDto { Name = string.Empty };
-
-            var result = await _controller.AddIngredientAsync(ingredientDto);
+            var ingredientDto = new IngredientDto
+            {
+                Name = string.Empty,
+                Cuisine = new CuisineDto { Id = 1}
+            };
+            
+            var result = await _controller.AddIngredientAsync(ingredientDto.Name, ingredientDto.Cuisine.Id);
 
             Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         }
@@ -38,31 +47,32 @@ namespace CookBookApi.Tests.Controllers
         [Test]
         public async Task AddIngredientAsync_NameExists_ReturnsBadRequest()
         {
-            var ingredientDto = new IngredientDto { Name = "Double" };
+            var ingredientDto = new IngredientDto
+            {
+                Name = "duplicate",
+                Cuisine = new CuisineDto { Id = 1}
+            };
 
-            _ingredientRepository.Setup(i => i.AnyIngredientWithSameName(ingredientDto.Name))
+            _ingredientRepository.Setup(i => i.AnyIngredientWithSameNameAsync(ingredientDto.Name))
                 .ReturnsAsync(true);
 
-            var result = await _controller.AddIngredientAsync(ingredientDto);
+            var result = await _controller.AddIngredientAsync(ingredientDto.Name, ingredientDto.Cuisine.Id);
 
             Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]
-        public async Task AddIngredientAsync_NoCuisineGiven_ReturnsBadRequest()
-        {
-            throw new NotImplementedException();
-        }
-
-        [Test]
         public async Task AddIngredientAsync_ReturnsCreated()
         {
-            var ingredientDto = new IngredientDto { Name = "Foo" };
+            var ingredientDto = new IngredientDto { Name = "Foo", Cuisine = new CuisineDto { Id = 1 } };
 
-            _ingredientRepository.Setup(i => i.AnyIngredientWithSameName(ingredientDto.Name))
+            _ingredientRepository.Setup(i => i.AnyIngredientWithSameNameAsync(ingredientDto.Name))
                 .ReturnsAsync(false);
+            
+            _cuisineRepository.Setup(c => c.GetCuisineByIdAsync(ingredientDto.Cuisine.Id))
+                .ReturnsAsync(ingredientDto.Cuisine);
 
-            var result = await _controller.AddIngredientAsync(ingredientDto);
+            var result = await _controller.AddIngredientAsync(ingredientDto.Name, ingredientDto.Cuisine.Id);
 
             Assert.That(result, Is.InstanceOf<CreatedResult>());
         }
@@ -90,9 +100,9 @@ namespace CookBookApi.Tests.Controllers
             _ingredientRepository.Setup(i => i.GetIngredientByIdAsync(id))
                 .ReturnsAsync(ingredientDto);
 
-            _recipeRepository.Setup(r => r.AnyRecipeWithIngredientAsync(id))
+            _recipeIngredientRepository.Setup(ri => ri.AnyRecipesWithIngredientAsync(id))
                 .ReturnsAsync(true);
-
+            
             var result = await _controller.DeleteIngredientAsync(id);
 
             Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
@@ -108,8 +118,8 @@ namespace CookBookApi.Tests.Controllers
             _ingredientRepository.Setup(i => i.GetIngredientByIdAsync(id))
                 .ReturnsAsync(ingredientDto);
 
-            _recipeRepository.Setup(r => r.AnyRecipeWithIngredientAsync(id))
-                .ReturnsAsync(false);
+            /*_recipeRepository.Setup(r => r.AnyRecipeWithIngredientAsync(id))
+                .ReturnsAsync(false);*/
 
             var result = await _controller.DeleteIngredientAsync(id);
 
@@ -171,7 +181,7 @@ namespace CookBookApi.Tests.Controllers
             _ingredientRepository.Setup(i => i.GetIngredientByIdAsync(id))
                 .ReturnsAsync((IngredientDto?)null);
 
-            _ingredientRepository.Setup(i => i.AnyIngredientWithSameName(ingredientDto.Name))
+            _ingredientRepository.Setup(i => i.AnyIngredientWithSameNameAsync(ingredientDto.Name))
                 .ReturnsAsync(false);
 
             var result = await _controller.UpdateIngredientAsync(id, ingredientDto);
@@ -189,7 +199,7 @@ namespace CookBookApi.Tests.Controllers
             _ingredientRepository.Setup(i => i.GetIngredientByIdAsync(id))
                 .ReturnsAsync(ingredientDto);
 
-            _ingredientRepository.Setup(i => i.AnyIngredientWithSameName(ingredientDto.Name))
+            _ingredientRepository.Setup(i => i.AnyIngredientWithSameNameAsync(ingredientDto.Name))
                 .ReturnsAsync(true);
 
             var result = await _controller.UpdateIngredientAsync(id, ingredientDto);
@@ -207,7 +217,7 @@ namespace CookBookApi.Tests.Controllers
             _ingredientRepository.Setup(i => i.GetIngredientByIdAsync(id))
                 .ReturnsAsync(ingredientDto);
 
-            _ingredientRepository.Setup(i => i.AnyIngredientWithSameName(ingredientDto.Name))
+            _ingredientRepository.Setup(i => i.AnyIngredientWithSameNameAsync(ingredientDto.Name))
                 .ReturnsAsync(false);
 
             var result = await _controller.UpdateIngredientAsync(id, ingredientDto);

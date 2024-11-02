@@ -22,10 +22,8 @@ namespace CookBookApi.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<bool> AnyIngredientWithSameName(string name) 
+        public async Task<bool> AnyIngredientWithSameNameAsync(string name) 
         {
-            // TODO add recipeRestrictionRepository and ingredientRestrictionRepository to implement if restriction is attached
-            
             return await _context.Ingredients.AnyAsync(ingredient => ingredient.Name == name);
         }
 
@@ -37,6 +35,7 @@ namespace CookBookApi.Repositories
                 return;
             
             _context.Ingredients.Remove(ingredientToDelete);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<IngredientDto>> GetAllIngredientsAsync()

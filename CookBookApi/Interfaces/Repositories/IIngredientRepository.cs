@@ -5,7 +5,7 @@ namespace CookBookApi.Interfaces.Repositories
     public interface IIngredientRepository
     {
         Task AddIngredientAsync(Ingredient ingredient);
-        Task<bool> AnyIngredientWithSameName(string name);
+        Task<bool> AnyIngredientWithSameNameAsync(string name);
         Task<IngredientDto?> GetIngredientByIdAsync(int id);
         Task<IEnumerable<IngredientDto>> GetAllIngredientsAsync();
         Task UpdateIngredientAsync(Ingredient ingredient);
