@@ -45,7 +45,7 @@ namespace CookBookApi.Repositories
         
         public async Task<bool> AnyRecipesWithIngredientAsync(int ingredientId)
         {
-            return await _context.Recipes.AnyAsync(r => r.RecipeIngredients.Any(ri => ri.IngredientId == ingredientId));
+            return await _context.RecipeIngredients.AnyAsync(ri => ri.IngredientId == ingredientId);
         }
         
         public async Task<bool> AnyRecipesWithMeasurementUnitAsync(int measurementUnitIdId)
