@@ -12,17 +12,19 @@ namespace CookBookApi.Tests.Controllers
     public class MeasureMentUnitControllerTests
     {
         private MeasurementUnitController _controller;
-        private Mock<IMeasurementUnitRepository> _measurementUnitRepositoryMock;
-        private Mock<IRecipeIngredientRepository> _recipeIngredientRepositoryMock;
+        private Mock<IMeasurementUnitRepository> _measurementUnitRepository;
+        private Mock<IRecipeIngredientRepository> _recipeIngredientRepository;
         private IMapper _mapper;
+        private Mock<IRecipeRepository> _recipeRepository;
 
         [SetUp]
         public void Setup()
         {
-            _measurementUnitRepositoryMock = new Mock<IMeasurementUnitRepository>();
-            _recipeIngredientRepositoryMock = new Mock<IRecipeIngredientRepository>();
+            _measurementUnitRepository = new Mock<IMeasurementUnitRepository>();
+            _recipeIngredientRepository = new Mock<IRecipeIngredientRepository>();
             _mapper = MapperTestConfig.InitializeAutoMapper();
-            _controller = new MeasurementUnitController(_measurementUnitRepositoryMock.Object, _recipeIngredientRepositoryMock.Object, _mapper);
+            _recipeRepository = new Mock<IRecipeRepository>();
+            _controller = new MeasurementUnitController(_measurementUnitRepository.Object, _recipeIngredientRepository.Object, _mapper, _recipeRepository.Object);
         }
 
         [Test]
@@ -51,7 +53,7 @@ namespace CookBookApi.Tests.Controllers
         {
             var addMeasurementUnitDto = new AddMeasurementUnitDto { Name = "foo", Abbreviation = "bar" };
 
-            _measurementUnitRepositoryMock.Setup(m => m.AnyMeasurementUnitWithSameNameAsync(addMeasurementUnitDto.Name))
+            _measurementUnitRepository.Setup(m => m.AnyMeasurementUnitWithSameNameAsync(addMeasurementUnitDto.Name))
                 .ReturnsAsync(true);
 
             var result = await _controller.AddMeasurementUnitAsync(addMeasurementUnitDto);
@@ -64,7 +66,7 @@ namespace CookBookApi.Tests.Controllers
         {
             var addMeasurementUnitDto = new AddMeasurementUnitDto { Name = "foo", Abbreviation = "bar" };
 
-            _measurementUnitRepositoryMock.Setup(m => m.AnyMeasurementUnitWithSameNameAsync(addMeasurementUnitDto.Name))
+            _measurementUnitRepository.Setup(m => m.AnyMeasurementUnitWithSameNameAsync(addMeasurementUnitDto.Name))
                 .ReturnsAsync(false);
 
             var result = await _controller.AddMeasurementUnitAsync(addMeasurementUnitDto);
@@ -77,7 +79,7 @@ namespace CookBookApi.Tests.Controllers
         {
             var id = 404;
 
-            _measurementUnitRepositoryMock.Setup(m => m.GetMeasurementUnitByIdAsync(id))
+            _measurementUnitRepository.Setup(m => m.GetMeasurementUnitByIdAsync(id))
                 .ReturnsAsync((MeasurementUnitDto?)null);
 
             var result = await _controller.DeleteMeasurementUnitAsync(id);
@@ -92,10 +94,10 @@ namespace CookBookApi.Tests.Controllers
 
             var measurementUnitDto = new MeasurementUnitDto { Name = "foo", Abbreviation = "bar" };
 
-            _measurementUnitRepositoryMock.Setup(m => m.GetMeasurementUnitByIdAsync(id))
+            _measurementUnitRepository.Setup(m => m.GetMeasurementUnitByIdAsync(id))
                 .ReturnsAsync(measurementUnitDto);
 
-            _recipeIngredientRepositoryMock.Setup(ri => ri.AnyRecipesWithMeasurementUnitAsync(id))
+            _recipeIngredientRepository.Setup(ri => ri.AnyRecipesWithMeasurementUnitAsync(id))
                 .ReturnsAsync(true);
 
             var result = await _controller.DeleteMeasurementUnitAsync(id);
@@ -110,10 +112,10 @@ namespace CookBookApi.Tests.Controllers
 
             var measurementUnitDto = new MeasurementUnitDto { Name = "foo", Abbreviation = "bar" };
 
-            _measurementUnitRepositoryMock.Setup(m => m.GetMeasurementUnitByIdAsync(id))
+            _measurementUnitRepository.Setup(m => m.GetMeasurementUnitByIdAsync(id))
                 .ReturnsAsync(measurementUnitDto);
 
-            _recipeIngredientRepositoryMock.Setup(ri => ri.AnyRecipesWithMeasurementUnitAsync(id))
+            _recipeIngredientRepository.Setup(ri => ri.AnyRecipesWithMeasurementUnitAsync(id))
                 .ReturnsAsync(false);
 
             var result = await _controller.DeleteMeasurementUnitAsync(id);
@@ -131,7 +133,7 @@ namespace CookBookApi.Tests.Controllers
                 new MeasurementUnitDto { Name = "bar", Abbreviation = "foo"}
             };
 
-            _measurementUnitRepositoryMock.Setup(m => m.GetAllMeasurementunitsAsync())
+            _measurementUnitRepository.Setup(m => m.GetAllMeasurementunitsAsync())
                 .ReturnsAsync(measurementUnits);
 
             var result = await _controller.GetAllMeasurementUnitsAsync();
@@ -147,7 +149,7 @@ namespace CookBookApi.Tests.Controllers
             MeasurementUnitDto measurementUnitDto = new()
             { Name = "foo", Abbreviation = "bar" };
 
-            _measurementUnitRepositoryMock.Setup(m => m.GetMeasurementUnitByIdAsync(id))
+            _measurementUnitRepository.Setup(m => m.GetMeasurementUnitByIdAsync(id))
                 .ReturnsAsync(measurementUnitDto);
 
             var result = await _controller.GetMeasurementUnitByIdAsync(id);
@@ -160,7 +162,7 @@ namespace CookBookApi.Tests.Controllers
         {
             var id = 404;
 
-            _measurementUnitRepositoryMock.Setup(m => m.GetMeasurementUnitByIdAsync(id))
+            _measurementUnitRepository.Setup(m => m.GetMeasurementUnitByIdAsync(id))
                 .ReturnsAsync((MeasurementUnitDto?)null);
 
             var result = await _controller.GetMeasurementUnitByIdAsync(id);
@@ -176,7 +178,7 @@ namespace CookBookApi.Tests.Controllers
             MeasurementUnitDto measurementUnitDto = new()
             { Name = "foo", Abbreviation= "bar" };
 
-            _measurementUnitRepositoryMock.Setup(m => m.GetMeasurementUnitByIdAsync(id))
+            _measurementUnitRepository.Setup(m => m.GetMeasurementUnitByIdAsync(id))
                 .ReturnsAsync((MeasurementUnitDto?)null);
 
             var result = await _controller.UpdateMeasurementUnitAsync(id, measurementUnitDto);
@@ -192,10 +194,10 @@ namespace CookBookApi.Tests.Controllers
             MeasurementUnitDto measurementUnitDto = new()
             { Name = "foo", Abbreviation = "bar" };
 
-            _measurementUnitRepositoryMock.Setup(m => m.GetMeasurementUnitByIdAsync(id))
+            _measurementUnitRepository.Setup(m => m.GetMeasurementUnitByIdAsync(id))
                 .ReturnsAsync(measurementUnitDto);
 
-            _measurementUnitRepositoryMock.Setup(m => m.AnyMeasurementUnitWithSameNameAsync(measurementUnitDto.Name))
+            _measurementUnitRepository.Setup(m => m.AnyMeasurementUnitWithSameNameAsync(measurementUnitDto.Name))
                 .ReturnsAsync(true);
 
             var result = await _controller.UpdateMeasurementUnitAsync(id, measurementUnitDto);
@@ -211,10 +213,10 @@ namespace CookBookApi.Tests.Controllers
             MeasurementUnitDto measurementUnitDto = new()
             { Name = "foo", Abbreviation = "bar" };
 
-            _measurementUnitRepositoryMock.Setup(m => m.GetMeasurementUnitByIdAsync(id))
+            _measurementUnitRepository.Setup(m => m.GetMeasurementUnitByIdAsync(id))
                 .ReturnsAsync(measurementUnitDto);
 
-            _measurementUnitRepositoryMock.Setup(m => m.AnyMeasurementUnitWithSameNameAsync(measurementUnitDto.Name))
+            _measurementUnitRepository.Setup(m => m.AnyMeasurementUnitWithSameNameAsync(measurementUnitDto.Name))
                 .ReturnsAsync(false);
 
             var result = await _controller.UpdateMeasurementUnitAsync(id, measurementUnitDto);
