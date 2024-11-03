@@ -3,6 +3,7 @@ using CookBookApi.DTOs;
 using CookBookApi.Interfaces.Repositories;
 using CookBookApi.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CookBookApi.Repositories
 {
@@ -50,15 +51,20 @@ namespace CookBookApi.Repositories
         {
             var restriction = await _context.Restrictions.FirstOrDefaultAsync(x => x.Id == id);
             
-            return _mapper.Map<RestrictionDto>(restriction);
+            return restriction == null ? null : _mapper.Map<RestrictionDto>(restriction);
         }
 
         public async Task UpdateRestrictionAsync(Restriction restriction)
         {
-            var existingRestriction = await _context.Restrictions.FirstOrDefaultAsync(x => x.Id == restriction.Id);
+            if (restriction.Name.IsNullOrEmpty())
+                return;
             
-            if (existingRestriction != null)
-                existingRestriction.Name = restriction.Name;
+            var restrictionToUpdate = await _context.Restrictions.FindAsync(restriction.Id);
+            
+            if (restrictionToUpdate == null)
+                return;
+            
+            restrictionToUpdate.Name = restriction.Name;
             
             await _context.SaveChangesAsync();
         }

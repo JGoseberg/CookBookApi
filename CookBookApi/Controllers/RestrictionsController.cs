@@ -10,23 +10,17 @@ namespace CookBookApi.Controllers
     [ApiController]
     public class RestrictionsController : ControllerBase
     {
-        private readonly IIngredientRepository _ingredientRepository;
         private readonly IIngredientRestrictionRepository _ingredientRestrictionRepository;
-        private readonly IRecipeRepository _recipeRepository;
         private readonly IRecipeRestrictionRepository _recipeRestrictionRepository;
         private readonly IRestrictionRepository _restrictionRepository;
 
         public RestrictionsController(
-            IIngredientRepository ingredientRepository,
             IIngredientRestrictionRepository ingredientRestrictionRepository,
-            IRecipeRepository recipeRepository,
             IRecipeRestrictionRepository recipeRestrictionRepository,
             IRestrictionRepository restrictionRepository
             )
         {
-            _ingredientRepository = ingredientRepository;
             _ingredientRestrictionRepository = ingredientRestrictionRepository;
-            _recipeRepository = recipeRepository;
             _recipeRestrictionRepository = recipeRestrictionRepository;
             _restrictionRepository = restrictionRepository;
         }
@@ -36,7 +30,7 @@ namespace CookBookApi.Controllers
         public async Task<ActionResult> AddRestrictionAsync(RestrictionDto restrictionDto)
         {
             if (restrictionDto.Name.IsNullOrEmpty())
-                return BadRequest($"Name {restrictionDto.Name} cannot be empty");
+                return BadRequest($"Name {restrictionDto.Name} cannot be empty.");
 
             if (await _restrictionRepository.AnyRestrictionWithSameNameAsync(restrictionDto.Name))
                 return BadRequest($"A Restriction with the Name {restrictionDto.Name} already exists");
@@ -45,6 +39,27 @@ namespace CookBookApi.Controllers
 
             await _restrictionRepository.AddRestrictionAsync(newRestriction);
             return Created("", newRestriction);
+        }
+        
+        [HttpDelete("{id}")]
+        [ActionName("DeleteRestriction")]
+        public async Task<ActionResult> DeleteRestrictionAsync(int id)
+        {
+            var restriction = await _restrictionRepository.GetRestrictionByIdAsync(id);
+            if (restriction == null)
+                return NotFound($"Restriction with Id {id} was not found.");
+
+            var restrictionHasIngredientRelations = await _ingredientRestrictionRepository.AnyIngredientWithRestrictionAsync(restriction.Id); 
+            if (restrictionHasIngredientRelations)
+                return BadRequest($"restriction with Id {id} has existing Relations to Ingredients, cannot delete.");
+            
+            var restrictionHasRecipeRelations = await _recipeRestrictionRepository.AnyRecipeWithRestrictionAsync(id);
+            if (restrictionHasRecipeRelations)
+                return BadRequest($"restriction with Id {id} has existing Relations to Recipes, cannot delete.");
+            
+            await _restrictionRepository.DeleteRestrictionAsync(id);
+
+            return NoContent();
         }
         
         [HttpGet]
@@ -90,29 +105,5 @@ namespace CookBookApi.Controllers
             await _restrictionRepository.UpdateRestrictionAsync(updatedRestrictionDto);
             return Ok(existingRestriction);
         }
-
-        [HttpDelete("{id}")]
-        [ActionName("DeleteRestriction")]
-        public async Task<ActionResult> DeleteRestrictionAsync(int id)
-        {
-            var restriction = await _restrictionRepository.GetRestrictionByIdAsync(id);
-            if (restriction == null)
-                return NotFound($"restriction with Id {id} does not Exist");
-
-            var restrictionHasIngredientRelations = await _ingredientRestrictionRepository.AnyIngredientWithRestrictionAsync(restriction.Id); 
-            if (restrictionHasIngredientRelations)
-                return BadRequest($"restriction with Id {id} has existing Relations to Ingredients, cannot delete");
-            
-            var restrictionHasRecipeRelations = await _recipeRestrictionRepository.AnyRecipeWithRestrictionAsync(id);
-            if (restrictionHasRecipeRelations)
-                return BadRequest($"restriction with Id {id} has existing Relations to Recipes, cannot delete");
-            
-            //var restrictionHasIngredientRelations = await ingredientRepository.AnyIngredientWithRestrictionAsync(id); //TODO remove Method
-            //var restrictionHasRecipeRelations = await _recipeRepository.AnyRecipesWithRestrictionAsync(id); //TODO remove Method
-            await _restrictionRepository.DeleteRestrictionAsync(id);
-
-            return NoContent();
-        }
-
     }
 }
