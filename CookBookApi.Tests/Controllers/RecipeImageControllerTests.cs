@@ -11,7 +11,7 @@ using Moq;
 namespace CookBookApi.Tests.Controllers;
 
 [TestFixture]
-public class RecipeImageControllerTest
+public class RecipeImageControllerTests
 {
     private Mock<IRecipeRepository> _recipeRepository;
     private Mock<IRecipeImageRepository> _recipeImageRepository;

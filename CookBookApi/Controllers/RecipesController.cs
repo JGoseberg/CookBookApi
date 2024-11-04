@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using CookBookApi.DTOs;
-using CookBookApi.DTOs.Ingredient;
 using CookBookApi.DTOs.Recipes;
 using CookBookApi.Interfaces.Repositories;
 using CookBookApi.Models;
@@ -17,37 +16,36 @@ public class RecipesController : ControllerBase
     private readonly IIngredientRepository _ingredientRepository;
     private readonly IRecipeRepository _recipeRepository;
     private readonly IRecipeIngredientRepository _recipeIngredientRepository;
+    private readonly IRestrictionRepository _restrictionRepository;
     private readonly IMapper _mapper;
     public RecipesController(
         ICuisineRepository cuisineRepository,
         IIngredientRepository ingredientRepository,
         IRecipeRepository recipeRepository,
         IMapper mapper, 
-        IRecipeIngredientRepository recipeIngredientRepository)
+        IRecipeIngredientRepository recipeIngredientRepository,
+        IRestrictionRepository restrictionRepository)
     {
         _cuisineRepository = cuisineRepository;
         _ingredientRepository = ingredientRepository;
         _recipeRepository = recipeRepository;
         _mapper = mapper;
         _recipeIngredientRepository = recipeIngredientRepository;
+        _restrictionRepository = restrictionRepository;
     }
     [HttpPost]
     [ActionName("AddRecipe")]
     public async Task<ActionResult> AddRecipeAsync(AddRecipeDto recipeDto)
     {
         if (recipeDto.Name.IsNullOrEmpty())
-            return BadRequest("Name Cannot be empty");
+            return BadRequest("Name Cannot be empty.");
 
         if (recipeDto.Instruction.IsNullOrEmpty())
-            return BadRequest("Name Cannot be empty");
-
-        var isExisting = await _recipeRepository.AnyRecipesWithSameNameAsync(recipeDto.Name);
-        if (isExisting)
-            return BadRequest("A Recipe with this Name already Exists");
+            return BadRequest("Name Cannot be empty.");
 
         var subRecipes = new List<Recipe>();
 
-        if (recipeDto.Subrecipes.Count == 0)
+        if (recipeDto.Subrecipes.Count != 0)
         {
             foreach (var subRecipe in recipeDto.Subrecipes)
             {
@@ -59,7 +57,7 @@ public class RecipesController : ControllerBase
 
         var parentRecipes = new List<Recipe>();
 
-        if (recipeDto.ParentRecipes.Count == 0)
+        if (recipeDto.ParentRecipes.Count != 0)
         {
             foreach (var parentRecipe in recipeDto.ParentRecipes)
             {
@@ -111,15 +109,7 @@ public class RecipesController : ControllerBase
     [ActionName("GetRandomRecipes")]
     public async Task<ActionResult<RecipeDto>> GetRandomRecipeAsync()
     {
-        var recipes = await _recipeRepository.GetAllRecipesAsync();
-
-        var numberOfRecipes = recipes.Count();
-
-        var rnd = new Random((int)DateTime.Now.Ticks).Next(1, numberOfRecipes+1);
-
-        var randomRecipe = recipes.Where(r => r.Id == rnd);
-
-        return Ok(randomRecipe);
+        return await _recipeRepository.GetRandomRecipe();
     }
 
     [HttpGet("{id}")]
@@ -142,12 +132,12 @@ public class RecipesController : ControllerBase
 
         var cuisine = await _cuisineRepository.GetCuisineByIdAsync(cuisineId);
         if (cuisine == null)
-            return BadRequest("cuisine does not exists");
+            return BadRequest("Cuisine does not exists!");
 
         var recipes = await _recipeRepository.GetRecipesWithSpecificCuisineAsync(cuisineId);
 
         if (!recipes.Any())
-            return NotFound($"No recipes with cuisine: {cuisine.Name} found");
+            return NotFound($"No recipes with cuisine {cuisine.Name} found");
 
         return Ok(recipes);
     }
@@ -156,7 +146,7 @@ public class RecipesController : ControllerBase
     [ActionName("GetRecipesByIngredients")]
     public async Task<ActionResult<RecipeDto>> GetRecipesWithIngredientsAsync([FromQuery] List<int> ingredientIds)
     {
-        if (ingredientIds.Count() < 1)
+        if (ingredientIds.Count < 1)
             return BadRequest("Ingredient Ids cannot be empty");
 
         foreach (var ingredientId in ingredientIds)
@@ -165,49 +155,41 @@ public class RecipesController : ControllerBase
                 return BadRequest($"Ingredient with Id: {ingredientId} not found");
         }
 
-        var recipes = new List<RecipeDto>();
-        
-        var recipeIds = new List<int>();
-        
-        if (ingredientIds.Count() == 1)
-        {
-            recipeIds.AddRange(await _recipeIngredientRepository.GetRecipesWithIngredientAsync(ingredientIds[0]));
+        var recipes = new List<RecipeDto?>();
 
-            if (recipeIds.Count == 0)
-                return BadRequest($"No Recipe with Ingredient with Id: {ingredientIds[0]} found");
-        }
-        else // TODO NullReferenceException
-        {
-            recipeIds.AddRange(await _recipeIngredientRepository.GetRecipesWithIngredientsAsync(ingredientIds));
-            
-            if (recipeIds.Count == 0)
-                return BadRequest($"No Recipe with Ingredient with Id: {ingredientIds[0]} found");
-        }
-        
+        var recipeIds = await _recipeIngredientRepository.GetRecipesWithIngredientsAsync(ingredientIds);
+
         foreach (var recipeId in recipeIds)
         {
-            recipes.Add(await _recipeRepository.GetRecipeByIdAsync(recipeId));   
+            var recipe = await _recipeRepository.GetRecipeByIdAsync(recipeId);
+            if (recipe != null)
+                recipes.Add(recipe);
         }
+        
+        if (recipes.Count == 0)
+            return BadRequest($"No Recipe with this Ingredients found!");
         
         return Ok(recipes);
     }
 
     [HttpGet]
     [ActionName("GetRecipesByRestriction")]
-    public async Task<ActionResult<RecipeDto>> GetRecipesWithRestrictionsAsync(List<RestrictionDto> restrictions)
+    public async Task<ActionResult<RecipeDto>> GetRecipesWithRestrictionsAsync([FromQuery] List<int> restrictionIds)
     {
-        if (restrictions.Count() == 0)
-            return BadRequest("select one or more ingredients");
+        if (restrictionIds.Count < 1)
+            return BadRequest("Restriction Ids cannot be empty");
 
-        foreach (var restriction in restrictions)
-            if (_ingredientRepository.GetIngredientByIdAsync(restriction.Id) == null)
-                return BadRequest($"ingredient with name: {restriction.Name} does not exist");
+        foreach (var restrictionId in restrictionIds)
+        {
+            if (await _restrictionRepository.GetRestrictionByIdAsync(restrictionId) == null)
+                return BadRequest($"Restriction with Id: {restrictionId} not found");
+        }
 
-        var recipes = await _recipeRepository.GetRecipesWithSpecificRestrictionsAsync(restrictions);
-
-        if (recipes.Count() == 0)
-            return NotFound($"No recipes with specified ingredients found");
-
+        var recipes = await _recipeRepository.GetRecipesWithRestrictionsAsync(restrictionIds);
+        
+        if (!recipes.Any())
+            return BadRequest($"No Recipe with this Restrictions found!");
+        
         return Ok(recipes);
     }
 
@@ -218,9 +200,6 @@ public class RecipesController : ControllerBase
         var existingRecipe = await _recipeRepository.GetRecipeByIdAsync(id);
         if (existingRecipe == null)
             return NotFound($"Recipe With Id {id} not found");
-
-        if (await _recipeRepository.AnyRecipesWithSameNameAsync(recipeDto.Name))
-            return BadRequest("A Recipe With this Name Already exists");
 
         var recipeToUpdate = new Recipe
         {

@@ -2,7 +2,6 @@
 {
     public interface IRecipeIngredientRepository
     {
-        Task<IEnumerable<int>?> GetRecipesWithIngredientAsync(int ingredientId);
         Task<IEnumerable<int>?> GetRecipesWithIngredientsAsync(List<int> ingredientId);
         Task<bool> AnyRecipesWithIngredientAsync(int ingredientId);
 

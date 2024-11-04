@@ -118,9 +118,6 @@ namespace CookBookApi.Tests.Controllers
             _ingredientRepository.Setup(i => i.GetIngredientByIdAsync(id))
                 .ReturnsAsync(ingredientDto);
 
-            /*_recipeRepository.Setup(r => r.AnyRecipeWithIngredientAsync(id))
-                .ReturnsAsync(false);*/
-
             var result = await _controller.DeleteIngredientAsync(id);
 
             Assert.That(result, Is.InstanceOf<NoContentResult>());

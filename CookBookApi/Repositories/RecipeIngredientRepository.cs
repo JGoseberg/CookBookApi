@@ -17,21 +17,9 @@ namespace CookBookApi.Repositories
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<int>?> GetRecipesWithIngredientAsync(int ingredientId)
-        {
-            var recipes = await _context.RecipeIngredients.Where(ri => ri.IngredientId == ingredientId).ToListAsync();
-
-            if (recipes.Count == 0)
-                return null;
-            
-            var recipeIds = recipes.Select(ri => ri.RecipeId).Distinct();
-            
-            return recipeIds;
-        }
-
         public async Task<IEnumerable<int>?> GetRecipesWithIngredientsAsync(List<int> ingredientIds)
         {
-            if (ingredientIds.IsNullOrEmpty() || ingredientIds.Count < 2)
+            if (ingredientIds.IsNullOrEmpty())
                 return null;
             
             var recipeIds = await _context.RecipeIngredients

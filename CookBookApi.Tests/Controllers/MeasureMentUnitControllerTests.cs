@@ -33,8 +33,7 @@ namespace CookBookApi.Tests.Controllers
             var addMeasurementUnitDto = new AddMeasurementUnitDto { Name = "", Abbreviation = "bar" };
 
             var result = await _controller.AddMeasurementUnitAsync(addMeasurementUnitDto);
-
-            // more unique Asserts
+            
             Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         }
 

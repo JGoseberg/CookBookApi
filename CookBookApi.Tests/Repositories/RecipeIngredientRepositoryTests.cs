@@ -42,40 +42,6 @@ public class RecipeIngredientRepositoryTests
     }
 
     [Test]
-    public async Task GetRecipesWithIngredient_ValidIngredientId_ShouldReturnRecipeIds()
-    {
-        await using var context = new CookBookContext(_options);
-        
-        await context.RecipeIngredients.AddAsync(_recipeIngredient);
-        await context.Ingredients.AddAsync(_ingredient);
-        await context.SaveChangesAsync();
-        
-        var repository = new RecipeIngredientRepository(context, _mapper);
-
-        var recipeIds = await repository.GetRecipesWithIngredientAsync(_ingredient.Id);
-        
-        Assert.That(recipeIds.Count(), Is.EqualTo(1));
-    }
-
-    [Test]
-    public async Task GetRecipesWithIngredient_InvalidIngredientId_ShouldReturnNull()
-    {
-        var invalidIngredientId = 404;
-        
-        await using var context = new CookBookContext(_options);
-        
-        await context.RecipeIngredients.AddAsync(_recipeIngredient);
-        await context.Ingredients.AddAsync(_ingredient);
-        await context.SaveChangesAsync();
-        
-        var repository = new RecipeIngredientRepository(context, _mapper);
-
-        var recipeIds = await repository.GetRecipesWithIngredientAsync(invalidIngredientId);
-        
-        Assert.That(recipeIds, Is.Null);
-    }
-
-    [Test]
     public async Task GetRecipesWithIngredientsAsync_EmptyListOfIngredients_ShouldReturnNull()
     {
         var emptyListOfIngredientIds = new List<int>();
@@ -94,7 +60,7 @@ public class RecipeIngredientRepositoryTests
     }
     
     [Test]
-    public async Task GetRecipesWithIngredientsAsync_ListWithOnlyOneIngredientId_ShouldReturnNull()
+    public async Task GetRecipesWithIngredientsAsync_ListWithOnlyOneIngredientId_ShouldReturnOneIngredient()
     {
         var listWithOnlyOneIngredientId = new List<int>
         {
@@ -111,7 +77,7 @@ public class RecipeIngredientRepositoryTests
 
         var recipeIds = await repository.GetRecipesWithIngredientsAsync(listWithOnlyOneIngredientId);
         
-        Assert.That(recipeIds, Is.Null);
+        Assert.That(recipeIds.Count(), Is.EqualTo(1));
     }
     
     [Test]

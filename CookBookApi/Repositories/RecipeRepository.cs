@@ -80,6 +80,21 @@ namespace CookBookApi.Repositories
             return _mapper.Map<RecipeDto>(recipe);
         }
 
+        public async Task<RecipeDto> GetRandomRecipe()
+        {
+            //put in Service
+            
+            var recipes = await GetAllRecipesAsync();
+
+            var numberOfRecipes = recipes.Count();
+
+            var rnd = new Random((int)DateTime.Now.Ticks).Next(1, numberOfRecipes+1);
+
+            var randomRecipe = recipes.Where(r => r.Id == rnd);
+
+            return _mapper.Map<RecipeDto>(randomRecipe);
+        }
+
         public async Task<IEnumerable<RecipeDto?>> GetRecipesWithSpecificCuisineAsync(int cuisineId)
         {
             var recipes = await _context.Recipes
@@ -100,17 +115,7 @@ namespace CookBookApi.Repositories
             return _mapper.Map<IEnumerable<RecipeDto>>(recipes);
         }
 
-        public async Task<IEnumerable<RecipeDto?>> GetRecipesWithSpecificIngredientAsync(int ingredientId)
-        {
-            throw new NotImplementedException();
-        }
-        
-        public async Task<IEnumerable<RecipeDto?>> GetRecipesWithSpecificIngredientsAsync(IEnumerable<int> ingredientIds)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<RecipeDto?>> GetRecipesWithSpecificRestrictionsAsync(IEnumerable<RestrictionDto> restrictionDto)
+        public Task<IEnumerable<RecipeDto?>> GetRecipesWithRestrictionsAsync(IEnumerable<int> restrictionIds)
         {
             throw new NotImplementedException();
         }
