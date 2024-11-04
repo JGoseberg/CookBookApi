@@ -109,7 +109,7 @@ public class RecipesController : ControllerBase
     [ActionName("GetRandomRecipes")]
     public async Task<ActionResult<RecipeDto>> GetRandomRecipeAsync()
     {
-        return await _recipeRepository.GetRandomRecipe();
+        return await _recipeRepository.GetRandomRecipeAsync();
     }
 
     [HttpGet("{id}")]

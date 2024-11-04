@@ -8,9 +8,8 @@ namespace CookBookApi.Interfaces.Repositories
     public interface IRecipeRepository
     {
         Task<bool> AnyRecipesWithCuisineAsync(int cuisineId);
-        Task<bool> AnyRecipesWithSameNameAsync(string name);
         Task<IEnumerable<RecipeDto>> GetAllRecipesAsync();
-        Task<RecipeDto> GetRandomRecipe();
+        Task<RecipeDto> GetRandomRecipeAsync();
         Task<RecipeDto?> GetRecipeByIdAsync(int id);
         Task<IEnumerable<RecipeDto?>> GetRecipesWithSpecificCuisineAsync(int cuisineId);
         Task<IEnumerable<RecipeDto?>> GetRecipesWithRestrictionsAsync(IEnumerable<int> restrictionIds);

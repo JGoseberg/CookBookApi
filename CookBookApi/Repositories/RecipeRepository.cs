@@ -29,11 +29,6 @@ namespace CookBookApi.Repositories
             return await _context.Recipes.AnyAsync(r => r.CuisineId == cuisineId);
         }
 
-        public Task<bool> AnyRecipesWithSameNameAsync(string name)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task DeleteRecipeAsync(int id)
         {
             var recipe = await _context.Recipes.FindAsync(id);
@@ -80,7 +75,7 @@ namespace CookBookApi.Repositories
             return _mapper.Map<RecipeDto>(recipe);
         }
 
-        public async Task<RecipeDto> GetRandomRecipe()
+        public async Task<RecipeDto> GetRandomRecipeAsync()
         {
             //put in Service
             

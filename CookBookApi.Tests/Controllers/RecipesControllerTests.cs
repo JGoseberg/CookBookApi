@@ -112,9 +112,6 @@ namespace CookBookApi.Tests.Controllers
                 ParentRecipes = []
             };
 
-            _recipeRepositoryMock.Setup(r => r.AnyRecipesWithSameNameAsync(recipeDto.Name))
-                .ReturnsAsync(true);
-
             var result = await _controller.AddRecipeAsync(recipeDto);
             var resultValue = (CreatedResult)result;
             
@@ -135,9 +132,6 @@ namespace CookBookApi.Tests.Controllers
                 Subrecipes = [],
                 ParentRecipes = [],
             };
-
-            _recipeRepositoryMock.Setup(r => r.AnyRecipesWithSameNameAsync(recipeDto.Name))
-                .ReturnsAsync(false);
 
             var result = await _controller.AddRecipeAsync(recipeDto);
             
@@ -160,9 +154,6 @@ namespace CookBookApi.Tests.Controllers
                 Subrecipes = subRecipes,
                 ParentRecipes = [],
             };
-
-            _recipeRepositoryMock.Setup(r => r.AnyRecipesWithSameNameAsync(recipeDto.Name))
-                .ReturnsAsync(false);
 
             var result = await _controller.AddRecipeAsync(recipeDto);
             var resultValue = (CreatedResult)result;
@@ -191,9 +182,6 @@ namespace CookBookApi.Tests.Controllers
                 Subrecipes = [],
                 ParentRecipes = parentRecipes,
             };
-
-            _recipeRepositoryMock.Setup(r => r.AnyRecipesWithSameNameAsync(recipeDto.Name))
-                .ReturnsAsync(false);
 
             var result = await _controller.AddRecipeAsync(recipeDto);
             var resultValue = (CreatedResult)result;
@@ -260,7 +248,7 @@ namespace CookBookApi.Tests.Controllers
                 Description = "Bar",
             };
 
-            _recipeRepositoryMock.Setup(r => r.GetRandomRecipe())
+            _recipeRepositoryMock.Setup(r => r.GetRandomRecipeAsync())
                 .ReturnsAsync(recipeDto);
             
             var result = await _controller.GetRandomRecipeAsync();
