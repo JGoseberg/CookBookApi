@@ -1,7 +1,4 @@
-﻿using CookBookApi.DTOs;
-using CookBookApi.DTOs.Ingredient;
-using CookBookApi.DTOs.Recipes;
-
+﻿using CookBookApi.DTOs.Recipes;
 
 namespace CookBookApi.Interfaces.Repositories
 {
@@ -9,7 +6,6 @@ namespace CookBookApi.Interfaces.Repositories
     {
         Task<bool> AnyRecipesWithCuisineAsync(int cuisineId);
         Task<IEnumerable<RecipeDto>> GetAllRecipesAsync();
-        Task<RecipeDto> GetRandomRecipeAsync();
         Task<RecipeDto?> GetRecipeByIdAsync(int id);
         Task<IEnumerable<RecipeDto?>> GetRecipesWithSpecificCuisineAsync(int cuisineId);
         Task<IEnumerable<RecipeDto?>> GetRecipesWithRestrictionsAsync(IEnumerable<int> restrictionIds);

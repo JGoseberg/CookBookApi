@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using CookBookApi.DTOs;
 using CookBookApi.DTOs.Recipes;
+using CookBookApi.Interfaces;
 using CookBookApi.Interfaces.Repositories;
 using CookBookApi.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -14,23 +14,27 @@ public class RecipesController : ControllerBase
 {
     private readonly ICuisineRepository _cuisineRepository;
     private readonly IIngredientRepository _ingredientRepository;
-    private readonly IRecipeRepository _recipeRepository;
-    private readonly IRecipeIngredientRepository _recipeIngredientRepository;
-    private readonly IRestrictionRepository _restrictionRepository;
     private readonly IMapper _mapper;
+    private readonly IRecipeIngredientRepository _recipeIngredientRepository;
+    private readonly IRecipeRepository _recipeRepository;
+    private readonly IRecipeService _recipeService;
+    private readonly IRestrictionRepository _restrictionRepository;
+
     public RecipesController(
         ICuisineRepository cuisineRepository,
         IIngredientRepository ingredientRepository,
-        IRecipeRepository recipeRepository,
         IMapper mapper, 
         IRecipeIngredientRepository recipeIngredientRepository,
+        IRecipeRepository recipeRepository,
+        IRecipeService recipeService,
         IRestrictionRepository restrictionRepository)
     {
         _cuisineRepository = cuisineRepository;
         _ingredientRepository = ingredientRepository;
-        _recipeRepository = recipeRepository;
         _mapper = mapper;
         _recipeIngredientRepository = recipeIngredientRepository;
+        _recipeRepository = recipeRepository;
+        _recipeService = recipeService;
         _restrictionRepository = restrictionRepository;
     }
     [HttpPost]
@@ -109,7 +113,9 @@ public class RecipesController : ControllerBase
     [ActionName("GetRandomRecipes")]
     public async Task<ActionResult<RecipeDto>> GetRandomRecipeAsync()
     {
-        return await _recipeRepository.GetRandomRecipeAsync();
+        var recipe = await _recipeService.GetRandomRecipeAsync();
+        
+        return Ok(recipe);
     }
 
     [HttpGet("{id}")]

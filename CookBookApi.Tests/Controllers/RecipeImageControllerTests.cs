@@ -16,9 +16,7 @@ public class RecipeImageControllerTests
     private Mock<IRecipeRepository> _recipeRepository;
     private Mock<IRecipeImageRepository> _recipeImageRepository;
     private Mock<IRecipeImageService> _recipeImageService;
-    
     private Mock<IMapper> _mapper;
-    
     private RecipeImageController _controller;
     
     [SetUp]

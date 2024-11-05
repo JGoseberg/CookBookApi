@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
-using CookBookApi.DTOs;
-using CookBookApi.DTOs.Ingredient;
 using CookBookApi.DTOs.Recipes;
+using CookBookApi.Interfaces;
 using CookBookApi.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -73,21 +72,6 @@ namespace CookBookApi.Repositories
                 .FirstOrDefaultAsync(r => r.Id == id);
 
             return _mapper.Map<RecipeDto>(recipe);
-        }
-
-        public async Task<RecipeDto> GetRandomRecipeAsync()
-        {
-            //put in Service
-            
-            var recipes = await GetAllRecipesAsync();
-
-            var numberOfRecipes = recipes.Count();
-
-            var rnd = new Random((int)DateTime.Now.Ticks).Next(1, numberOfRecipes+1);
-
-            var randomRecipe = recipes.Where(r => r.Id == rnd);
-
-            return _mapper.Map<RecipeDto>(randomRecipe);
         }
 
         public async Task<IEnumerable<RecipeDto?>> GetRecipesWithSpecificCuisineAsync(int cuisineId)

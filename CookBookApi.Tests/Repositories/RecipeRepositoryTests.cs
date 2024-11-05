@@ -66,7 +66,6 @@ public class RecipeRepositoryTests
     [Test]
     public void GetRandomRecipeAsync_ShouldReturnRandomRecipe()
     {
-        // outsource in Service
         throw new NotImplementedException();
     }
 

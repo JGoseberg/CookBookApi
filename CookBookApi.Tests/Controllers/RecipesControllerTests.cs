@@ -7,6 +7,7 @@ using Moq;
 using CookBookApi.Controllers;
 using CookBookApi.DTOs;
 using CookBookApi.DTOs.Ingredient;
+using CookBookApi.Interfaces;
 
 namespace CookBookApi.Tests.Controllers
 {
@@ -15,12 +16,13 @@ namespace CookBookApi.Tests.Controllers
     {
         private Mock<ICuisineRepository> _cuisineRepositoryMock;
         private Mock<IIngredientRepository> _ingredientRepositoryMock;
-        private Mock<IRecipeRepository> _recipeRepositoryMock;
-        private Mock<IRestrictionRepository> _restrictionRepositoryMock;
-        private RecipesController _controller;
         private IMapper _mapper;
+        private RecipesController _controller;
         private Mock<IRecipeIngredientRepository> _recipeIngredientRepositoryMock;
-
+        private Mock<IRecipeRepository> _recipeRepositoryMock;
+        private Mock<IRecipeService> _recipeServiceMock; 
+        private Mock<IRestrictionRepository> _restrictionRepositoryMock;
+        
         [SetUp]
         public void Setup()
         {
@@ -29,8 +31,18 @@ namespace CookBookApi.Tests.Controllers
             _recipeRepositoryMock = new Mock<IRecipeRepository>();
             _recipeIngredientRepositoryMock = new Mock<IRecipeIngredientRepository>();
             _restrictionRepositoryMock = new Mock<IRestrictionRepository>();
+            _recipeServiceMock = new Mock<IRecipeService>();
             _mapper = MapperTestConfig.InitializeAutoMapper();
-            _controller = new RecipesController(_cuisineRepositoryMock.Object, _ingredientRepositoryMock.Object, _recipeRepositoryMock.Object, _mapper, _recipeIngredientRepositoryMock.Object, _restrictionRepositoryMock.Object);
+            _controller = new RecipesController
+                (
+                    _cuisineRepositoryMock.Object,
+                    _ingredientRepositoryMock.Object,
+                    _mapper,
+                    _recipeIngredientRepositoryMock.Object,
+                    _recipeRepositoryMock.Object,
+                    _recipeServiceMock.Object,
+                    _restrictionRepositoryMock.Object
+                );
         }
 
         [Test]
@@ -248,12 +260,17 @@ namespace CookBookApi.Tests.Controllers
                 Description = "Bar",
             };
 
-            _recipeRepositoryMock.Setup(r => r.GetRandomRecipeAsync())
+            _recipeServiceMock.Setup(r => r.GetRandomRecipeAsync())
                 .ReturnsAsync(recipeDto);
             
             var result = await _controller.GetRandomRecipeAsync();
+            var resultValue = result.Result as OkObjectResult;
             
-            Assert.That(result.Value, Is.InstanceOf<RecipeDto>());
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
+                Assert.That(resultValue.Value, Is.InstanceOf<RecipeDto>());
+            });
         }
 
         [Test]

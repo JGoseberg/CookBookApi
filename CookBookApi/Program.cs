@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//cors for frontend
+// Cors for frontend
 builder.Services.AddCors(opt =>
 {
     opt.AddPolicy("AllowSpecificOrigins",
@@ -19,16 +19,14 @@ builder.Services.AddCors(opt =>
         });
 });
 
-
-// Add services to the container.
 builder.Services.AddDbContext<CookBookContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("CookBookContext")));
 
+builder.Services.AddScoped<IRecipeService, RecipeService>();
 builder.Services.AddScoped<IRecipeImageService, RecipeImageService>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
-builder.Services.AddControllers();/*.AddJsonOptions(o => o.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles);*/
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -46,7 +44,6 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -71,7 +68,6 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-//Cors
 app.UseCors("AllowSpecificOrigins");
 
 app.MapControllers();
