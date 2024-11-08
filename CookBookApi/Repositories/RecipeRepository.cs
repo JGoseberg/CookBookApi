@@ -94,11 +94,6 @@ namespace CookBookApi.Repositories
             return _mapper.Map<IEnumerable<RecipeDto>>(recipes);
         }
 
-        public Task<IEnumerable<RecipeDto?>> GetRecipesWithRestrictionsAsync(IEnumerable<int> restrictionIds)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task UpdateRecipeAsync(Recipe recipe)
         {
             _context.Recipes.Update(recipe);

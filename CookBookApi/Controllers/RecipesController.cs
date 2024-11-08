@@ -17,6 +17,7 @@ public class RecipesController : ControllerBase
     private readonly IMapper _mapper;
     private readonly IRecipeIngredientRepository _recipeIngredientRepository;
     private readonly IRecipeRepository _recipeRepository;
+    private readonly IRecipeRestrictionRepository _recipeRestrictionRepository;
     private readonly IRecipeService _recipeService;
     private readonly IRestrictionRepository _restrictionRepository;
 
@@ -26,6 +27,7 @@ public class RecipesController : ControllerBase
         IMapper mapper, 
         IRecipeIngredientRepository recipeIngredientRepository,
         IRecipeRepository recipeRepository,
+        IRecipeRestrictionRepository recipeRestrictionRepository,
         IRecipeService recipeService,
         IRestrictionRepository restrictionRepository)
     {
@@ -34,6 +36,7 @@ public class RecipesController : ControllerBase
         _mapper = mapper;
         _recipeIngredientRepository = recipeIngredientRepository;
         _recipeRepository = recipeRepository;
+        _recipeRestrictionRepository = recipeRestrictionRepository;
         _recipeService = recipeService;
         _restrictionRepository = restrictionRepository;
     }
@@ -191,7 +194,15 @@ public class RecipesController : ControllerBase
                 return BadRequest($"Restriction with Id: {restrictionId} not found");
         }
 
-        var recipes = await _recipeRepository.GetRecipesWithRestrictionsAsync(restrictionIds);
+        var recipeIds = await _recipeRestrictionRepository.GetRecipeIdsWithRestrictionAsync(restrictionIds);
+
+        var recipes = new List<RecipeDto?>();
+        foreach (var recipeId in recipeIds)
+        {
+            var recipe = await _recipeRepository.GetRecipeByIdAsync(recipeId);
+            if (recipe != null)
+                recipes.Add(recipe);
+        }
         
         if (!recipes.Any())
             return BadRequest($"No Recipe with this Restrictions found!");

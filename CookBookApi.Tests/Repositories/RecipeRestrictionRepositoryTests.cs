@@ -61,4 +61,71 @@ public class RecipeRestrictionRepositoryTests
         
         Assert.That(result, Is.False);
     }
+
+    [Test]
+    public async Task GetRecipeIdsWithRestrictionAsync_EmptyListofIdsIds_ShouldReturnNull()
+    {
+        var emptyListOfIds = new List<int>();
+
+        var recipe = new Recipe
+        {
+            Name = "Foo",
+            Description = "Bar",
+            Instruction = "FooBar",
+            Creator = "BarFoo"
+        };
+        
+        await using var context = new CookBookContext(_options);
+        await context.RecipeRestrictions.AddAsync(_recipeRestriction);
+        await context.Recipes.AddAsync(recipe);
+        await context.SaveChangesAsync();
+
+        var repository = new RecipeRestrictionRepository(context);
+        
+        var recipeIds = await repository.GetRecipeIdsWithRestrictionAsync(emptyListOfIds);
+        
+        Assert.That(recipeIds, Is.Null);
+    }
+    
+    [Test]
+    public async Task GetRecipeIdsWithRestrictionAsync_ValidIds_ShouldReturnListOfRecipeIds()
+    {
+        var restrictionIds = new List<int> { 1, 2 };
+
+        var secondRecipeRestriction = new RecipeRestriction
+        {
+            RecipeId = 1,
+            RestrictionId = 2
+        };
+        
+        var recipe = new Recipe
+        {
+            Name = "Foo",
+            Description = "Bar",
+            Instruction = "FooBar",
+            Creator = "BarFoo",
+            RecipeRestrictions = new List<RecipeRestriction> { _recipeRestriction }
+        };
+        
+        var secondRecipe = new Recipe
+        {
+            Name = "Foo",
+            Description = "Bar",
+            Instruction = "FooBar",
+            Creator = "BarFoo"
+        };
+        
+        await using var context = new CookBookContext(_options);
+        await context.Recipes.AddAsync(recipe);
+        await context.Recipes.AddAsync(secondRecipe);
+        await context.RecipeRestrictions.AddAsync(_recipeRestriction);
+        await context.RecipeRestrictions.AddAsync(secondRecipeRestriction);
+        await context.SaveChangesAsync();
+        
+        var repository = new RecipeRestrictionRepository(context);
+        
+        var recipeIds = await repository.GetRecipeIdsWithRestrictionAsync(restrictionIds);
+        
+        Assert.That(recipeIds.Count(), Is.EqualTo(1));
+    }
 }
