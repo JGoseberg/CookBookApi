@@ -33,11 +33,11 @@ public class RecipeImageControllerTests
     public async Task AddRecipeImage_RecipeNotFound_ReturnsNotFound()
     {
         var recipeId = 1;
-        IFormFile file = null;
+        IFormFile? file = null;
         
         _recipeRepository.Setup(rr => rr.GetRecipeByIdAsync(recipeId)).ReturnsAsync((RecipeDto?)null);
         
-        var result = await _controller.AddRecipeImage(recipeId, file);
+        var result = await _controller.AddRecipeImage(recipeId, file!);
         
         Assert.That(result, Is.TypeOf<NotFoundObjectResult>());
     }
@@ -51,14 +51,14 @@ public class RecipeImageControllerTests
         
         var recipeImage = new RecipeImage {Id = 1, RecipeId = recipe.Id};
         
-        IFormFile file = null;
+        IFormFile? file = null;
         
         _recipeRepository.Setup(rr => rr.GetRecipeByIdAsync(recipe.Id)).ReturnsAsync(recipe);
         _recipeImageRepository.Setup(ri => ri.GetExistingImageAsync(It.IsAny<byte[]>(), It.IsAny<string>()))
-            .ReturnsAsync((RecipeImage)null);
-        _recipeImageService.Setup(ri => ri.ProcessAndCreateRecipeImageAsync(file)).ReturnsAsync(recipeImage);
+            .ReturnsAsync((RecipeImage?)null);
+        _recipeImageService.Setup(ri => ri.ProcessAndCreateRecipeImageAsync(file!)).ReturnsAsync(recipeImage);
         
-        var result = await _controller.AddRecipeImage(recipeId, file);
+        var result = await _controller.AddRecipeImage(recipeId, file!);
         
         Assert.That(result, Is.TypeOf<CreatedResult>());
     }
@@ -72,12 +72,12 @@ public class RecipeImageControllerTests
         
         var recipeImage = new RecipeImage {Id = 1, RecipeId = recipe.Id};
         
-        IFormFile file = null;
+        IFormFile? file = null;
         
         _recipeRepository.Setup(rr => rr.GetRecipeByIdAsync(recipe.Id)).ReturnsAsync(recipe);
-        _recipeImageService.Setup(ri => ri.ProcessAndCreateRecipeImageAsync(file)).ReturnsAsync(recipeImage);
+        _recipeImageService.Setup(ri => ri.ProcessAndCreateRecipeImageAsync(file!)).ReturnsAsync(recipeImage);
         
-        var result = await _controller.AddRecipeImage(recipeId, file);
+        var result = await _controller.AddRecipeImage(recipeId, file!);
         
         Assert.That(result, Is.TypeOf<CreatedResult>());
     }
@@ -97,7 +97,7 @@ public class RecipeImageControllerTests
     {
         var recipeId = 1;
 
-        var recipeImages = new RecipeImage[]
+        var recipeImages = new[]
         {
             new RecipeImage { Id = 1, RecipeId = recipeId, ImageData = new byte[] { 1, 2, 3 }, MimeType = "image/png" },
             new RecipeImage { Id = 2, RecipeId = recipeId, ImageData = new byte[] { 1, 2, 3 }, MimeType = "image/jpg" },

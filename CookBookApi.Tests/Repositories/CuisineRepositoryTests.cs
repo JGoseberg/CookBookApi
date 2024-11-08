@@ -44,9 +44,12 @@ public class CuisineRepositoryTests
         await repository.AddCuisineAsync(_cuisine);
         
         var addedCuisine = await context.Cuisines.FirstOrDefaultAsync();
-        
-        Assert.That(addedCuisine, Is.Not.Null);
-        Assert.That(addedCuisine.Id, Is.EqualTo(_cuisine.Id));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(addedCuisine, Is.Not.Null);
+            Assert.That(addedCuisine!.Id, Is.EqualTo(_cuisine.Id));
+        });
     }
 
     [Test]
@@ -105,9 +108,13 @@ public class CuisineRepositoryTests
         var repository = new CuisineRepository(context, _mapper);
         
         await repository.DeleteCuisineAsync(404);
-        
-        Assert.That(context.Cuisines.FirstOrDefault(c => c.Id == _cuisine.Id), Is.Not.Null);
-        Assert.That(context.Cuisines.FirstOrDefault(c => c.Id == _cuisine.Id), Is.EqualTo(_cuisine));
+
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(context.Cuisines.FirstOrDefault(c => c.Id == _cuisine.Id), Is.Not.Null);
+            Assert.That(context.Cuisines.FirstOrDefault(c => c.Id == _cuisine.Id), Is.EqualTo(_cuisine));
+        });
     }
 
     [Test]
@@ -122,8 +129,12 @@ public class CuisineRepositoryTests
         
         var cuisines = await repository.GetAllCuisinesAsync();
         
-        Assert.That(cuisines, Is.Not.Null);
-        Assert.That(cuisines.Count(), Is.EqualTo(1));
+        Assert.Multiple(() =>
+        {
+            var cuisineList = cuisines.ToList();
+            Assert.That(cuisineList, Is.Not.Null);
+            Assert.That(cuisineList.Count(), Is.EqualTo(1));
+        });
     }
 
     [Test]
@@ -155,7 +166,7 @@ public class CuisineRepositoryTests
         
         Assert.Multiple(() =>
         {
-            Assert.That(cuisine.Id, Is.EqualTo(_cuisine.Id));
+            Assert.That(cuisine!.Id, Is.EqualTo(_cuisine.Id));
             Assert.That(cuisine.Name, Is.EqualTo(_cuisine.Name));
         });
     }
@@ -178,8 +189,11 @@ public class CuisineRepositoryTests
         
         await repository.UpdateCuisineAsync(cuisineToUpdate);
         
-        Assert.That(context.Cuisines.FirstOrDefault(), Is.Not.Null);
-        Assert.That(context.Cuisines.FirstOrDefault().Name, Is.EqualTo(cuisineToUpdate.Name));
+        Assert.Multiple(() =>
+        {
+            Assert.That(context.Cuisines.FirstOrDefault(), Is.Not.Null);
+            Assert.That(context.Cuisines.FirstOrDefault()!.Name, Is.EqualTo(cuisineToUpdate.Name));
+        });
     }
 
     [Test]

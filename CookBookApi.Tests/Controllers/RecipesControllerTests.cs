@@ -66,7 +66,7 @@ namespace CookBookApi.Tests.Controllers
         [Test]
         public async Task AddRecipeAsync_NameIsNull_ShouldReturnBadRequest()
         {
-            var recipeDto = new AddRecipeDto { Name = null };
+            var recipeDto = new AddRecipeDto { Name = null! };
 
             var result = await _controller.AddRecipeAsync(recipeDto);
             var resultValue = (BadRequestObjectResult)result;
@@ -177,7 +177,7 @@ namespace CookBookApi.Tests.Controllers
             Assert.Multiple(() =>
             {
                 Assert.That(resultValue.Value, Is.Not.Null);
-                Assert.That(recipe.Subrecipes.Count, Is.EqualTo(subRecipes.Count));
+                Assert.That(recipe!.Subrecipes.Count, Is.EqualTo(subRecipes.Count));
             });
         }
 
@@ -205,7 +205,7 @@ namespace CookBookApi.Tests.Controllers
             Assert.Multiple(() =>
             {
                 Assert.That(resultValue.Value, Is.Not.Null);
-                Assert.That(recipe.ParentRecipes.Count, Is.EqualTo(parentRecipes.Count));
+                Assert.That(recipe!.ParentRecipes.Count, Is.EqualTo(parentRecipes.Count));
             });
         }
 
@@ -272,7 +272,7 @@ namespace CookBookApi.Tests.Controllers
             Assert.Multiple(() =>
             {
                 Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
-                Assert.That(resultValue.Value, Is.InstanceOf<RecipeDto>());
+                Assert.That(resultValue!.Value, Is.InstanceOf<RecipeDto>());
             });
         }
 
@@ -317,7 +317,7 @@ namespace CookBookApi.Tests.Controllers
             Assert.Multiple(() =>
             {
                 Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
-                Assert.That(resultValue.Value, Is.EqualTo("Cuisine does not exists!"));
+                Assert.That(resultValue!.Value, Is.EqualTo("Cuisine does not exists!"));
             });
         }
         
@@ -338,7 +338,7 @@ namespace CookBookApi.Tests.Controllers
             Assert.Multiple(() =>
             {
                 Assert.That(result.Result, Is.InstanceOf<NotFoundObjectResult>());
-                Assert.That(resultValue.Value, Is.EqualTo($"No recipes with cuisine {validCuisine.Name} found"));
+                Assert.That(resultValue!.Value, Is.EqualTo($"No recipes with cuisine {validCuisine.Name} found"));
             });
         }
 
@@ -368,7 +368,7 @@ namespace CookBookApi.Tests.Controllers
             Assert.Multiple(() =>
             {
                 Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
-                Assert.That(resultValue.Value, Is.EqualTo(recipes));
+                Assert.That(resultValue!.Value, Is.EqualTo(recipes));
             });
         }
 
@@ -383,7 +383,7 @@ namespace CookBookApi.Tests.Controllers
             Assert.Multiple(() =>
             {
                 Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
-                Assert.That(resultValue.Value, Is.EqualTo("Ingredient Ids cannot be empty"));
+                Assert.That(resultValue!.Value, Is.EqualTo("Ingredient Ids cannot be empty"));
             });
         }
         
@@ -401,7 +401,7 @@ namespace CookBookApi.Tests.Controllers
             Assert.Multiple(() =>
             {
                 Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
-                Assert.That(resultValue.Value, Is.EqualTo("Ingredient with Id: 1 not found"));
+                Assert.That(resultValue!.Value, Is.EqualTo("Ingredient with Id: 1 not found"));
             });
         }
         
@@ -427,7 +427,7 @@ namespace CookBookApi.Tests.Controllers
             Assert.Multiple(() =>
             {
                 Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
-                Assert.That(resultValue.Value, Is.EqualTo("No Recipe with this Ingredients found!"));
+                Assert.That(resultValue!.Value, Is.EqualTo("No Recipe with this Ingredients found!"));
             });
         }
         
@@ -455,7 +455,7 @@ namespace CookBookApi.Tests.Controllers
             Assert.Multiple(() =>
             {
                 Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
-                Assert.That(resultValue.Value, Is.InstanceOf<IEnumerable<RecipeDto>>());
+                Assert.That(resultValue!.Value, Is.InstanceOf<IEnumerable<RecipeDto>>());
             });
         }
 
@@ -470,7 +470,7 @@ namespace CookBookApi.Tests.Controllers
             Assert.Multiple(() =>
             {
                 Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
-                Assert.That(resultValue.Value, Is.EqualTo("Restriction Ids cannot be empty"));
+                Assert.That(resultValue!.Value, Is.EqualTo("Restriction Ids cannot be empty"));
             });
         }
         
@@ -488,7 +488,7 @@ namespace CookBookApi.Tests.Controllers
             Assert.Multiple(() =>
             {
                 Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
-                Assert.That(resultValue.Value, Is.EqualTo("Restriction with Id: 1 not found"));
+                Assert.That(resultValue!.Value, Is.EqualTo("Restriction with Id: 1 not found"));
             });
         }
         
@@ -509,7 +509,7 @@ namespace CookBookApi.Tests.Controllers
             Assert.Multiple(() =>
             {
                 Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
-                Assert.That(resultValue.Value, Is.EqualTo("No Recipe with this Restrictions found!"));
+                Assert.That(resultValue!.Value, Is.EqualTo("No Recipe with this Restrictions found!"));
             });
         }
         
@@ -538,7 +538,7 @@ namespace CookBookApi.Tests.Controllers
             Assert.Multiple(() =>
             {
                 Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
-                Assert.That(resultValue.Value, Is.InstanceOf<IEnumerable<RecipeDto>>());
+                Assert.That(resultValue!.Value, Is.InstanceOf<IEnumerable<RecipeDto>>());
             });
         }
 
@@ -592,7 +592,7 @@ namespace CookBookApi.Tests.Controllers
             Assert.Multiple( () =>
             {
                 Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
-                Assert.That(resultValue.Value, Is.EqualTo(newRecipeDto));
+                Assert.That(resultValue!.Value, Is.EqualTo(newRecipeDto));
             });
         }
 
@@ -628,7 +628,7 @@ namespace CookBookApi.Tests.Controllers
             Assert.Multiple( () =>
             {
                 Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
-                Assert.That(resultValue.Value, Is.EqualTo(newRecipeDto));
+                Assert.That(resultValue!.Value, Is.EqualTo(newRecipeDto));
             });
         }
     }
