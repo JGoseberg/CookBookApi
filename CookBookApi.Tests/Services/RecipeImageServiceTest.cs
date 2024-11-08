@@ -1,6 +1,3 @@
-using System.Net;
-using Castle.Components.DictionaryAdapter.Xml;
-using CookBookApi.Interfaces;
 using CookBookApi.Interfaces.Repositories;
 using CookBookApi.Models;
 using CookBookApi.Services;
@@ -28,9 +25,9 @@ public class RecipeImageServiceTest
     [Test]
     public async Task ProcessAndCreateRecipeImage_FileIsNull_ReturnsNull()
     {
-        IFormFile file = null;
+        IFormFile? file = null;
 
-        var result = await _recipeImageService.ProcessAndCreateRecipeImageAsync(file);
+        var result = await _recipeImageService.ProcessAndCreateRecipeImageAsync(file!);
         
         Assert.That(result, Is.Null);
     }
@@ -83,7 +80,7 @@ public class RecipeImageServiceTest
         
         var result = await _recipeImageService.ProcessAndCreateRecipeImageAsync(file.Object);
         
-        Assert.That(result.ImageData, Is.EqualTo(imageData));
+        Assert.That(result!.ImageData, Is.EqualTo(imageData));
     }
     
     [Test]
@@ -96,19 +93,19 @@ public class RecipeImageServiceTest
         var imagedata = new byte[] { 1, 2, 3 };
         using var memoryStream = new MemoryStream();
         file.Setup(f => f.CopyToAsync(It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
-            .Callback<Stream, CancellationToken>((stream, token) =>
+            .Callback<Stream, CancellationToken>((stream, _) =>
                 stream.Write(imagedata, 0, imagedata.Length));
         
         _recipeImageRepositoryMock.Setup(r => r.GetExistingImageAsync(It.IsAny<byte[]>(), It.IsAny<string>()))
-            .ReturnsAsync((RecipeImage)null);
+            .ReturnsAsync((RecipeImage?)null);
         
         var result = await _recipeImageService.ProcessAndCreateRecipeImageAsync(file.Object);
         
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result, Is.InstanceOf<RecipeImage>());
         Assert.Multiple(() =>
         {
-            Assert.That(result.ImageData, Has.Length.EqualTo(imagedata.Length));
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result, Is.InstanceOf<RecipeImage>());
+            Assert.That(result!.ImageData, Has.Length.EqualTo(imagedata.Length));
             Assert.That(result.MimeType, Is.EqualTo(file.Object.ContentType));
         });
     }

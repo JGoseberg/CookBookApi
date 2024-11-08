@@ -136,7 +136,7 @@ public class RecipesController : ControllerBase
     [ActionName("GetRecipesByCuisine")]
     public async Task<ActionResult<RecipeDto>> GetRecipesWithCuisinesAsync(int cuisineId)
     {
-        if (cuisineId == null)
+        if (!int.IsPositive(cuisineId))
             return BadRequest("cuisine Id cannot be empty");
 
         var cuisine = await _cuisineRepository.GetCuisineByIdAsync(cuisineId);
@@ -168,7 +168,7 @@ public class RecipesController : ControllerBase
 
         var recipeIds = await _recipeIngredientRepository.GetRecipesWithIngredientsAsync(ingredientIds);
 
-        foreach (var recipeId in recipeIds)
+        foreach (var recipeId in recipeIds!)
         {
             var recipe = await _recipeRepository.GetRecipeByIdAsync(recipeId);
             if (recipe != null)

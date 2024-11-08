@@ -1,4 +1,3 @@
-using AutoMapper;
 using CookBookApi.Models;
 using CookBookApi.Repositories;
 using Microsoft.EntityFrameworkCore;

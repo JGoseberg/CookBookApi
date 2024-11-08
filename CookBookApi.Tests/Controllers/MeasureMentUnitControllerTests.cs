@@ -15,7 +15,6 @@ namespace CookBookApi.Tests.Controllers
         private Mock<IMeasurementUnitRepository> _measurementUnitRepository;
         private Mock<IRecipeIngredientRepository> _recipeIngredientRepository;
         private IMapper _mapper;
-        private Mock<IRecipeRepository> _recipeRepository;
 
         [SetUp]
         public void Setup()
@@ -23,8 +22,7 @@ namespace CookBookApi.Tests.Controllers
             _measurementUnitRepository = new Mock<IMeasurementUnitRepository>();
             _recipeIngredientRepository = new Mock<IRecipeIngredientRepository>();
             _mapper = MapperTestConfig.InitializeAutoMapper();
-            _recipeRepository = new Mock<IRecipeRepository>();
-            _controller = new MeasurementUnitController(_measurementUnitRepository.Object, _recipeIngredientRepository.Object, _mapper, _recipeRepository.Object);
+            _controller = new MeasurementUnitController(_measurementUnitRepository.Object, _recipeIngredientRepository.Object, _mapper);
         }
 
         [Test]

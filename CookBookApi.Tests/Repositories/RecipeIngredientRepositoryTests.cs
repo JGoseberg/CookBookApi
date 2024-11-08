@@ -77,7 +77,7 @@ public class RecipeIngredientRepositoryTests
 
         var recipeIds = await repository.GetRecipesWithIngredientsAsync(listWithOnlyOneIngredientId);
         
-        Assert.That(recipeIds.Count(), Is.EqualTo(1));
+        Assert.That(recipeIds!.Count(), Is.EqualTo(1));
     }
     
     [Test]
@@ -123,7 +123,7 @@ public class RecipeIngredientRepositoryTests
 
         var recipeIds = await repository.GetRecipesWithIngredientsAsync(listOfIngredientIds);
         
-        Assert.That(recipeIds.Count(), Is.EqualTo(1));
+        Assert.That(recipeIds!.Count(), Is.EqualTo(1));
     }
     
     [Test]

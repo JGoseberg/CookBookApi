@@ -51,7 +51,7 @@ namespace CookBookApi.Tests.Controllers
         [Test]
         public async Task AddCuisineAsync_NameIsNull_ReturnsBadRequest()
         {
-            var result = await _controller.AddCuisineAsync(new CuisineDto());
+            var result = await _controller.AddCuisineAsync(new CuisineDto{Name = string.Empty});
 
             Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         }

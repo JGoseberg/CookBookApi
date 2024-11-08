@@ -2,8 +2,8 @@
 {
     public class RecipeIngredientDto
     {
-        public string IngredientName { get; set; }
-        public double Amount { get; set; }
-        public string MeasurementUnit { get; set; }
+        public required string IngredientName { get; set; }
+        public required double Amount { get; set; }
+        public required string MeasurementUnit { get; set; }
     }
 }

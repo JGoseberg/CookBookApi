@@ -15,7 +15,7 @@ public class RecipeImageService : IRecipeImageService
         _repository = repository;
     }
 
-    public async Task<RecipeImage> ProcessAndCreateRecipeImageAsync(IFormFile file)
+    public async Task<RecipeImage?> ProcessAndCreateRecipeImageAsync(IFormFile file)
     {
         if (file == null || file.Length == 0)
             return null;

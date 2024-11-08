@@ -126,6 +126,6 @@ public class RecipeRestrictionRepositoryTests
         
         var recipeIds = await repository.GetRecipeIdsWithRestrictionAsync(restrictionIds);
         
-        Assert.That(recipeIds.Count(), Is.EqualTo(1));
+        Assert.That(recipeIds!.Count(), Is.EqualTo(1));
     }
 }

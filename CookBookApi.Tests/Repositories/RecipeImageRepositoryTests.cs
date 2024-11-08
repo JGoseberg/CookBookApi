@@ -1,7 +1,6 @@
 using CookBookApi.Models;
 using CookBookApi.Repositories;
 using Microsoft.EntityFrameworkCore;
-using Moq;
 
 namespace CookBookApi.Tests.Repositories;
 
@@ -10,12 +9,12 @@ public class RecipeImageRepositoryTests
 {
     private DbContextOptions<CookBookContext> _options;
     
-    private static readonly string base64String =
+    private static readonly string Base64String =
         "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==";
 
     private readonly RecipeImage _recipeImage = new RecipeImage
     {
-        ImageData = Convert.FromBase64String(base64String), RecipeId = 1, MimeType = "image/jpeg"
+        ImageData = Convert.FromBase64String(Base64String), RecipeId = 1, MimeType = "image/jpeg"
     };
     
     [SetUp]
@@ -44,8 +43,11 @@ public class RecipeImageRepositoryTests
 
         var addedImage = await context.RecipeImages.FirstOrDefaultAsync();
 
-        Assert.That(addedImage, Is.Not.Null);
-        Assert.That(addedImage.Id, Is.EqualTo(_recipeImage.Id));
+        Assert.Multiple(() =>
+        {
+            Assert.That(addedImage, Is.Not.Null);
+            Assert.That(addedImage!.Id, Is.EqualTo(_recipeImage.Id));
+        });
     }
 
     [Test]
@@ -58,10 +60,14 @@ public class RecipeImageRepositoryTests
             
         var repository = new RecipeImageRepository(context); 
         var images = await repository.GetRecipeImagesAsync(_recipeImage.RecipeId);
-            
-        Assert.That(images, Is.Not.Empty); 
-        Assert.That(images.Count, Is.EqualTo(1)); 
-        Assert.That(images.First().Id, Is.EqualTo(_recipeImage.Id));
+
+        Assert.Multiple(() =>
+        {
+            var recipeImages = images.ToList();
+            Assert.That(recipeImages, Is.Not.Empty);
+            Assert.That(recipeImages.Count, Is.EqualTo(1));
+            Assert.That(recipeImages.First().Id, Is.EqualTo(_recipeImage.Id));
+        });
     }
     
     [Test]

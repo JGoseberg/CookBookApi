@@ -2,7 +2,7 @@
 {
     public class AddMeasurementUnitDto
     {
-        public string Name { get; set; }
-        public string Abbreviation { get; set; }
+        public required string Name { get; set; }
+        public required string Abbreviation { get; set; }
     }
 }

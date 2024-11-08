@@ -12,7 +12,6 @@ namespace CookBookApi.Controllers
     [ApiController]
     public class CuisinesController : ControllerBase
     {
-        private readonly CookBookContext _context;
         private readonly ICuisineRepository _cuisineRepository;
         private readonly IRecipeRepository _recipeRepository;
         private readonly IMapper _mapper;

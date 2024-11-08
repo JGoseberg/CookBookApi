@@ -128,9 +128,14 @@ public class IngredientRepositoryTests
         var repository = new IngredientRepository(context, _mapper);
         
         var ingredients = await repository.GetAllIngredientsAsync();
+
         
-        Assert.That(ingredients, Is.Not.Null);
-        Assert.That(ingredients.Count(), Is.EqualTo(1));
+        Assert.Multiple( () =>
+        {
+            var ingredientDtos = ingredients.ToList();
+            Assert.That(ingredientDtos, Is.Not.Null);
+            Assert.That(ingredientDtos.Count(), Is.EqualTo(1));
+        });
     }
 
     [Test]
@@ -145,8 +150,11 @@ public class IngredientRepositoryTests
         
         var ingredient = await repository.GetIngredientByIdAsync(_ingredient.Id);
         
-        Assert.That(ingredient, Is.Not.Null);
-        Assert.That(ingredient, Is.EqualTo(ingredient));
+        Assert.Multiple(() =>
+        {
+            Assert.That(ingredient, Is.Not.Null);
+            Assert.That(ingredient, Is.EqualTo(_mapper.Map(_ingredient, ingredient)));
+        });
     }
 
     [Test]

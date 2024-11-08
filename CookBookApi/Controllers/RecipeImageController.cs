@@ -2,9 +2,7 @@ using AutoMapper;
 using CookBookApi.DTOs;
 using CookBookApi.Interfaces;
 using CookBookApi.Interfaces.Repositories;
-using CookBookApi.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
 namespace CookBookApi.Controllers;
 
@@ -56,12 +54,13 @@ public class RecipeImageController : ControllerBase
     {
         var recipeImages = await _recipeImageRepository.GetRecipeImagesAsync(recipeId);
 
-        if(!recipeImages.Any())
+        var recipeImagesList = recipeImages.ToList();
+        if(!recipeImagesList.Any())
             return NotFound("No images found");
 
         var images = new List<FileContentResult>();
 
-        foreach (var recipeImage in recipeImages)
+        foreach (var recipeImage in recipeImagesList)
         {
             images.Add(File(recipeImage.ImageData, recipeImage.MimeType));
         }

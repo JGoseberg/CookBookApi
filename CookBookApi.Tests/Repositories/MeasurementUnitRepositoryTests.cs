@@ -1,5 +1,4 @@
 using AutoMapper;
-using CookBookApi.DTOs.MeasurementUnit;
 using CookBookApi.Mappings;
 using CookBookApi.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -187,11 +186,11 @@ public class MeasurementUnitRepositoryTests
         Assert.Multiple(() => 
         { 
             Assert.That(context.MeasurementUnits.Count(), Is.EqualTo(1)); 
-            Assert.That(context.MeasurementUnits.FirstOrDefault(mu => mu.Id == measurementUnitToUpdate.Id).Name, 
+            Assert.That(context.MeasurementUnits.FirstOrDefault(mu => mu.Id == measurementUnitToUpdate.Id)!.Name, 
                 Is.EqualTo(measurementUnitToUpdate.Name));
-            Assert.That(context.MeasurementUnits.FirstOrDefault(mu => mu.Id == measurementUnitToUpdate.Id).Abbreviation,
+            Assert.That(context.MeasurementUnits.FirstOrDefault(mu => mu.Id == measurementUnitToUpdate.Id)!.Abbreviation,
                 Is.EqualTo(measurementUnitToUpdate.Abbreviation));
-            Assert.That(context.MeasurementUnits.FirstOrDefault(mu => mu.Id == measurementUnitToUpdate.Id).Id,
+            Assert.That(context.MeasurementUnits.FirstOrDefault(mu => mu.Id == measurementUnitToUpdate.Id)!.Id,
                 Is.EqualTo(_measurementUnit.Id));
         });
     }

@@ -51,7 +51,16 @@ namespace CookBookApi.Tests.Controllers
         [Test]
         public async Task AddRecipeAsync_NameIsEmpty_ShouldReturnBadRequest()
         {
-            var recipeDto = new AddRecipeDto { Name = string.Empty };
+            var recipeDto = new AddRecipeDto
+            {
+                Name = string.Empty,
+                Description = string.Empty,
+                Instruction = string.Empty,
+                Creator = string.Empty,
+                Ingredients = [],
+                Subrecipes = [],
+                ParentRecipes = []
+            };
 
             var result = await _controller.AddRecipeAsync(recipeDto);
             var resultValue = (BadRequestObjectResult)result;
@@ -66,7 +75,16 @@ namespace CookBookApi.Tests.Controllers
         [Test]
         public async Task AddRecipeAsync_NameIsNull_ShouldReturnBadRequest()
         {
-            var recipeDto = new AddRecipeDto { Name = null! };
+            var recipeDto = new AddRecipeDto
+            {
+                Name = null!,
+                Description = string.Empty,
+                Instruction = string.Empty,
+                Creator = string.Empty,
+                Ingredients = [],
+                Subrecipes = [],
+                ParentRecipes = []
+            };
 
             var result = await _controller.AddRecipeAsync(recipeDto);
             var resultValue = (BadRequestObjectResult)result;
@@ -84,7 +102,12 @@ namespace CookBookApi.Tests.Controllers
             var recipeDto = new AddRecipeDto
             {
                 Name = "Foo",
-                Instruction = string.Empty
+                Instruction = string.Empty,
+                Description = string.Empty,
+                Creator = string.Empty,
+                Ingredients = [],
+                Subrecipes = [],
+                ParentRecipes = []
             };
 
             var result = await _controller.AddRecipeAsync(recipeDto);
@@ -103,7 +126,12 @@ namespace CookBookApi.Tests.Controllers
             var recipeDto = new AddRecipeDto
             {
                 Name = "Foo",
-                Instruction = string.Empty
+                Instruction = string.Empty,
+                Description = string.Empty,
+                Creator = string.Empty,
+                Ingredients = [],
+                Subrecipes = [],
+                ParentRecipes = []
             };
 
             var result = await _controller.AddRecipeAsync(recipeDto);
@@ -124,7 +152,10 @@ namespace CookBookApi.Tests.Controllers
                 Name = "Foo",
                 Instruction = "Bar",
                 Subrecipes = [],
-                ParentRecipes = []
+                ParentRecipes = [],
+                Description = string.Empty,
+                Creator = string.Empty,
+                Ingredients = [],
             };
 
             var result = await _controller.AddRecipeAsync(recipeDto);
@@ -146,6 +177,9 @@ namespace CookBookApi.Tests.Controllers
                 Instruction = "Bar",
                 Subrecipes = [],
                 ParentRecipes = [],
+                Description = string.Empty,
+                Creator = string.Empty,
+                Ingredients = [],
             };
 
             var result = await _controller.AddRecipeAsync(recipeDto);
@@ -168,6 +202,9 @@ namespace CookBookApi.Tests.Controllers
                 Instruction = "Bar",
                 Subrecipes = subRecipes,
                 ParentRecipes = [],
+                Description = string.Empty,
+                Creator = string.Empty,
+                Ingredients = [],
             };
 
             var result = await _controller.AddRecipeAsync(recipeDto);
@@ -196,6 +233,9 @@ namespace CookBookApi.Tests.Controllers
                 Instruction = "Bar",
                 Subrecipes = [],
                 ParentRecipes = parentRecipes,
+                Description = string.Empty,
+                Creator = string.Empty,
+                Ingredients = [],
             };
 
             var result = await _controller.AddRecipeAsync(recipeDto);
@@ -413,7 +453,7 @@ namespace CookBookApi.Tests.Controllers
             var recipeIds = new List<int> { 4, 5, 6 };
 
             _ingredientRepositoryMock.Setup(r => r.GetIngredientByIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(new IngredientDto());
+                .ReturnsAsync(new IngredientDto{Name = string.Empty});
             
             _recipeIngredientRepositoryMock.Setup(ri => ri.GetRecipesWithIngredientsAsync(ingredientIds))
                 .ReturnsAsync(recipeIds);
@@ -441,7 +481,7 @@ namespace CookBookApi.Tests.Controllers
             var recipeDto = new RecipeDto() { Name = "Foo", Instruction = "Bar" };
 
             _ingredientRepositoryMock.Setup(r => r.GetIngredientByIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(new IngredientDto());
+                .ReturnsAsync(new IngredientDto{Name = string.Empty});
             
             _recipeIngredientRepositoryMock.Setup(ri => ri.GetRecipesWithIngredientsAsync(ingredientIds))
                 .ReturnsAsync(recipeIds);

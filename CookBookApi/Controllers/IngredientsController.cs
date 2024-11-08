@@ -12,20 +12,17 @@ namespace CookBookApi.Controllers
     {
         private readonly ICuisineRepository _cuisineRepository;
         private readonly IIngredientRepository _ingredientRepository;
-        private readonly IRecipeRepository _recipeRepository;
         private readonly IRecipeIngredientRepository _recipeIngredientRepository;
         private readonly IMapper _mapper;
 
         public IngredientsController(
             ICuisineRepository cuisineRepository,
             IIngredientRepository ingredientRepository,
-            IRecipeRepository recipeRepository,
             IRecipeIngredientRepository recipeIngredientRepository,
             IMapper mapper)
         {
             _cuisineRepository = cuisineRepository;
             _ingredientRepository = ingredientRepository;
-            _recipeRepository = recipeRepository;
             _recipeIngredientRepository = recipeIngredientRepository;
             _mapper = mapper;
         }

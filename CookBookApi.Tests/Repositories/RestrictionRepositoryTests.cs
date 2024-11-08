@@ -146,7 +146,7 @@ public class RestrictionRepositoryTests
         
         var restriction = await repository.GetRestrictionByIdAsync(_restriction.Id);
         
-        Assert.That(restriction.Name, Is.EqualTo(_restriction.Name));
+        Assert.That(restriction!.Name, Is.EqualTo(_restriction.Name));
     }
 
     [Test]
@@ -184,7 +184,7 @@ public class RestrictionRepositoryTests
         
         await repository.UpdateRestrictionAsync(restrictionToUpdate);
         
-        Assert.That(context.Restrictions.FirstOrDefault().Name, Is.EqualTo(restrictionToUpdate.Name));
+        Assert.That(context.Restrictions.FirstOrDefault()!.Name, Is.EqualTo(restrictionToUpdate.Name));
     }
     
     [Test]

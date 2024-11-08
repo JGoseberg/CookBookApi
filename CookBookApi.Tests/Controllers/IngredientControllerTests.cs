@@ -15,7 +15,6 @@ namespace CookBookApi.Tests.Controllers
         private IngredientsController _controller;
         private IMapper _mapper;
         private Mock<IIngredientRepository> _ingredientRepository;
-        private Mock<IRecipeRepository> _recipeRepository;
         private Mock<IRecipeIngredientRepository> _recipeIngredientRepository;
         private Mock<ICuisineRepository> _cuisineRepository;
 
@@ -24,10 +23,9 @@ namespace CookBookApi.Tests.Controllers
         {
             _cuisineRepository = new Mock<ICuisineRepository>();
             _ingredientRepository = new Mock<IIngredientRepository>();
-            _recipeRepository = new Mock<IRecipeRepository>();
             _mapper = MapperTestConfig.InitializeAutoMapper();
             _recipeIngredientRepository = new Mock<IRecipeIngredientRepository>();
-            _controller = new IngredientsController(_cuisineRepository.Object, _ingredientRepository.Object, _recipeRepository.Object, _recipeIngredientRepository.Object, _mapper);
+            _controller = new IngredientsController(_cuisineRepository.Object, _ingredientRepository.Object, _recipeIngredientRepository.Object, _mapper);
         }
 
         [Test]
@@ -36,7 +34,7 @@ namespace CookBookApi.Tests.Controllers
             var ingredientDto = new IngredientDto
             {
                 Name = string.Empty,
-                Cuisine = new CuisineDto { Id = 1}
+                Cuisine = new CuisineDto { Id = 1, Name = string.Empty }
             };
             
             var result = await _controller.AddIngredientAsync(ingredientDto.Name, ingredientDto.Cuisine.Id);
@@ -50,7 +48,7 @@ namespace CookBookApi.Tests.Controllers
             var ingredientDto = new IngredientDto
             {
                 Name = "duplicate",
-                Cuisine = new CuisineDto { Id = 1}
+                Cuisine = new CuisineDto { Id = 1, Name = string.Empty}
             };
 
             _ingredientRepository.Setup(i => i.AnyIngredientWithSameNameAsync(ingredientDto.Name))
@@ -64,7 +62,7 @@ namespace CookBookApi.Tests.Controllers
         [Test]
         public async Task AddIngredientAsync_ReturnsCreated()
         {
-            var ingredientDto = new IngredientDto { Name = "Foo", Cuisine = new CuisineDto { Id = 1 } };
+            var ingredientDto = new IngredientDto { Name = "Foo", Cuisine = new CuisineDto { Id = 1 ,Name = string.Empty } };
 
             _ingredientRepository.Setup(i => i.AnyIngredientWithSameNameAsync(ingredientDto.Name))
                 .ReturnsAsync(false);

@@ -1,6 +1,4 @@
 using AutoMapper;
-using CookBookApi.DTOs;
-using CookBookApi.DTOs.Recipes;
 using CookBookApi.Mappings;
 using CookBookApi.Models;
 using CookBookApi.Repositories;
@@ -24,7 +22,6 @@ public class RecipeRepositoryTests
         {
             Name = "Foo",
         }
-
     };
     
     [SetUp]
@@ -58,7 +55,7 @@ public class RecipeRepositoryTests
         Assert.Multiple(() =>
         {
             Assert.That(addedRecipe, Is.Not.Null);
-            Assert.That(addedRecipe.Name, Is.EqualTo(_recipe.Name));
+            Assert.That(addedRecipe!.Name, Is.EqualTo(_recipe.Name));
         });
     }
 
@@ -159,7 +156,7 @@ public class RecipeRepositoryTests
         
         Assert.Multiple(() =>
         {
-            Assert.That(recipe.Id, Is.EqualTo(_recipe.Id));
+            Assert.That(recipe!.Id, Is.EqualTo(_recipe.Id));
             Assert.That(recipe.Description, Is.EqualTo(_recipe.Description));
             Assert.That(recipe.Instruction, Is.EqualTo(_recipe.Instruction));
         });
@@ -194,7 +191,7 @@ public class RecipeRepositoryTests
         
         var recipes = await repository.GetRecipesWithSpecificCuisineAsync(_recipe.Cuisine.Id);
         
-        Assert.That(recipes.FirstOrDefault(r => r.Id == _recipe.Id).Name, Is.EqualTo(_recipe.Name));
+        Assert.That(recipes.FirstOrDefault(r => r!.Id == _recipe.Id)?.Name, Is.EqualTo(_recipe.Name));
     }
 
     [Test]

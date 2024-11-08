@@ -4,5 +4,5 @@ namespace CookBookApi.Interfaces;
 
 public interface IRecipeImageService
 {
-    Task<RecipeImage> ProcessAndCreateRecipeImageAsync(IFormFile file);
+    Task<RecipeImage?> ProcessAndCreateRecipeImageAsync(IFormFile file);
 }

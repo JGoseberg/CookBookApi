@@ -11,20 +11,18 @@ namespace CookBookApi.Controllers
     public class MeasurementUnitController : ControllerBase
     {
         private readonly IMeasurementUnitRepository _measurementUnitRepository;
-        private readonly IRecipeRepository _recipeRepository;
         private readonly IRecipeIngredientRepository _recipeIngredientRepository;
         private readonly IMapper _mapper;
         
         public MeasurementUnitController(
             IMeasurementUnitRepository measurementUnitRepository,
             IRecipeIngredientRepository recipeIngredientRepository,
-            IMapper mapper, 
-            IRecipeRepository recipeRepository)
+            IMapper mapper
+            )
         {
             _measurementUnitRepository = measurementUnitRepository;
             _recipeIngredientRepository = recipeIngredientRepository;
             _mapper = mapper;
-            _recipeRepository = recipeRepository;
         }
         [HttpPost]
         [ActionName("AddMeasurementUnit")]
